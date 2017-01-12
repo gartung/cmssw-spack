@@ -12,3 +12,5 @@ class Libsigcpp(Package):
         configure("--prefix=%s" % prefix)
         make()
         make("install")
+        cp=which('cp')
+        cp(prefix+'/lib/sigc++-2.0/include/sigc++config.h', prefix+'/include/sigc++-2.0/')

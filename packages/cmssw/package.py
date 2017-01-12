@@ -34,7 +34,7 @@ class Cmssw(Package):
     homepage = "http://cms-sw.github.io"
     url      = "https://github.com/cms-sw/cmssw/archive/CMSSW_9_0_0_pre2.tar.gz"
 
-    version('9.0.0.pre2', '070cc64e73a3a3ac5def459a3037c23d')
+    version('9.0.X',git='https://github.com/cms-sw/cmssw.git',branch='CMSSW_9_0_X')
 
     config_tag='V05-05-20'
 
