@@ -60,6 +60,7 @@ class Md5(Package):
         if sys.platform == 'darwin': 
           comp('md5.c', '-shared', '-fPIC', '-o', 'libcms-md5.dylib')
           cp('-v','libcms-md5.dylib',prefix.lib)
+          fix_darwin_install_name(prefix.lib)
         else: 
           comp('md5.c', '-shared', '-fPIC', '-o', 'libcms-md5.so')
           cp('-v','libcms-md5.so',prefix.lib)

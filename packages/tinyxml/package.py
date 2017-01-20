@@ -35,7 +35,7 @@ class Tinyxml(Package):
     if sys.platform == 'darwin':
       patch('tinyxml.patch')
 
-    depends_on('boost')
+    depends_on('boost+python')
     depends_on('gmake',type='build')
 
     def install(self, spec, prefix):
@@ -45,8 +45,9 @@ class Tinyxml(Package):
         md=which('mkdir')
         md('%s' % self.prefix.lib)
         md('%s' % self.prefix.include)
-        if sys.platform == 'darwin': 
+        if sys.platform == 'darwin':
           cp('-v','libtinyxml.dylib',prefix.lib)
+          fix_darwin_install_name(prefix.lib) 
         else: 
           cp('-v','libtinyxml.so',prefix.lib)
         cp('-v','tinystr.h','tinyxml.h',prefix.include)
