@@ -22,27 +22,38 @@
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
+#
+# This is a template package file for Spack.  We've put "FIXME"
+# next to all the things you'll want to change. Once you've handled
+# them, you can save this file and test your package like this:
+#
+#     spack install cfe-bindings
+#
+# You can edit this file again by typing:
+#
+#     spack edit cfe-bindings
+#
+# See the Spack documentation for more information on packaging.
+# If you submit this package back to Spack as a pull request,
+# please first remove this boilerplate and all FIXME comments.
+#
 from spack import *
 
 
-class Scram(Package):
-    """SCRAM as used by CMS"""
+class CfeBindings(Package):
+    """FIXME: Put a proper description of your package here."""
 
-    url      = "https://github.com/cms-sw/SCRAM/archive/V2_2_6.tar.gz"
+    # FIXME: Add a proper url for your package's homepage here.
+    homepage = "http://www.example.com"
+    url      = "http://releases.llvm.org/3.8.0/cfe-3.8.0.src.tar.xz"
 
-    version('2_2_6', 'ebff710a52077da0f38b0312f01e041d')
-
-    depends_on('gmake')
+    version('3.8.0', 'cc99e7019bb74e6459e80863606250c5')
 
     def install(self, spec, prefix):
-        gmake=which('gmake')
-        args=['install']
-        args.append('INSTALL_BASE=%s' % prefix)
-        args.append('VERSION=V%s' % self.version)
-        args.append('PREFIX=%s' % prefix )
-        args.append('VERBOSE=1')
-        gmake(*args)
-
-    def setup_dependent_environment(self, spack_env, run_env, dspec):
-        spack_env.set('SCRAM_ARCH', 'osx1012_amd64_clang8')
-
+        cp=which('cp')
+        md=which('mkdir')
+        md('%s' % self.prefix.lib)
+        md('%s' % self.prefix.include)
+        md(self.prefix+'/python')
+        cp('-rpv',self.stage.source_path+'/bindings/python/clang',self.prefix+'/python')
+        cp('-rpv','/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libclang.dylib',self.prefix.lib)

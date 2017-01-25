@@ -83,8 +83,8 @@ class Fwlite(Package):
     depends_on('xz')
     depends_on('libtiff')
     depends_on('libxml2')
-    depends_on('zlib')
     depends_on('bzip2')
+    depends_on('cfe-bindings')
 
 
     def install(self, spec, prefix):
@@ -126,9 +126,9 @@ class Fwlite(Package):
         values['TINYXML_PREFIX']=str(spec['tinyxml'].prefix)
         values['VDT_VER']=str(spec['vdt'].version)
         values['VDT_PREFIX']=str(spec['vdt'].prefix)
-        values['XZ_VER']=str('spec['xz'].version)
+        values['XZ_VER']=str(spec['xz'].version)
         values['XZ_PREFIX']=str(spec['xz'].prefix)
-        values['ZLIB_VER']=str(spec['zlib'].version_
+        values['ZLIB_VER']=str(spec['zlib'].version)
         values['ZLIB_PREFIX']=str(spec['zlib'].prefix)
         values['SIGCPP_VER']=str(spec['libsigcpp'].version)
         values['SIGCPP_PREFIX']=str(spec['libsigcpp'].prefix)
@@ -156,6 +156,8 @@ class Fwlite(Package):
         values['CLHEP_PREFIX']=str(spec['clhep'].prefix)
         values['BZ2_VER']=str(spec['bzip2'].version)
         values['BZ2_PREFIX']=str(spec['bzip2'].prefix)
+        values['CFE_VER']=str(spec['cfe-bindings'].version)
+        values['CFE_PREFIX']=str(spec['cfe-bindings'].prefix)
         values['GMAKE_VER']=str(spec['gmake'].version)
         values['GMAKE_PREFIX']=str(spec['gmake'].prefix)
         values['CPPUNIT_VER']=str(spec['cppunit'].version)
@@ -189,7 +191,6 @@ class Fwlite(Package):
                 fout = open(xmlfile,'w')
                 fout.write(res)
                 fout.close() 
-            os.environ["SCRAM_ARCH"] = "osx1012_amd64_clang8"
             perl=which('perl')
             perl('config/updateConfig.pl',
                  '-p', 'CMSSW', 
@@ -216,29 +217,26 @@ class Fwlite(Package):
                     replacement=line+'\n'
                     fout.write(replacement)
             fout.close()
-            scram('-a','osx1012_amd64_clang8', 'project','-d', build_directory, '-b', 'config/bootsrc.xml')
+            scram('project','-d', prefix, '-b', 'config/bootsrc.xml')
 
     
-        with working_dir(join_path(build_directory,cmssw_u_version),create=False):
+        with working_dir(join_path(prefix,cmssw_u_version),create=False):
             rm=which('rm')
             matches = []
             matches.append('src/CommonTools/Utils/src/TMVAEvaluator.cc')
             matches.append('src/FWCore/MessageLogger/python/MessageLogger_cfi.py')
-            matches.append('src/CondFormats/Serialization/python/BuildFile.xml')
-            matches.append('src/CommonTools/Utils/plugins/BuildFile.xml')
-            matches.append('src/CondFormats/RPCObjects/BuildFile.xml')
-            matches.append('src/CondFormats/L1TObjects/BuildFile.xml')
-            matches.append('src/PhysicsTools/Utilities/BuildFile.xml')
+            matches.append('src/CommonTools/Utils/plugins/GBRForestWriter.cc')
             for f in glob('src/*/*/test/BuildFile.xml'):
                 matches.append(f)
             for m in matches: 
                 rm('-v',m,output=str)
-            scram('-a', 'osx1012_amd64_clang8', 'build', '-v', '-k','-j8')
+            scram('build', '-v','-j8')
+            scram('install', '-f')
 
-        with working_dir(join_path(prefix,cmssw_u_version),create=True):
-            rsync=which('rsync')
-            rsync('-a',build_directory+'/'+cmssw_u_version+'/','./')    
-            scram('-a', 'osx1012_amd64_clang8', 'build', '-v', 'ProjectRename')
+#        with working_dir(join_path(prefix,cmssw_u_version),create=True):
+#            rsync=which('rsync')
+#            rsync('-a',build_directory+'/'+cmssw_u_version+'/','./')    
+#            scram('install')
 
     def url_for_version(self, version):
         """Handle CMSSW's version string."""
