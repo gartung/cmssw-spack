@@ -43,19 +43,23 @@ class Root(Package):
         patch('root6-60606-mathmore.patch', when='@6.06.06')
 
     variant('graphviz', default=False, description='Enable graphviz support')
+    variant('debug', default=False, description='debug build')
 
     depends_on("cmake", type='build')
     depends_on("libtool", type='build')
     depends_on("pcre")
-    depends_on("fftw")
+    depends_on("fftw~mpi")
     depends_on("graphviz", when="+graphviz")
     depends_on("python")
     depends_on("gsl")
     depends_on("libxml2+python")
     depends_on("jpeg")
     depends_on("libpng")
+    depends_on("libtiff")
+    depends_on("giflib")
     depends_on("xz")
     depends_on("openssl")
+    depends_on("xrootd")
     depends_on("freetype")
 
     def install(self, spec, prefix):
@@ -70,6 +74,17 @@ class Root(Package):
         options.append('-Droofit=on')
         options.append('-Dx11=on')
         options.extend(std_cmake_args)
+        options.append('-DPCRE_CONFIG_EXECUTABLE=%s/bin/pcre-config' % self.spec['pcre'].prefix)
+        options.append('-DPCRE_INCLUDE_DIR=%s/include' % self.spec['pcre'].prefix)
+        options.append('-DPCRE_PCRE_LIBRARY=%s/lib/libpcre.dylib' % self.spec['pcre'].prefix)
+        options.append('-DPCRE_PCREPOSIX_LIBRARY=%s/lib/libpcreposix.dylib' % self.spec['pcre'].prefix)
+        options.append('-DLZMA_DIR=%s' % self.spec['xz'].prefix)
+        options.append('-DLZMA_INCLUDE_DIR=%s/include' % self.spec['xz'].prefix)
+        options.append('-DLZMA_LIBRARY=%s/lib/liblzma.dylib' % self.spec['xz'].prefix)
+        options.append('-DXROOTD_ROOT_DIR=%s' % self.spec['xrootd'].prefix)
+        options.append('-DPNG_INCLUDE_DIR=%s/include' % self.spec['libpng'].prefix)
+        options.append('-DPNG_LIBRARY=%s/lib/libpng.dylib' % self.spec['libpng'].prefix)
+                       
         if sys.platform == 'darwin':
             darwin_options = [
                 '-Dcocoa=on',
@@ -87,6 +102,7 @@ class Root(Package):
         spack_env.set('ROOTSYS', self.prefix)
         spack_env.set('ROOT_VERSION', 'v6')
         spack_env.prepend_path('PYTHONPATH', self.prefix.lib)
+        spack_env.prepend_path('PATH', self.prefix.bin)
 
     def url_for_version(self, version):
         """Handle ROOT's unusual version string."""

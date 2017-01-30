@@ -74,7 +74,6 @@ class Fwlite(Package):
     depends_on('bzip2')
     depends_on('gsl')
     depends_on('hepmc')
-    depends_on('jpeg')
     depends_on('libpng')
     depends_on('giflib')
     depends_on('openssl')
@@ -85,6 +84,7 @@ class Fwlite(Package):
     depends_on('libxml2')
     depends_on('bzip2')
     depends_on('cfe-bindings')
+    depends_on('fireworks-data')
 
 
     def install(self, spec, prefix):
@@ -162,8 +162,8 @@ class Fwlite(Package):
         values['GMAKE_PREFIX']=str(spec['gmake'].prefix)
         values['CPPUNIT_VER']=str(spec['cppunit'].version)
         values['CPPUNIT_PREFIX']=str(spec['cppunit'].prefix)
-        values['FWLITEDATA_VER']='V07-05-01-cms'
-        values['FWLITEDATA_PREFIX']='/Users/gartung/CMSSW/osx1011_amd64_gcc540/cms'
+        values['FWLITEDATA_VER']=str(spec['fireworks-data'].version)
+        values['FWLITEDATA_PREFIX']=str(spec['fireworks-data'].prefix)
         values['SELF_LIB']=prefix+'/'+cmssw_u_version+'/lib/osx1012_amd64_clang8'
         values['SELF_INC']=prefix+'/'+cmssw_u_version+'/src'
 
@@ -230,16 +230,16 @@ class Fwlite(Package):
                 matches.append(f)
             for m in matches: 
                 rm('-v',m,output=str)
-            scram('build', '-v','-j8')
-            scram('install', '-f')
+            scram('build', '-v','-k','-j4')
+            rm('-r', 'tmp')
 
-#        with working_dir(join_path(prefix,cmssw_u_version),create=True):
-#            rsync=which('rsync')
-#            rsync('-a',build_directory+'/'+cmssw_u_version+'/','./')    
-#            scram('install')
+    def setup_dependent_environment(self, spack_env, run_env, dspec):
+        spack_env.set('CMSSW_RELEASE_BASE', self.prefix)
+        spack_env.set('CMSSW_BASE', self.prefix)
+        spack_env.append_path('LD_LIBRARY_PATH', self.prefix+'/'+cmssw_u_version+'/lib/osx1012_amd64_clang8')
+
 
     def url_for_version(self, version):
         """Handle CMSSW's version string."""
         version_underscore=str(self.version).replace('.','_')
         return "https://github.com/cms-sw/cmssw/archive/CMSSW_%s.tar.gz" % version_underscore
-

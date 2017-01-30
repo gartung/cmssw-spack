@@ -57,3 +57,7 @@ class CfeBindings(Package):
         md(self.prefix+'/python')
         cp('-rpv',self.stage.source_path+'/bindings/python/clang',self.prefix+'/python')
         cp('-rpv','/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libclang.dylib',self.prefix.lib)
+
+    def setup_dependent_environment(self, spack_env, run_env, dspec):
+        spack_env.set('LLVM_BASE', self.prefix)
+
