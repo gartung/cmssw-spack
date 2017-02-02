@@ -54,6 +54,7 @@ class Fwlite(Package):
              placement='tools'
     )
 
+    depends_on('gcc~binutils')
     depends_on('scram')
     depends_on('gmake')
     depends_on('root')
@@ -95,13 +96,9 @@ class Fwlite(Package):
         cmssw_u_version=cmssw_version.replace('.','_')
         scram_version='V'+str(spec['scram'].version)
         
-        gcc=which(spack_cc)
-        if spec.satisfies('%clang') and self.compiler.is_apple:
-            gcc_prefix='/usr'
-            gcc_machine=''
-        else:
-            gcc_prefix=re.sub('/bin/.*$','',self.compiler.cc)
-            gcc_machine=gcc('-dumpmachine',output=str)
+        gcc=which(spack_f77)
+        gcc_prefix=re.sub('/bin/.*$','',self.compiler.f77)
+        gcc_machine=gcc('-dumpmachine',output=str)
         gcc_ver=gcc('-dumpversion',output=str)
 
         values = {}
@@ -136,7 +133,7 @@ class Fwlite(Package):
         values['PCRE_PREFIX']=str(spec['pcre'].prefix)
         values['OPENSSL_VER']=str(spec['openssl'].version)
         values['OPENSSL_PREFIX']=str(spec['openssl'].prefix)
-        values['LIBXML2_VER']=str(spec['libxml2'].prefix)
+        values['LIBXML2_VER']=str(spec['libxml2'].version)
         values['LIBXML2_PREFIX']=str(spec['libxml2'].prefix)
         values['LIBUUID_VER']=str(spec['libuuid'].version)
         values['LIBUUID_PREFIX']=str(spec['libuuid'].prefix)
@@ -232,6 +229,21 @@ class Fwlite(Package):
                 rm('-v',m,output=str)
             scram('build', '-v','-k','-j4')
             rm('-r', 'tmp')
+            rm('external/osx1012_amd64_clang8/lib/libJPEG.dylib')
+            rm('external/osx1012_amd64_clang8/lib/libPng.dylib')
+            rm('external/osx1012_amd64_clang8/lib/libTIFF.dylib')
+            rm('external/osx1012_amd64_clang8/lib/libGIF.dylib')
+            mv=which('mv')
+            md=which('mkdir')
+            md('-p','external/osx1012_amd64_clang8/data/Fireworks/Geometry/data')
+            matches = []
+            for f in glob('external/osx1012_amd64_clang8/data/*.root'):
+                matches.append(f)
+            for m in matches: 
+                mv(m,'external/osx1012_amd64_clang8/data/Fireworks/Geometry/data')
+             
+            
+
 
     def setup_dependent_environment(self, spack_env, run_env, dspec):
         spack_env.set('CMSSW_RELEASE_BASE', self.prefix)
