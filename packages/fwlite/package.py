@@ -38,6 +38,7 @@ class Fwlite(Package):
 
 #    version('9.0.X',git='https://github.com/gartung/cmssw.git',branch='CMSSW_9_0_X')
     version('9.0.X',git='https://github.com/gartung/cmssw.git',branch='macos-clang-fixes')
+    version('8.1.X',git='https://github.com/gartung/cmssw.git',branch='macos-clang-fixes-81x')
 
     config_tag='V05-05-20'
 
