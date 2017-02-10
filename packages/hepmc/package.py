@@ -33,7 +33,7 @@ class Hepmc(Package):
     homepage = "http://hepmc.web.cern.ch/hepmc/"
     url      = "http://lcgapp.cern.ch/project/simu/HepMC/download/HepMC-2.06.09.tar.gz"
 
-    version('2.06.09', 'c789ad9899058737b3563f41b9c7425b')
+    version('2.06.09', 'c47627ced4255b40e731b8666848b087')
     version('2.06.08', 'a2e889114cafc4f60742029d69abd907')
     version('2.06.07', '11d7035dccb0650b331f51520c6172e7')
 
