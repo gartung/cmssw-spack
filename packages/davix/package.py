@@ -22,32 +22,40 @@
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
+#
+# This is a template package file for Spack.  We've put "FIXME"
+# next to all the things you'll want to change. Once you've handled
+# them, you can save this file and test your package like this:
+#
+#     spack install davix
+#
+# You can edit this file again by typing:
+#
+#     spack edit davix
+#
+# See the Spack documentation for more information on packaging.
+# If you submit this package back to Spack as a pull request,
+# please first remove this boilerplate and all FIXME comments.
+#
 from spack import *
-import sys
 
-class Tinyxml(Package):
+
+class Davix(CMakePackage):
     """FIXME: Put a proper description of your package here."""
 
-    url      = "http://cmsrep.cern.ch/cmssw/cms/SOURCES/slc6_amd64_gcc600/external/tinyxml/2.5.3-giojec/tinyxml.2.5.3-3b1ed8542a820e77de84bc08734bde904c3b12be.tgz"
+    # FIXME: Add a proper url for your package's homepage here.
+    homepage = "http://www.example.com"
+    url      = "https://github.com/cern-it-sdc-id/davix/archive/R_0_6_5.tar.gz"
 
-    version('2.5.3', '3126b4a2dbfbd087e28faca4ad62cd31', 
-       url='http://cmsrep.cern.ch/cmssw/cms/SOURCES/slc6_amd64_gcc600/external/tinyxml/2.5.3-giojec/tinyxml.2.5.3-3b1ed8542a820e77de84bc08734bde904c3b12be.tgz')
-    if sys.platform == 'darwin':
-      patch('tinyxml.patch')
+    version('R_0_6_5', 'a7f09dfa0bd0daaa46aafc8e0f4b1a25')
 
-    depends_on('boost@1.63.0+python')
-    depends_on('gmake',type='build')
+    # FIXME: Add dependencies if required.
+    depends_on('libxml2+python')
+    depends_on('boost+python')
 
-    def install(self, spec, prefix):
-        gmake=which('gmake')
-        gmake('BOOST_ROOT=%s' % spec['boost'].prefix)
-        cp=which('cp')
-        md=which('mkdir')
-        md('%s' % self.prefix.lib)
-        md('%s' % self.prefix.include)
-        if sys.platform == 'darwin':
-          cp('-v','libtinyxml.dylib',prefix.lib)
-          fix_darwin_install_name(prefix.lib) 
-        else: 
-          cp('-v','libtinyxml.so',prefix.lib)
-        cp('-v','tinystr.h','tinyxml.h',prefix.include)
+    def cmake_args(self):
+        # FIXME: Add arguments other than
+        # FIXME: CMAKE_INSTALL_PREFIX and CMAKE_BUILD_TYPE
+        # FIXME: If not needed delete this function
+        args = ['-DLIBXML2_INCLUDE_DIR=%s/include/libxml2' % self.spec['libxml2'].prefix ]
+        return args

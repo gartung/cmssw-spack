@@ -59,7 +59,7 @@ class Root(Package):
     depends_on("giflib")
     depends_on("xz")
     depends_on("openssl")
-    depends_on("xrootd")
+#    depends_on("xrootd")
     depends_on("freetype")
 
     def install(self, spec, prefix):
@@ -76,14 +76,14 @@ class Root(Package):
         options.extend(std_cmake_args)
         options.append('-DPCRE_CONFIG_EXECUTABLE=%s/bin/pcre-config' % self.spec['pcre'].prefix)
         options.append('-DPCRE_INCLUDE_DIR=%s/include' % self.spec['pcre'].prefix)
-        options.append('-DPCRE_PCRE_LIBRARY=%s/lib/libpcre.dylib' % self.spec['pcre'].prefix)
-        options.append('-DPCRE_PCREPOSIX_LIBRARY=%s/lib/libpcreposix.dylib' % self.spec['pcre'].prefix)
+        options.append('-DPCRE_PCRE_LIBRARY=%s/lib/libpcre.so' % self.spec['pcre'].prefix)
+        options.append('-DPCRE_PCREPOSIX_LIBRARY=%s/lib/libpcreposix.so' % self.spec['pcre'].prefix)
         options.append('-DLZMA_DIR=%s' % self.spec['xz'].prefix)
         options.append('-DLZMA_INCLUDE_DIR=%s/include' % self.spec['xz'].prefix)
-        options.append('-DLZMA_LIBRARY=%s/lib/liblzma.dylib' % self.spec['xz'].prefix)
-        options.append('-DXROOTD_ROOT_DIR=%s' % self.spec['xrootd'].prefix)
+        options.append('-DLZMA_LIBRARY=%s/lib/liblzma.so' % self.spec['xz'].prefix)
+#        options.append('-DXROOTD_ROOT_DIR=%s' % self.spec['xrootd'].prefix)
         options.append('-DPNG_INCLUDE_DIR=%s/include' % self.spec['libpng'].prefix)
-        options.append('-DPNG_LIBRARY=%s/lib/libpng.dylib' % self.spec['libpng'].prefix)
+        options.append('-DPNG_LIBRARY=%s/lib/libpng.so' % self.spec['libpng'].prefix)
                        
         if sys.platform == 'darwin':
             darwin_options = [
