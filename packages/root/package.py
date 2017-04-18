@@ -73,6 +73,7 @@ class Root(Package):
         options.append('-Dcxx14=on')
         options.append('-Droofit=on')
         options.append('-Dx11=on')
+        options.append('-Dminuit2=on')
         options.extend(std_cmake_args)
         options.append('-DPCRE_CONFIG_EXECUTABLE=%s/bin/pcre-config' % self.spec['pcre'].prefix)
         options.append('-DPCRE_INCLUDE_DIR=%s/include' % self.spec['pcre'].prefix)

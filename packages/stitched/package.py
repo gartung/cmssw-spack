@@ -50,8 +50,7 @@ class Stitched(CMakePackage):
 
     # FIXME: Add proper versions and checksums here.
     # version('1.2.3', '0123456789abcdef0123456789abcdef')
-    version('0.1m',git='https://github.com/gartung/stitched.git',branch='master',submodules='True')
-    version('0.1d',git='https://github.com/gartung/stitched.git',branch='develop',submodules='True')
+    version('0.1',git='https://github.com/gartung/stitched.git',commit='699883f',submodules='True')
 
 
     # FIXME: Add dependencies if required.

@@ -36,7 +36,7 @@ class Fwlite(CMakePackage):
     homepage = "http://cms-sw.github.io"
     url      = "https://github.com/cms-sw/cmssw/archive/CMSSW_9_0_0.tar.gz"
 
-    version('9.0.1',git='https://github.com/gartung/fwlite.git',commit='04b5af5',submodules=True)
+    version('9.0.1',git='https://github.com/gartung/fwlite.git',commit='9b7363c',submodules=True)
 
     if sys.platform == 'darwin':
         depends_on('gcc')
@@ -44,33 +44,20 @@ class Fwlite(CMakePackage):
     depends_on('cmake')
     depends_on('root')
     depends_on('tbb')
-    depends_on('tinyxml')
     depends_on('clhep')
     depends_on('md5')
     depends_on('python')
     depends_on('vdt')
     depends_on('boost')
-    depends_on('libuuid')
-    depends_on('libsigcpp')
     depends_on('xrootd')
-    depends_on('cppunit')
-    depends_on('xerces-c')
-    depends_on('expat')
-    depends_on('sqlite')
-    depends_on('bzip2')
-    depends_on('gsl')
     depends_on('hepmc')
-    depends_on('libpng')
-    depends_on('giflib')
-    depends_on('openssl')
     depends_on('pcre')
-    depends_on('zlib')
-    depends_on('xz')
-    depends_on('libtiff')
-    depends_on('libxml2')
-    depends_on('bzip2')
     depends_on('castor')
     depends_on('davix')
+    depends_on('libsigcpp')
+    depends_on('tinyxml')
+    depends_on('jpeg')
+    depends_on('cppunit')
     depends_on('fireworks-data')
 
     def cmake_args(self):
@@ -79,10 +66,10 @@ class Fwlite(CMakePackage):
         args.append('-DCASTOR_INCLUDE_DIR=%s/include' % self.spec['castor'].prefix)
         args.append('-DBOOST_ROOT=%s' % self.spec['boost'].prefix)
         args.append('-DTBB_ROOT_DIR=%s' % self.spec['tbb'].prefix)
-        args.append('-DTINYXMLROOT=%s' % self.spec['tinyxml'].prefix)
         args.append('-DMD5ROOT=%s' % self.spec['md5'].prefix)
-        args.append('-DCPPUNITROOT=%s' % self.spec['cppunit'].prefix)
-        args.append('-DSIGCPPROOT=%s' % self.spec['libsigcpp'].prefix)
         args.append('-DDAVIXROOT=%s' % self.spec['davix'].prefix)
+        args.append('-DSIGCPPROOT=%s' % self.spec['libsigcpp'].prefix)
+        args.append('-DTINYXMLROOT=%s' % self.spec['tinyxml'].prefix)
+        args.append('-DCPPUNITROOT=%s' % self.spec['cppunit'].prefix)
         return args
 
