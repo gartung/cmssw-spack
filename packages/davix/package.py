@@ -52,6 +52,7 @@ class Davix(CMakePackage):
     # FIXME: Add dependencies if required.
     depends_on('libxml2+python')
     depends_on('boost+python')
+    depends_on('cmake',type='build')
 
     def cmake_args(self):
         # FIXME: Add arguments other than
