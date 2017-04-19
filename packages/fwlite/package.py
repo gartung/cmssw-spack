@@ -36,10 +36,9 @@ class Fwlite(CMakePackage):
     homepage = "http://cms-sw.github.io"
     url      = "https://github.com/cms-sw/cmssw/archive/CMSSW_9_0_0.tar.gz"
 
-    version('9.0.1',git='https://github.com/gartung/fwlite.git',commit='9b7363c',submodules=True)
+    version('9.0.1',git='https://github.com/gartung/fwlite.git',commit='107a7a0',submodules=True)
 
     if sys.platform == 'darwin':
-        depends_on('gcc')
         depends_on('cfe-bindings')
     depends_on('cmake')
     depends_on('root')
@@ -59,6 +58,9 @@ class Fwlite(CMakePackage):
     depends_on('jpeg')
     depends_on('cppunit')
     depends_on('fireworks-data')
+    depends_on('libuuid')
+    depends_on('xerces-c')
+
 
     def cmake_args(self):
         args = ['-DCMakeTools_DIR=%s/cmaketools' % self.stage.source_path]
@@ -71,5 +73,8 @@ class Fwlite(CMakePackage):
         args.append('-DSIGCPPROOT=%s' % self.spec['libsigcpp'].prefix)
         args.append('-DTINYXMLROOT=%s' % self.spec['tinyxml'].prefix)
         args.append('-DCPPUNITROOT=%s' % self.spec['cppunit'].prefix)
+        args.append('-DUUID_INCLUDE_DIR=%s/include' % self.spec['libuuid'].prefix)
+        args.append('-DUUID_ROOT_DIR=%s' % self.spec['libuuid'].prefix)
+        args.append('-DXERCESC_ROOT_DIR=%s' % self.spec['xerces-c'].prefix)
         return args
 
