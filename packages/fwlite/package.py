@@ -40,6 +40,7 @@ class Fwlite(CMakePackage):
 
     if sys.platform == 'darwin':
         depends_on('cfe-bindings')
+        depends_on('libuuid')
     depends_on('cmake')
     depends_on('root')
     depends_on('tbb')
@@ -47,7 +48,7 @@ class Fwlite(CMakePackage):
     depends_on('md5')
     depends_on('python')
     depends_on('vdt')
-    depends_on('boost')
+    depends_on('boost+python')
     depends_on('xrootd')
     depends_on('hepmc')
     depends_on('pcre')
@@ -58,7 +59,6 @@ class Fwlite(CMakePackage):
     depends_on('jpeg')
     depends_on('cppunit')
     depends_on('fireworks-data')
-    depends_on('libuuid')
     depends_on('xerces-c')
 
 
@@ -71,10 +71,12 @@ class Fwlite(CMakePackage):
         args.append('-DMD5ROOT=%s' % self.spec['md5'].prefix)
         args.append('-DDAVIXROOT=%s' % self.spec['davix'].prefix)
         args.append('-DSIGCPPROOT=%s' % self.spec['libsigcpp'].prefix)
+        args.append('-DSIGCPP_INCLUDE_DIR=%s/include/sigc++-2.0' % self.spec['libsigcpp'].prefix)
         args.append('-DTINYXMLROOT=%s' % self.spec['tinyxml'].prefix)
         args.append('-DCPPUNITROOT=%s' % self.spec['cppunit'].prefix)
-        args.append('-DUUID_INCLUDE_DIR=%s/include' % self.spec['libuuid'].prefix)
-        args.append('-DUUID_ROOT_DIR=%s' % self.spec['libuuid'].prefix)
         args.append('-DXERCESC_ROOT_DIR=%s' % self.spec['xerces-c'].prefix)
+        if sys.platform == 'darwin':
+            args.append('-DUUID_INCLUDE_DIR=%s/include' % self.spec['libuuid'].prefix)
+            args.append('-DUUID_ROOT_DIR=%s' % self.spec['libuuid'].prefix)
         return args
 

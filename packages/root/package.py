@@ -32,6 +32,7 @@ class Root(Package):
     homepage = "https://root.cern.ch"
     url      = "https://root.cern.ch/download/root_v6.07.02.source.tar.gz"
 
+    version('6.08.06', '')
     version('6.08.02', '50c4dbb8aa81124aa58524e776fd4b4b')
     version('6.06.08', '6ef0fe9bd9f88f3ce8890e3651142ee4')
     version('6.06.06', '4308449892210c8d36e36924261fea26')
@@ -59,10 +60,13 @@ class Root(Package):
     depends_on("giflib")
     depends_on("xz")
     depends_on("openssl")
-#    depends_on("xrootd")
+    depends_on("xrootd")
     depends_on("freetype")
 
     def install(self, spec, prefix):
+        libext='so'
+        if sys.platform == 'darwin':
+            libext='dylib'
         build_directory = join_path(self.stage.path, 'spack-build')
         source_directory = self.stage.source_path
         options = [source_directory]
@@ -77,14 +81,14 @@ class Root(Package):
         options.extend(std_cmake_args)
         options.append('-DPCRE_CONFIG_EXECUTABLE=%s/bin/pcre-config' % self.spec['pcre'].prefix)
         options.append('-DPCRE_INCLUDE_DIR=%s/include' % self.spec['pcre'].prefix)
-        options.append('-DPCRE_PCRE_LIBRARY=%s/lib/libpcre.so' % self.spec['pcre'].prefix)
-        options.append('-DPCRE_PCREPOSIX_LIBRARY=%s/lib/libpcreposix.so' % self.spec['pcre'].prefix)
+        options.append('-DPCRE_PCRE_LIBRARY=%s/lib/libpcre.%s' % (self.spec['pcre'].prefix,libext))
+        options.append('-DPCRE_PCREPOSIX_LIBRARY=%s/lib/libpcreposix.%s' % (self.spec['pcre'].prefix,libext))
         options.append('-DLZMA_DIR=%s' % self.spec['xz'].prefix)
         options.append('-DLZMA_INCLUDE_DIR=%s/include' % self.spec['xz'].prefix)
-        options.append('-DLZMA_LIBRARY=%s/lib/liblzma.so' % self.spec['xz'].prefix)
-#        options.append('-DXROOTD_ROOT_DIR=%s' % self.spec['xrootd'].prefix)
+        options.append('-DLZMA_LIBRARY=%s/lib/liblzma.%s' % (self.spec['xz'].prefix,libext))
+        options.append('-DXROOTD_ROOT_DIR=%s' % self.spec['xrootd'].prefix)
         options.append('-DPNG_INCLUDE_DIR=%s/include' % self.spec['libpng'].prefix)
-        options.append('-DPNG_LIBRARY=%s/lib/libpng.so' % self.spec['libpng'].prefix)
+        options.append('-DPNG_LIBRARY=%s/lib/libpng.%s' % (self.spec['libpng'].prefix,libext))
                        
         if sys.platform == 'darwin':
             darwin_options = [
