@@ -36,7 +36,7 @@ class Fwlite(CMakePackage):
     homepage = "http://cms-sw.github.io"
     url      = "https://github.com/cms-sw/cmssw/archive/CMSSW_9_0_0.tar.gz"
 
-    version('9.0.1',git='https://github.com/gartung/fwlite.git',commit='1fc3314',submodules=True)
+    version('9.0.1',git='https://github.com/gartung/fwlite.git',commit='359a543',submodules=True)
 
     if sys.platform == 'darwin':
         depends_on('cfe-bindings')
@@ -75,6 +75,7 @@ class Fwlite(CMakePackage):
         args.append('-DTINYXMLROOT=%s' % self.spec['tinyxml'].prefix)
         args.append('-DCPPUNITROOT=%s' % self.spec['cppunit'].prefix)
         args.append('-DXERCESC_ROOT_DIR=%s' % self.spec['xerces-c'].prefix)
+#        args.append('-DBUILDTEST=1')
         if sys.platform == 'darwin':
             args.append('-DUUID_INCLUDE_DIR=%s/include' % self.spec['libuuid'].prefix)
             args.append('-DUUID_ROOT_DIR=%s' % self.spec['libuuid'].prefix)
