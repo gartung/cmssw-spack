@@ -28,10 +28,11 @@ from string import Template
 import re
 import os
 import fnmatch
+import sys
 
 
-class Fwlite(Package):
-    """CMSSW FWLite"""
+class FwliteScram(Package):
+    """CMSSW FWLite built as a scram project"""
 
     homepage = "http://cms-sw.github.io"
     url      = "https://github.com/cms-sw/cmssw/archive/CMSSW_9_0_0_pre2.tar.gz"
@@ -55,7 +56,9 @@ class Fwlite(Package):
              placement='tools'
     )
 
-    depends_on('gcc~binutils')
+
+    depends_on('libuuid')
+    depends_on('cfe-bindings')
     depends_on('scram')
     depends_on('gmake')
     depends_on('root')
@@ -66,7 +69,6 @@ class Fwlite(Package):
     depends_on('python')
     depends_on('vdt')
     depends_on('boost+python')
-    depends_on('libuuid')
     depends_on('libsigcpp')
     depends_on('xrootd')
     depends_on('cppunit')
@@ -85,7 +87,6 @@ class Fwlite(Package):
     depends_on('libtiff')
     depends_on('libxml2')
     depends_on('bzip2')
-    depends_on('cfe-bindings')
     depends_on('fireworks-data')
 
 
@@ -138,6 +139,8 @@ class Fwlite(Package):
         values['LIBXML2_PREFIX']=str(spec['libxml2'].prefix)
         values['LIBUUID_VER']=str(spec['libuuid'].version)
         values['LIBUUID_PREFIX']=str(spec['libuuid'].prefix)
+        values['CFE_VER']=str(spec['cfe-bindings'].version)
+        values['CFE_PREFIX']=str(spec['cfe-bindings'].prefix)
         values['LIBUNGIF_VER']=str(spec['giflib'].version)
         values['LIBUNGIF_PREFIX']=str(spec['giflib'].prefix)
         values['LIBTIFF_VER']=str(spec['libtiff'].version)
@@ -154,8 +157,6 @@ class Fwlite(Package):
         values['CLHEP_PREFIX']=str(spec['clhep'].prefix)
         values['BZ2_VER']=str(spec['bzip2'].version)
         values['BZ2_PREFIX']=str(spec['bzip2'].prefix)
-        values['CFE_VER']=str(spec['cfe-bindings'].version)
-        values['CFE_PREFIX']=str(spec['cfe-bindings'].prefix)
         values['GMAKE_VER']=str(spec['gmake'].version)
         values['GMAKE_PREFIX']=str(spec['gmake'].prefix)
         values['CPPUNIT_VER']=str(spec['cppunit'].version)
