@@ -36,7 +36,7 @@ class Fwlite(CMakePackage):
     homepage = "http://cms-sw.github.io"
     url      = "https://github.com/cms-sw/cmssw/archive/CMSSW_9_0_0.tar.gz"
 
-    version('9.0.1',git='https://github.com/gartung/fwlite.git',commit='359a543',submodules=True)
+    version('9.0.1',git='https://github.com/gartung/fwlite.git',commit='82e3558',submodules=True)
 
     if sys.platform == 'darwin':
         depends_on('cfe-bindings')
