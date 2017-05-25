@@ -30,7 +30,7 @@ class Scram(Package):
 
     url      = "https://github.com/cms-sw/SCRAM/archive/V2_2_6.tar.gz"
 
-    version('V2_2_6', 'ebff710a52077da0f38b0312f01e041d')
+    version('2_2_6', 'ebff710a52077da0f38b0312f01e041d')
 
     depends_on('gmake')
 
