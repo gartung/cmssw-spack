@@ -103,11 +103,27 @@ class Root(Package):
             make()
             make("install")
 
+    def setup_environment(self, spack_env, run_env):
+        run_env.prepend_path('ROOT_INCLUDE_PATH', self.prefix.include)
+        run_env.prepend_path('PATH', self.prefix.bin)
+        run_env.set('ROOTSYS', self.prefix)
+        run_env.set('ROOT_VERSION', 'v6')
+        run_env.prepend_path('PYTHONPATH', self.prefix.lib)
+        run_env.set('ROOT_TTREECACHE_SIZE', '0')
+        run_env.set('ROOT_TTREECACHE_PREFILL','0')
+
     def setup_dependent_environment(self, spack_env, run_env, dspec):
         spack_env.set('ROOTSYS', self.prefix)
         spack_env.set('ROOT_VERSION', 'v6')
         spack_env.prepend_path('PYTHONPATH', self.prefix.lib)
         spack_env.prepend_path('PATH', self.prefix.bin)
+        run_env.set('ROOTSYS', self.prefix)
+        run_env.set('ROOT_VERSION', 'v6')
+        run_env.prepend_path('PYTHONPATH', self.prefix.lib)
+        run_env.prepend_path('PATH', self.prefix.bin)
+        run_env.prepend_path('ROOT_INCLUDE_PATH', self.prefix.include)
+        run_env.set('ROOT_TTREECACHE_SIZE', '0')
+        run_env.set('ROOT_TTREECACHE_PREFILL','0')
 
     def url_for_version(self, version):
         """Handle ROOT's unusual version string."""

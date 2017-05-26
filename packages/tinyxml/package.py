@@ -27,7 +27,7 @@ import sys
 
 class Tinyxml(Package):
     """FIXME: Put a proper description of your package here."""
-
+    homepage = "https://github.com/cms-externals/tinyxml"
     url      = "http://cmsrep.cern.ch/cmssw/cms/SOURCES/slc6_amd64_gcc600/external/tinyxml/2.5.3-giojec/tinyxml.2.5.3-3b1ed8542a820e77de84bc08734bde904c3b12be.tgz"
 
     version('2.5.3', '3126b4a2dbfbd087e28faca4ad62cd31', 
