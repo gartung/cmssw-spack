@@ -28,6 +28,7 @@ from spack import *
 class Scram(Package):
     """SCRAM as used by CMS"""
 
+    homepage = "https://github.com/cms-sw/SCRAM"
     url      = "https://github.com/cms-sw/SCRAM/archive/V2_2_6.tar.gz"
 
     version('2_2_6', 'ebff710a52077da0f38b0312f01e041d')
