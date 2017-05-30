@@ -225,8 +225,6 @@ class Fwlite(Package):
             matches.append('src/CommonTools/Utils/src/TMVAEvaluator.cc')
             matches.append('src/FWCore/MessageLogger/python/MessageLogger_cfi.py')
             matches.append('src/CommonTools/Utils/plugins/GBRForestWriter.cc')
-            matches.append('src/Serialization/L1TObjects/BuildFile.xml')
-            matches.append('src/Serialization/RPCObjects/BuildFile.xml')
             for f in glob('src/*/*/test/BuildFile.xml'):
                 matches.append(f)
             for m in matches: 

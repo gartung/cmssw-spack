@@ -52,7 +52,7 @@ class Root(Package):
     depends_on("pcre")
     depends_on("fftw~mpi")
     depends_on("graphviz", when="+graphviz")
-    depends_on("python")
+    depends_on("python+shared")
     depends_on("gsl")
     depends_on("libxml2+python")
     depends_on("jpeg")
@@ -90,6 +90,11 @@ class Root(Package):
         options.append('-DXROOTD_ROOT_DIR=%s' % self.spec['xrootd'].prefix)
         options.append('-DPNG_INCLUDE_DIR=%s/include' % self.spec['libpng'].prefix)
         options.append('-DPNG_LIBRARY=%s/lib/libpng.%s' % (self.spec['libpng'].prefix,libext))
+        pyvers=str(self.spec['python'].version).split('.')
+        pyver=pyvers[0]+'.'+pyvers[1]
+        options.append('-DPYTHON_EXECUTABLE=%s/python' % (self.spec['python'].prefix.bin))
+        options.append('-DPYTHON_INCLUDE=%s' % (self.spec['python'].prefix.include))
+        options.append('-DPYTHON_LIBRARY=%s/libpython%s.%s' % (self.spec['python'].prefix.lib,pyver,libext))
                        
         if sys.platform == 'darwin':
             darwin_options = [

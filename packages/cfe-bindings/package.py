@@ -51,12 +51,11 @@ class CfeBindings(Package):
 
     def install(self, spec, prefix):
         cp=which('cp')
-        md=which('mkdir')
-        md('%s' % self.prefix.lib)
-        md('%s' % self.prefix.include)
-        md(self.prefix+'/python')
-        cp('-rpv',self.stage.source_path+'/bindings/python/clang',self.prefix+'/python')
-        cp('-rpv','/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libclang.dylib',self.prefix.lib)
+        mkdirp('%s' % self.prefix.lib)
+        mkdirp('%s' % self.prefix.include)
+        mkdirp(self.prefix.lib+'/python2.7/site-packages/clang')
+        cp('-rpv','/usr/local/Cellar/llvm/4.0.0_1/lib/python2.7/site-packages/clang/',self.prefix.lib+'/python2.7/site-packages/clang/')
+        cp('-rpv','/usr/local/Cellar/llvm/4.0.0_1/lib/libclang.dylib',self.prefix.lib)
 
     def setup_dependent_environment(self, spack_env, run_env, dspec):
         spack_env.set('LLVM_BASE', self.prefix)
