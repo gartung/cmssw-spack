@@ -32,6 +32,7 @@ class Root(Package):
     homepage = "https://root.cern.ch"
     url      = "https://root.cern.ch/download/root_v6.07.02.source.tar.gz"
 
+    version('6.08.07', git='https://github.com/cms-sw/root.git',branch='cms/ff9a7c0')
     version('6.08.06', 'bcf0be2df31a317d25694ad2736df268')
     version('6.08.02', '50c4dbb8aa81124aa58524e776fd4b4b')
     version('6.06.08', '6ef0fe9bd9f88f3ce8890e3651142ee4')
@@ -51,7 +52,7 @@ class Root(Package):
     depends_on("pcre")
     depends_on("fftw~mpi")
     depends_on("graphviz", when="+graphviz")
-    depends_on("python")
+    depends_on("python+shared")
     depends_on("gsl")
     depends_on("libxml2+python")
     depends_on("jpeg")
@@ -89,6 +90,11 @@ class Root(Package):
         options.append('-DXROOTD_ROOT_DIR=%s' % self.spec['xrootd'].prefix)
         options.append('-DPNG_INCLUDE_DIR=%s/include' % self.spec['libpng'].prefix)
         options.append('-DPNG_LIBRARY=%s/lib/libpng.%s' % (self.spec['libpng'].prefix,libext))
+        pyvers=str(self.spec['python'].version).split('.')
+        pyver=pyvers[0]+'.'+pyvers[1]
+        options.append('-DPYTHON_EXECUTABLE=%s/python' % (self.spec['python'].prefix.bin))
+        options.append('-DPYTHON_INCLUDE=%s' % (self.spec['python'].prefix.include))
+        options.append('-DPYTHON_LIBRARY=%s/libpython%s.%s' % (self.spec['python'].prefix.lib,pyver,libext))
                        
         if sys.platform == 'darwin':
             darwin_options = [
@@ -103,11 +109,27 @@ class Root(Package):
             make()
             make("install")
 
+    def setup_environment(self, spack_env, run_env):
+        run_env.prepend_path('ROOT_INCLUDE_PATH', self.prefix.include)
+        run_env.prepend_path('PATH', self.prefix.bin)
+        run_env.set('ROOTSYS', self.prefix)
+        run_env.set('ROOT_VERSION', 'v6')
+        run_env.prepend_path('PYTHONPATH', self.prefix.lib)
+        run_env.set('ROOT_TTREECACHE_SIZE', '0')
+        run_env.set('ROOT_TTREECACHE_PREFILL','0')
+
     def setup_dependent_environment(self, spack_env, run_env, dspec):
         spack_env.set('ROOTSYS', self.prefix)
         spack_env.set('ROOT_VERSION', 'v6')
         spack_env.prepend_path('PYTHONPATH', self.prefix.lib)
         spack_env.prepend_path('PATH', self.prefix.bin)
+        run_env.set('ROOTSYS', self.prefix)
+        run_env.set('ROOT_VERSION', 'v6')
+        run_env.prepend_path('PYTHONPATH', self.prefix.lib)
+        run_env.prepend_path('PATH', self.prefix.bin)
+        run_env.prepend_path('ROOT_INCLUDE_PATH', self.prefix.include)
+        run_env.set('ROOT_TTREECACHE_SIZE', '0')
+        run_env.set('ROOT_TTREECACHE_PREFILL','0')
 
     def url_for_version(self, version):
         """Handle ROOT's unusual version string."""

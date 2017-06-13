@@ -41,7 +41,7 @@ class Fwlite(Package):
     version('9.0.X',git='https://github.com/gartung/cmssw.git',branch='macos-clang-fixes')
     version('8.1.X',git='https://github.com/gartung/cmssw.git',branch='macos-clang-fixes-81x')
 
-    config_tag='V05-05-20'
+    config_tag='V05-05-23'
 
     resource(name='config',
              git='https://github.com/cms-sw/cmssw-config.git',
@@ -167,19 +167,18 @@ class Fwlite(Package):
         values['SELF_INC']=prefix+'/'+cmssw_u_version+'/src'
 
         with working_dir(build_directory, create=True):
-            md=which('mkdir')
             rsync=which('rsync')
-            md('-p','src')
+            mkdirp('src')
             rsync('-a', '--exclude', '.git', '--exclude', 'config',
                   '--exclude', 'tools', '--exclude', 'spack-build.*',
                   source_directory+'/','src/')
-            md('-p','config')
+            mkdirp('config')
             rsync('-a', '--exclude', '.git', 
                   source_directory+'/config/','config/')
             with open('config/config_tag','w') as f:
                 f.write(self.config_tag)
                 f.close()
-            md('-p','tools')
+            mkdirp('tools')
             rsync('-a', '--exclude', '.git', source_directory+'/tools/','tools/')
             xmlfiles = glob(join_path('tools','selected','*.xml'))
             for xmlfile in xmlfiles:
@@ -190,6 +189,7 @@ class Fwlite(Package):
                 fout = open(xmlfile,'w')
                 fout.write(res)
                 fout.close() 
+            filter_file('_mic_','osx10','config/CMSSW_SCRAM_ExtraBuildRule.pm')
             perl=which('perl')
             perl('config/updateConfig.pl',
                  '-p', 'CMSSW', 
@@ -236,8 +236,7 @@ class Fwlite(Package):
             rm('external/osx1012_amd64_clang8/lib/libTIFF.dylib')
             rm('external/osx1012_amd64_clang8/lib/libGIF.dylib')
             mv=which('mv')
-            md=which('mkdir')
-            md('-p','external/osx1012_amd64_clang8/data/Fireworks/Geometry/data')
+            mkdirp('external/osx1012_amd64_clang8/data/Fireworks/Geometry/data')
             matches = []
             for f in glob('external/osx1012_amd64_clang8/data/*.root'):
                 matches.append(f)
@@ -248,10 +247,19 @@ class Fwlite(Package):
 
 
     def setup_dependent_environment(self, spack_env, run_env, dspec):
+        cmssw_version='CMSSW.'+str(self.version)
+        cmssw_u_version=cmssw_version.replace('.','_')
         spack_env.set('CMSSW_RELEASE_BASE', self.prefix)
         spack_env.set('CMSSW_BASE', self.prefix)
         spack_env.append_path('LD_LIBRARY_PATH', self.prefix+'/'+cmssw_u_version+'/lib/osx1012_amd64_clang8')
 
+
+    def setup_environment(self, spack_env, run_env):
+        cmssw_version='CMSSW.'+str(self.version)
+        cmssw_u_version=cmssw_version.replace('.','_')
+        spack_env.set('CMSSW_RELEASE_BASE', self.prefix)
+        spack_env.set('CMSSW_BASE', self.prefix)
+        spack_env.append_path('LD_LIBRARY_PATH', self.prefix+'/'+cmssw_u_version+'/lib/osx1012_amd64_clang8')
 
     def url_for_version(self, version):
         """Handle CMSSW's version string."""
