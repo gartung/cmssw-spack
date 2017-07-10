@@ -37,7 +37,7 @@ class Fwlite(Package):
     homepage = "http://cms-sw.github.io"
     url      = "https://github.com/cms-sw/cmssw/archive/CMSSW_9_0_0_pre2.tar.gz"
 
-    version('9.2.X',git='https://github.com/gartung/cmssw.git',branch='macos-clang-fixes-920')
+    version('9.2.X',git='https://github.com/gartung/cmssw.git',branch='macos-clang-fixes-926')
     version('9.0.X',git='https://github.com/gartung/cmssw.git',branch='macos-clang-fixes')
     version('8.1.X',git='https://github.com/gartung/cmssw.git',branch='macos-clang-fixes-81x')
 
@@ -63,12 +63,12 @@ class Fwlite(Package):
     depends_on('gmake')
     depends_on('root')
     depends_on('tbb')
-    depends_on('tinyxml')
+    depends_on('tinyxml^boost+python^python+shared')
     depends_on('clhep')
     depends_on('md5')
-    depends_on('python')
+    depends_on('python+shared')
     depends_on('vdt')
-    depends_on('boost+python')
+    depends_on('boost+python^python+shared')
     depends_on('libsigcpp')
     depends_on('xrootd')
     depends_on('cppunit')
@@ -85,7 +85,7 @@ class Fwlite(Package):
     depends_on('zlib')
     depends_on('xz')
     depends_on('libtiff')
-    depends_on('libxml2')
+    depends_on('libxml2^python+shared')
     depends_on('bzip2')
     depends_on('fireworks-data')
 
