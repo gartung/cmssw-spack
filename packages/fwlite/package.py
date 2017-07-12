@@ -29,7 +29,24 @@ import re
 import os
 import fnmatch
 import sys
+import shutil
 
+def relrelink(top):
+    for root, dirs, files in os.walk(top,topdown=False):
+       for x in files:
+           p = os.path.join(root,x)
+           if os.path.islink(p):
+               linkto=os.readlink(p)
+               rel=os.path.relpath(linkto,start=p)
+               os.remove(p)
+               os.symlink(rel, p)
+       for y in dirs:
+           p = os.path.join(root,y)
+           if os.path.islink(p):
+               linkto=os.readlink(p)
+               rel=os.path.relpath(linkto,start=p)
+               os.remove(p)
+               os.symlink(rel, p)
 
 class Fwlite(Package):
     """CMSSW FWLite built as a scram project"""
@@ -37,7 +54,7 @@ class Fwlite(Package):
     homepage = "http://cms-sw.github.io"
     url      = "https://github.com/cms-sw/cmssw/archive/CMSSW_9_0_0_pre2.tar.gz"
 
-    version('9.2.X',git='https://github.com/gartung/cmssw.git',branch='macos-clang-fixes-926')
+    version('9.2.6',git='https://github.com/gartung/cmssw.git',branch='macos-clang-fixes-926')
     version('9.0.X',git='https://github.com/gartung/cmssw.git',branch='macos-clang-fixes')
     version('8.1.X',git='https://github.com/gartung/cmssw.git',branch='macos-clang-fixes-81x')
 
@@ -52,6 +69,7 @@ class Fwlite(Package):
     
     resource(name='toolbox',
              git='https://github.com/gartung/scram-tool-templ.git',
+             branch='master',
              destination='',
              placement='tools'
     )
@@ -189,7 +207,6 @@ class Fwlite(Package):
                 fout = open(xmlfile,'w')
                 fout.write(res)
                 fout.close() 
-            filter_file('_mic_','osx10','config/CMSSW_SCRAM_ExtraBuildRule.pm')
             perl=which('perl')
             perl('config/updateConfig.pl',
                  '-p', 'CMSSW', 
@@ -220,7 +237,6 @@ class Fwlite(Package):
 
     
         with working_dir(join_path(prefix,cmssw_u_version),create=False):
-            rm=which('rm')
             matches = []
             matches.append('src/CommonTools/Utils/src/TMVAEvaluator.cc')
             matches.append('src/FWCore/MessageLogger/python/MessageLogger_cfi.py')
@@ -228,20 +244,10 @@ class Fwlite(Package):
             for f in glob('src/*/*/test/BuildFile.xml'):
                 matches.append(f)
             for m in matches: 
-                rm('-v',m,output=str)
+                os.remove(m)
             scram('build', '-v','-k','-j4')
-            rm('-r', 'tmp')
-            rm('external/osx1012_amd64_clang8/lib/libJPEG.dylib')
-            rm('external/osx1012_amd64_clang8/lib/libPng.dylib')
-            rm('external/osx1012_amd64_clang8/lib/libTIFF.dylib')
-            rm('external/osx1012_amd64_clang8/lib/libGIF.dylib')
-            mv=which('mv')
-            mkdirp('external/osx1012_amd64_clang8/data/Fireworks/Geometry/data')
-            matches = []
-            for f in glob('external/osx1012_amd64_clang8/data/*.root'):
-                matches.append(f)
-            for m in matches: 
-                mv(m,'external/osx1012_amd64_clang8/data/Fireworks/Geometry/data')
+            relrelink('external')
+            shutil.rmtree('tmp')
              
             
 

@@ -53,10 +53,11 @@ class CfeBindings(Package):
         cp=which('cp')
         mkdirp('%s' % self.prefix.lib)
         mkdirp('%s' % self.prefix.include)
+        mkdirp('%s' % self.prefix.bin)
         mkdirp(self.prefix.lib+'/python2.7/site-packages/clang')
         cp('-rpv','/usr/local/Cellar/llvm/4.0.1/lib/python2.7/site-packages/clang/',self.prefix.lib+'/python2.7/site-packages/clang/')
         cp('-rpv','/usr/local/Cellar/llvm/4.0.1/lib/libclang.dylib',self.prefix.lib)
-
+        cp('-rpv','/usr/local/Cellar/llvm/4.0.1/bin/clang',self.prefix.bin)
     def setup_dependent_environment(self, spack_env, run_env, dspec):
         spack_env.set('LLVM_BASE', self.prefix)
 
