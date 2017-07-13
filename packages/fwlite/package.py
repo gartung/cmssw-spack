@@ -35,18 +35,22 @@ def relrelink(top):
     for root, dirs, files in os.walk(top,topdown=False):
        for x in files:
            p = os.path.join(root,x)
-           if os.path.islink(p):
-               linkto=os.readlink(p)
-               rel=os.path.relpath(linkto,start=p)
-               os.remove(p)
-               os.symlink(rel, p)
+           f = os.path.abspath(p)
+           if os.path.islink(f):
+               linkto=os.path.realpath(f)
+               if not os.path.commonprefix((f,linkto)) == '/':
+                   rel=os.path.relpath(linkto,start=os.path.dirname(f))
+                   os.remove(p)
+                   os.symlink(rel, p)
        for y in dirs:
            p = os.path.join(root,y)
-           if os.path.islink(p):
-               linkto=os.readlink(p)
-               rel=os.path.relpath(linkto,start=p)
-               os.remove(p)
-               os.symlink(rel, p)
+           f = os.path.abspath(p)
+           if os.path.islink(f):
+               linkto=os.path.realpath(f)
+               if not os.path.commonprefix((f,linkto)) == '/':
+                   rel=os.path.relpath(linkto,start=os.path.dirname(f))
+                   os.remove(p)
+                   os.symlink(rel, p)
 
 class Fwlite(Package):
     """CMSSW FWLite built as a scram project"""
