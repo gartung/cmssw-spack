@@ -47,7 +47,7 @@ class Davix(CMakePackage):
     homepage = "http://www.example.com"
     url      = "https://github.com/cern-it-sdc-id/davix/archive/R_0_6_5.tar.gz"
 
-    version('R_0_6_5', 'a7f09dfa0bd0daaa46aafc8e0f4b1a25')
+    version('0_6_5', 'a7f09dfa0bd0daaa46aafc8e0f4b1a25')
 
     # FIXME: Add dependencies if required.
     depends_on('libxml2+python')
