@@ -37,7 +37,7 @@ class FwliteCmake(Package):
     url      = "https://github.com/cms-sw/cmssw/archive/CMSSW_9_0_0.tar.gz"
 
     version('9.0.1',git='https://github.com/gartung/fwlite.git',commit='6a9ace6',submodules=True)
-    version('9.2.6',git='https://github.com/gartung/fwlite.git',commit='ecefbe9',submodules=True)
+    version('9.2.6',git='https://github.com/gartung/fwlite.git',commit='70f937c',submodules=True)
 
     if sys.platform != 'darwin':
         patch('patch')
