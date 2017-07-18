@@ -37,7 +37,7 @@ class FwliteCmake(Package):
     url      = "https://github.com/cms-sw/cmssw/archive/CMSSW_9_0_0.tar.gz"
 
     version('9.0.1',git='https://github.com/gartung/fwlite.git',commit='6a9ace6',submodules=True)
-    version('9.2.1',git='https://github.com/gartung/fwlite.git',commit='d292299',submodules=True)
+    version('9.2.6',git='https://github.com/gartung/fwlite.git',commit='ecefbe9',submodules=True)
 
     if sys.platform != 'darwin':
         patch('patch')
@@ -81,17 +81,17 @@ class FwliteCmake(Package):
                 '-DSIGCPP_INCLUDE_DIR=%s/include/sigc++-2.0' % self.spec['libsigcpp'].prefix,
                 '-DTINYXMLROOT=%s' % self.spec['tinyxml'].prefix,
                 '-DCPPUNITROOT=%s' % self.spec['cppunit'].prefix,
-                '-DXERCESC_ROOT_DIR=%s' % self.spec['xerces-c'].prefix]    
-#                '-GNinja']
+                '-DXERCESC_ROOT_DIR=%s' % self.spec['xerces-c'].prefix]
             options.extend(args)
             if sys.platform == 'darwin':
                 options.append('-DUUID_INCLUDE_DIR=%s/include' % self.spec['libuuid'].prefix)
                 options.append('-DUUID_ROOT_DIR=%s' % self.spec['libuuid'].prefix)
+            options.append('-GNinja')
             cmake('..', *options)
-            make = which('make')
-            make('-j4', 'VERBOSE=1')
-            make('install')
-#            ninja = which('ninja')
-#            ninja('-v', '-j4')
-#            ninja('install')
+#            make = which('make')
+#            make('-j4', 'VERBOSE=1')
+#            make('install')
+            ninja = which('ninja')
+            ninja('-v', '-j4')
+            ninja('install')
 
