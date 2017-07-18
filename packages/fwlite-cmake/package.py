@@ -87,7 +87,7 @@ class FwliteCmake(Package):
                 options.append('-DUUID_INCLUDE_DIR=%s/include' % self.spec['libuuid'].prefix)
                 options.append('-DUUID_ROOT_DIR=%s' % self.spec['libuuid'].prefix)
             options.append('-GNinja')
-            cmake('..', *options)
+            cmake(*options)
 #            make = which('make')
 #            make('-j4', 'VERBOSE=1')
 #            make('install')
