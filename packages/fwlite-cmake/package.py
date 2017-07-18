@@ -39,9 +39,6 @@ class FwliteCmake(Package):
     version('9.0.1',git='https://github.com/gartung/fwlite.git',commit='6a9ace6',submodules=True)
     version('9.2.6',git='https://github.com/gartung/fwlite.git',commit='ecefbe9',submodules=True)
 
-    if sys.platform != 'darwin':
-        patch('patch')
-
     if sys.platform == 'darwin':
         depends_on('cfe-bindings')
         depends_on('libuuid')
