@@ -80,7 +80,6 @@ class Fwlite(Package):
 
 
     depends_on('libuuid')
-    depends_on('cfe-bindings')
     depends_on('scram')
     depends_on('gmake')
     depends_on('root')
@@ -110,7 +109,8 @@ class Fwlite(Package):
     depends_on('libxml2^python+shared')
     depends_on('bzip2')
     depends_on('fireworks-data')
-
+    if sys.platform == 'darwin':
+        depends_on('cfe-bindings')
 
     def install(self, spec, prefix):
         scram=which('scram')
@@ -161,8 +161,12 @@ class Fwlite(Package):
         values['LIBXML2_PREFIX']=str(spec['libxml2'].prefix)
         values['LIBUUID_VER']=str(spec['libuuid'].version)
         values['LIBUUID_PREFIX']=str(spec['libuuid'].prefix)
-        values['CFE_VER']=str(spec['cfe-bindings'].version)
-        values['CFE_PREFIX']=str(spec['cfe-bindings'].prefix)
+        if sys.platform == 'darwin':
+            values['CFE_VER']=str(spec['cfe-bindings'].version)
+            values['CFE_PREFIX']=str(spec['cfe-bindings'].prefix)
+        else:
+            values['CFE_VER']='cfe-bindings'
+            values['CFE_PREFIX']='cfe-bindings'
         values['LIBUNGIF_VER']=str(spec['giflib'].version)
         values['LIBUNGIF_PREFIX']=str(spec['giflib'].prefix)
         values['LIBTIFF_VER']=str(spec['libtiff'].version)
@@ -249,7 +253,7 @@ class Fwlite(Package):
                 matches.append(f)
             for m in matches: 
                 os.remove(m)
-            scram('build', '-v','-k','-j4')
+            scram('build', '-v', '-k', '-j4')
             relrelink('external')
             shutil.rmtree('tmp')
              
