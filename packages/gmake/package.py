@@ -25,25 +25,18 @@
 from spack import *
 
 
-class Scram(Package):
-    """SCRAM as used by CMS"""
+class Gmake(Package):
+    """GNU Make."""
 
-    homepage = "https://github.com/cms-sw/SCRAM"
-    url      = "https://github.com/cms-sw/SCRAM/archive/V2_2_6.tar.gz"
+    homepage = "http://gnu.org/gnu/make"
+    url      = "ftp://ftp.gnu.org/gnu/make/make-4.0.tar.gz"
 
-    version('2_2_7_pre3', 'b451f27fff6a74f44544d90bd3140ca6')
-
-    depends_on('gmake')
+    version('4.0', 'b5e558f981326d9ca1bfdb841640721a')
 
     def install(self, spec, prefix):
-        gmake=which('gmake')
-        args=['install']
-        args.append('INSTALL_BASE=%s' % prefix)
-        args.append('VERSION=V%s' % self.version)
-        args.append('PREFIX=%s' % prefix )
-        args.append('VERBOSE=1')
-        gmake(*args)
+        configure('--prefix={0}'.format(prefix))
 
-    def setup_dependent_environment(self, spack_env, run_env, dspec):
-        spack_env.set('SCRAM_ARCH', str(self.spec.architecture))
-
+        make()
+        make('install')
+        with working_dir(prefix.bin):
+            symlink('make', 'gmake')

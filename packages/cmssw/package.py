@@ -52,19 +52,19 @@ def relrelink(top):
                    os.remove(p)
                    os.symlink(rel, p)
 
-class Fwlite(Package):
-    """CMSSW FWLite built as a scram project"""
+class Cmssw(Package):
+    """CMSSW built as a scram project"""
 
     homepage = "http://cms-sw.github.io"
     url      = "https://github.com/cms-sw/cmssw/archive/CMSSW_9_4_X.tar.gz"
 
-    version('9.2.14',git='https://github.com/cms-sw/cmssw.git',tag='CMSSW_9_2_14')
+    version('9.4.X',git='https://github.com/gartung/cmssw.git',branch='CMSSW_9_4_X')
 
     config_tag='V05-05-56'
 
     resource(name='config',
-             git='https://github.com/gartung/cmssw-config.git',
-             branch='macos',
+             git='https://github.com/cms-sw/cmssw-config.git',
+             branch='linux',
              destination='',
              placement='config'
     )
@@ -80,14 +80,14 @@ class Fwlite(Package):
     depends_on('libuuid')
     depends_on('scram')
     depends_on('gmake')
-    depends_on('root@6.11.02^python+shared^fftw~mpi')
-    depends_on('tbb')
-    depends_on('tinyxml^boost+python+shared^python+shared')
-    depends_on('clhep@2.3.4.2')
+    depends_on('root^fftw~mpi')
+    depends_on('intel-tbb')
+    depends_on('tinyxml^boost+python^python+shared')
+    depends_on('clhep')
     depends_on('md5')
     depends_on('python+shared')
     depends_on('vdt')
-    depends_on('boost@1.63.0+python+shared^python+shared')
+    depends_on('boost@1.63.0+python^python+shared')
     depends_on('libsigcpp')
     depends_on('xrootd')
     depends_on('cppunit')
@@ -107,9 +107,7 @@ class Fwlite(Package):
     depends_on('libxml2^python+shared')
     depends_on('bzip2')
     depends_on('fireworks-data')
-    depends_on('cfe-bindings')
-
-    patch('macos.patch')
+    depends_on('llvm+python+shared_libs~gold^python+shared')
 
     def install(self, spec, prefix):
         scram=which('scram')
@@ -160,8 +158,8 @@ class Fwlite(Package):
         values['LIBXML2_PREFIX']=str(spec['libxml2'].prefix)
         values['LIBUUID_VER']=str(spec['libuuid'].version)
         values['LIBUUID_PREFIX']=str(spec['libuuid'].prefix)
-        values['CFE_VER']=str(spec['cfe-bindings'].version)
-        values['CFE_PREFIX']=str(spec['cfe-bindings'].prefix)
+        values['CFE_VER']=str(spec['llvm'].version)
+        values['CFE_PREFIX']=str(spec['llvm'].prefix)
         values['LIBUNGIF_VER']=str(spec['giflib'].version)
         values['LIBUNGIF_PREFIX']=str(spec['giflib'].prefix)
         values['LIBTIFF_VER']=str(spec['libtiff'].version)
@@ -184,7 +182,7 @@ class Fwlite(Package):
         values['CPPUNIT_PREFIX']=str(spec['cppunit'].prefix)
         values['FWLITEDATA_VER']=str(spec['fireworks-data'].version)
         values['FWLITEDATA_PREFIX']=str(spec['fireworks-data'].prefix)
-        values['SELF_LIB']=prefix+'/'+cmssw_u_version+'/lib/'+str(spec.architecture)
+        values['SELF_LIB']=prefix+'/'+cmssw_u_version+'/lib'+str(spec.architecture)
         values['SELF_INC']=prefix+'/'+cmssw_u_version+'/src'
 
         with working_dir(build_directory, create=True):
@@ -218,33 +216,12 @@ class Fwlite(Package):
                  '-t', build_directory,
                  '--keys', 'SCRAM_COMPILER=gcc', 
                  '--keys', 'PROJECT_GIT_HASH='+cmssw_u_version,
-                 '--arch', str(spec.architecture))
-            fin='config/bootsrc.xml'
-            matchexp=re.compile(r"(\s*\<download.*)(file:src)(.*)(name=\"src)(\"/\>)")
-            lines = [line.rstrip('\n') for line in open(fin,'r')]
-            fout=open(fin,'w')
-            for line in lines:
-                mobj=matchexp.match(line)
-                if mobj:
-                    replacement='#'+line+'\n'
-                    fout.write(replacement)
-                    reps = [line.rstrip('\n') for line in open('tools/fwlite_build_set.file','r')]
-                    for rep in reps:
-                         replacement=mobj.group(1)+mobj.group(2)+'/'+rep+mobj.group(3)+mobj.group(4)+'/'+rep+mobj.group(5)+'\n'
-                         fout.write(replacement)
-                else:
-                    replacement=line+'\n'
-                    fout.write(replacement)
-            fout.close()
+                 '--arch', self.spec.architecture)
             scram('project','-d', prefix, '-b', 'config/bootsrc.xml')
 
     
         with working_dir(join_path(prefix,cmssw_u_version),create=False):
             matches = []
-            matches.append('src/CommonTools/Utils/src/TMVAEvaluator.cc')
-            matches.append('src/FWCore/MessageLogger/python/MessageLogger_cfi.py')
-            matches.append('src/CommonTools/Utils/plugins/GBRForestWriter.cc')
-
             for f in glob('src/*/*/test/BuildFile.xml'):
                 matches.append(f)
             for m in matches:
@@ -262,7 +239,7 @@ class Fwlite(Package):
         cmssw_u_version=cmssw_version.replace('.','_')
         spack_env.set('CMSSW_RELEASE_BASE', self.prefix)
         spack_env.set('CMSSW_BASE', self.prefix)
-        spack_env.append_path('LD_LIBRARY_PATH', self.prefix+'/'+cmssw_u_version+'/lib/'+str(self.spec.architecture))
+        spack_env.append_path('LD_LIBRARY_PATH', self.prefix+'/'+cmssw_u_version+'/lib'+str(self.spec.architecture))
 
 
     def setup_environment(self, spack_env, run_env):

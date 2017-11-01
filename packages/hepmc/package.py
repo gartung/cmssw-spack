@@ -22,41 +22,37 @@
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
-#
-# This is a template package file for Spack.  We've put "FIXME"
-# next to all the things you'll want to change. Once you've handled
-# them, you can save this file and test your package like this:
-#
-#     spack install castor
-#
-# You can edit this file again by typing:
-#
-#     spack edit castor
-#
-# See the Spack documentation for more information on packaging.
-# If you submit this package back to Spack as a pull request,
-# please first remove this boilerplate and all FIXME comments.
-#
+
 from spack import *
-import glob
 
-class Castor(Package):
-    """FIXME: Put a proper description of your package here."""
 
-    # FIXME: Add a proper url for your package's homepage here.
-    homepage = "http://www.example.com"
-    url      = "http://castorold.web.cern.ch/castorold/DIST/CERN/savannah/CASTOR.pkg/2.1.16-*/2.1.16-13/castor-2.1.16-13.tar.gz"
+class Hepmc(Package):
+    """The HepMC package is an object oriented, C++ event record for
+       High Energy Physics Monte Carlo generators and simulation."""
 
-    version('2.1.16-13', '5a2cf6992ac4c1a2dcf7eb90e14233e5')
+    homepage = "http://hepmc.web.cern.ch/hepmc/"
+    url      = "http://lcgapp.cern.ch/project/simu/HepMC/download/HepMC-2.06.09.tar.gz"
 
-    # FIXME: Add dependencies if required.
-    # depends_on('foo')
+    version('2.06.09', 'c47627ced4255b40e731b8666848b087')
+    version('2.06.08', 'a2e889114cafc4f60742029d69abd907')
+    version('2.06.07', '11d7035dccb0650b331f51520c6172e7')
+
+    depends_on("cmake", type='build')
 
     def install(self, spec, prefix):
+        build_directory = join_path(self.stage.path, 'spack-build')
         source_directory = self.stage.source_path
-        mkdirp('%s' % prefix.include)
-        mkdirp('%s/shift' % prefix.include)
-        install('%s/h/shift.h' % source_directory,prefix.include)
-        for file in glob.glob('%s/h/*' % source_directory): 
-           f = join_path(source_directory,'h',file)
-           install(f, '%s/shift' % prefix.include)
+        options = [source_directory]
+        options.append('-Dmomentum:STRING=GEV')
+        options.append('-Dlength:STRING=MM')
+        options.extend(std_cmake_args)
+
+        with working_dir(build_directory, create=True):
+            cmake(*options)
+            make()
+            make('install')
+            fix_darwin_install_name(prefix.lib)
+
+
+    def setup_dependent_environment(self, spack_env, run_env, dspec):
+        spack_env.prepend_path('LD_LIBRARY_PATH', self.prefix.lib)
