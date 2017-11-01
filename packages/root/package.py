@@ -27,34 +27,23 @@ from spack import *
 import sys
 
 
-class Root(Package):
+class Root(CMakePackage):
     """ROOT is a data analysis framework."""
     homepage = "https://root.cern.ch"
     url      = "https://root.cern.ch/download/root_v6.07.02.source.tar.gz"
+    # Development versions
+    version('6.11.02', '95e5705e203a5e0e70be7849c915f732')
 
-    version('6.08.07', git='https://github.com/cms-sw/root.git',branch='cms/ff9a7c0')
-    version('6.08.06', 'bcf0be2df31a317d25694ad2736df268')
-    version('6.08.02', '50c4dbb8aa81124aa58524e776fd4b4b')
-    version('6.06.08', '6ef0fe9bd9f88f3ce8890e3651142ee4')
-    version('6.06.06', '4308449892210c8d36e36924261fea26')
-    version('6.06.04', '55a2f98dd4cea79c9c4e32407c2d6d17')
-    version('6.06.02', 'e9b8b86838f65b0a78d8d02c66c2ec55')
+    # Production versions
+    version('6.10.08', '48f5044e9588d94fb2d79389e48e1d73', preferred=True)
 
-    if sys.platform == 'darwin':
-        patch('math_uint.patch', when='@6.06.02')
-        patch('root6-60606-mathmore.patch', when='@6.06.06')
-
-    variant('graphviz', default=False, description='Enable graphviz support')
-    variant('debug', default=False, description='debug build')
-
-    depends_on("cmake", type='build')
-#    depends_on("libtool", type='build')
+    depends_on('cmake@3.4.3:', type='build')
+    depends_on('pkg-config',   type='build')
     depends_on("pcre")
-    depends_on("fftw~mpi")
-    depends_on("graphviz", when="+graphviz")
+    depends_on("fftw")
     depends_on("python+shared")
     depends_on("gsl")
-    depends_on("libxml2+python")
+    depends_on("libxml2+python^python+shared")
     depends_on("jpeg")
     depends_on("libpng")
     depends_on("libtiff")
@@ -64,50 +53,53 @@ class Root(Package):
     depends_on("xrootd")
     depends_on("freetype")
 
-    def install(self, spec, prefix):
+    def cmake_args(self):
         libext='so'
         if sys.platform == 'darwin':
             libext='dylib'
-        build_directory = join_path(self.stage.path, 'spack-build')
-        source_directory = self.stage.source_path
-        options = [source_directory]
-        if '+debug' in spec:
-            options.append('-DCMAKE_BUILD_TYPE:STRING=Debug')
-        else:
-            options.append('-DCMAKE_BUILD_TYPE:STRING=Release')
-        options.append('-Dcxx14=on')
-        options.append('-Droofit=on')
-        options.append('-Dx11=on')
-        options.append('-Dminuit2=on')
-        options.extend(std_cmake_args)
-        options.append('-DPCRE_CONFIG_EXECUTABLE=%s/bin/pcre-config' % self.spec['pcre'].prefix)
-        options.append('-DPCRE_INCLUDE_DIR=%s/include' % self.spec['pcre'].prefix)
-        options.append('-DPCRE_PCRE_LIBRARY=%s/lib/libpcre.%s' % (self.spec['pcre'].prefix,libext))
-        options.append('-DPCRE_PCREPOSIX_LIBRARY=%s/lib/libpcreposix.%s' % (self.spec['pcre'].prefix,libext))
-        options.append('-DLZMA_DIR=%s' % self.spec['xz'].prefix)
-        options.append('-DLZMA_INCLUDE_DIR=%s/include' % self.spec['xz'].prefix)
-        options.append('-DLZMA_LIBRARY=%s/lib/liblzma.%s' % (self.spec['xz'].prefix,libext))
-        options.append('-DXROOTD_ROOT_DIR=%s' % self.spec['xrootd'].prefix)
-        options.append('-DPNG_INCLUDE_DIR=%s/include' % self.spec['libpng'].prefix)
-        options.append('-DPNG_LIBRARY=%s/lib/libpng.%s' % (self.spec['libpng'].prefix,libext))
         pyvers=str(self.spec['python'].version).split('.')
         pyver=pyvers[0]+'.'+pyvers[1]
-        options.append('-DPYTHON_EXECUTABLE=%s/python' % (self.spec['python'].prefix.bin))
-        options.append('-DPYTHON_INCLUDE=%s' % (self.spec['python'].prefix.include))
-        options.append('-DPYTHON_LIBRARY=%s/libpython%s.%s' % (self.spec['python'].prefix.lib,pyver,libext))
-                       
+        options=[ '-Dcxx17=on'
+                 ,'-Droofit=on'
+                 ,'-Dx11=on'
+                 ,'-Dminuit2=on'
+                 ,'-DPCRE_CONFIG_EXECUTABLE=%s/bin/pcre-config' %
+                   self.spec['pcre'].prefix
+                 ,'-DPCRE_INCLUDE_DIR=%s/include' %
+                   self.spec['pcre'].prefix
+                 ,'-DPCRE_PCRE_LIBRARY=%s/lib/libpcre.%s' %
+                  (self.spec['pcre'].prefix,libext)
+                 ,'-DPCRE_PCREPOSIX_LIBRARY=%s/lib/libpcreposix.%s' %
+                  (self.spec['pcre'].prefix,libext)
+                 ,'-DLZMA_DIR=%s' %
+                   self.spec['xz'].prefix
+                 ,'-DLZMA_INCLUDE_DIR=%s/include' %
+                   self.spec['xz'].prefix
+                 ,'-DLZMA_LIBRARY=%s/lib/liblzma.%s' %
+                  (self.spec['xz'].prefix,libext)
+                 ,'-DXROOTD_ROOT_DIR=%s' %
+                   self.spec['xrootd'].prefix
+                 ,'-DPNG_INCLUDE_DIR=%s/include' %
+                   self.spec['libpng'].prefix
+                 ,'-DPNG_LIBRARY=%s/lib/libpng.%s' %
+                  (self.spec['libpng'].prefix,libext)
+                 ,'-DPYTHON_EXECUTABLE=%s/python' %
+                  (self.spec['python'].prefix.bin)
+                 ,'-DPYTHON_INCLUDE=%s' %
+                  (self.spec['python'].prefix.include)
+                 ,'-DPYTHON_LIBRARY=%s/libpython%s.%s' %
+                  (self.spec['python'].prefix.lib,pyver,libext) ]               
         if sys.platform == 'darwin':
             darwin_options = [
+                '-Dx11=off',
                 '-Dcocoa=on',
                 '-Dbonjour=on',
                 '-Dcastor=OFF',
                 '-Drfio=OFF',
                 '-Ddcache=OFF']
             options.extend(darwin_options)
-        with working_dir(build_directory, create=True):
-            cmake(*options)
-            make()
-            make("install")
+
+        return options
 
     def setup_environment(self, spack_env, run_env):
         run_env.prepend_path('ROOT_INCLUDE_PATH', self.prefix.include)

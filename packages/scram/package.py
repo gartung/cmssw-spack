@@ -31,7 +31,7 @@ class Scram(Package):
     homepage = "https://github.com/cms-sw/SCRAM"
     url      = "https://github.com/cms-sw/SCRAM/archive/V2_2_6.tar.gz"
 
-    version('2_2_6', 'ebff710a52077da0f38b0312f01e041d')
+    version('2_2_7_pre3', 'b451f27fff6a74f44544d90bd3140ca6')
 
     depends_on('gmake')
 
@@ -45,5 +45,5 @@ class Scram(Package):
         gmake(*args)
 
     def setup_dependent_environment(self, spack_env, run_env, dspec):
-        spack_env.set('SCRAM_ARCH', 'osx1012_amd64_clang8')
+        spack_env.set('SCRAM_ARCH', self.spec.architecture)
 
