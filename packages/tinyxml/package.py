@@ -35,7 +35,7 @@ class Tinyxml(Package):
     if sys.platform == 'darwin':
       patch('tinyxml.patch')
 
-    depends_on('boost+python')
+    depends_on('boost@1.63.0+python^python+shared')
     depends_on('gmake',type='build')
 
     def install(self, spec, prefix):

@@ -45,5 +45,5 @@ class Scram(Package):
         gmake(*args)
 
     def setup_dependent_environment(self, spack_env, run_env, dspec):
-        spack_env.set('SCRAM_ARCH', 'osx1012_amd64_clang8')
+        spack_env.set('SCRAM_ARCH', str(self.spec.architecture))
 
