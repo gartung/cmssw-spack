@@ -1,3 +1,16 @@
+diff --git a/CondFormats/Serialization/python/condformats_serialization_generate.py b/CondFormats/Serialization/python/condformats_serialization_generate.py
+index e0d730302e0..1dae199fb63 100755
+--- a/CondFormats/Serialization/python/condformats_serialization_generate.py
++++ b/CondFormats/Serialization/python/condformats_serialization_generate.py
+@@ -29,7 +29,7 @@ import subprocess
+
+ import clang.cindex
+
+-clang_version = None
++clang_version = (4,0,1)
+
+ headers_template = '''
+ #include "{headers}"
 diff --git a/FWCore/Utilities/scripts/edmCheckClassTransients b/FWCore/Utilities/scripts/edmCheckClassTransients
 index e4f9ab28ed2..78fd31babb6 100755
 --- a/FWCore/Utilities/scripts/edmCheckClassTransients
