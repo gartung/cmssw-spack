@@ -56,28 +56,27 @@ class Fwlite(Package):
     """CMSSW FWLite built as a scram project"""
 
     homepage = "http://cms-sw.github.io"
-    url      = "https://github.com/cms-sw/cmssw/archive/CMSSW_9_4_X.tar.gz"
+    url      = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc_amd64_gcc630/cms/fwlite/CMSSW_9_2_12_FWLITE/src.tar.gz"
 
-    version('9.2.14',git='https://github.com/cms-sw/cmssw.git',tag='CMSSW_9_2_14')
+    version('9.2.12','b640a7fc68a41805d55c481846add97d')
 
     config_tag='V05-05-56'
 
     resource(name='config',
              git='https://github.com/gartung/cmssw-config.git',
              branch='macos',
-             destination='',
+             destination='.',
              placement='config'
     )
     
     resource(name='toolbox',
              git='https://github.com/gartung/scram-tool-templ.git',
              branch='linux',
-             destination='',
+             destination='.',
              placement='tools'
     )
 
 
-    depends_on('libuuid')
     depends_on('scram')
     depends_on('gmake')
     depends_on('root@6.10.08^python+shared^fftw~mpi')
@@ -107,7 +106,8 @@ class Fwlite(Package):
     depends_on('libxml2^python+shared')
     depends_on('bzip2')
     depends_on('fireworks-data')
-    depends_on('llvm~gold+python+shared_libs')
+    depends_on('llvm~gold~libcxx+python+shared_libs')
+    depends_on('libuuid')
 
     if sys.platform == 'darwin':
         patch('macos.patch')
@@ -161,8 +161,6 @@ class Fwlite(Package):
         values['OPENSSL_PREFIX']=str(spec['openssl'].prefix)
         values['LIBXML2_VER']=str(spec['libxml2'].version)
         values['LIBXML2_PREFIX']=str(spec['libxml2'].prefix)
-        values['LIBUUID_VER']=str(spec['libuuid'].version)
-        values['LIBUUID_PREFIX']=str(spec['libuuid'].prefix)
         values['CFE_VER']=str(spec['llvm'].version)
         values['CFE_PREFIX']=str(spec['llvm'].prefix)
         values['LIBUNGIF_VER']=str(spec['giflib'].version)
@@ -173,6 +171,8 @@ class Fwlite(Package):
         values['LIBPNG_PREFIX']=str(spec['libpng'].prefix)
         values['LIBJPEG_VER']=str(spec['jpeg'].version)
         values['LIBJPEG_PREFIX']=str(spec['jpeg'].prefix)
+        values['LIBUUID_VER']=str(spec['libuuid'].version)
+        values['LIBUUID_PREFIX']=str(spec['libuuid'].prefix)
         values['HEPMC_VER']=str(spec['hepmc'].version)
         values['HEPMC_PREFIX']=str(spec['hepmc'].prefix)
         values['GSL_VER']=str(spec['gsl'].version)
@@ -239,10 +239,10 @@ class Fwlite(Package):
                     replacement=line+'\n'
                     fout.write(replacement)
             fout.close()
-            scram('project','-d', prefix, '-b', 'config/bootsrc.xml')
+            scram('project','-d', build_directory, '-b', 'config/bootsrc.xml')
 
     
-        with working_dir(join_path(prefix,cmssw_u_version),create=False):
+        with working_dir(join_path(build_directory,cmssw_u_version),create=False):
             matches = []
             matches.append('src/CommonTools/Utils/src/TMVAEvaluator.cc')
             matches.append('src/FWCore/MessageLogger/python/MessageLogger_cfi.py')
@@ -253,10 +253,14 @@ class Fwlite(Package):
             for m in matches:
                 if os.path.exists(m):
                     os.remove(m)
-            scram('build', '-v', '-j4')
+            scram('build', '-v', '-k', '-j8')
             relrelink('external')
             shutil.rmtree('tmp')
-             
+            install_tree('.',prefix)
+
+
+        with working_dir(prefix, create=False):
+             scram('build', 'ProjectRename')
             
 
 
@@ -278,4 +282,4 @@ class Fwlite(Package):
     def url_for_version(self, version):
         """Handle CMSSW's version string."""
         version_underscore=str(self.version).replace('.','_')
-        return "https://github.com/cms-sw/cmssw/archive/CMSSW_%s.tar.gz" % version_underscore
+        return "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc7_amd64_gcc630/cms/fwlite/CMSSW_%s_FWLITE/src.tar.gz" % version_underscore
