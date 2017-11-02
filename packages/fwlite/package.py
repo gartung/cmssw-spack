@@ -80,7 +80,7 @@ class Fwlite(Package):
     depends_on('libuuid')
     depends_on('scram')
     depends_on('gmake')
-    depends_on('root@6.11.02^python+shared^fftw~mpi')
+    depends_on('root@6.10.08^python+shared^fftw~mpi')
     depends_on('tbb')
     depends_on('tinyxml^boost+python+shared^python+shared')
     depends_on('clhep@2.3.4.2')
@@ -107,9 +107,12 @@ class Fwlite(Package):
     depends_on('libxml2^python+shared')
     depends_on('bzip2')
     depends_on('fireworks-data')
-    depends_on('cfe-bindings')
+    depends_on('llvm~gold+python+shared_libs')
 
-    patch('macos.patch')
+    if sys.platform == 'darwin':
+        patch('macos.patch')
+    else:
+        patch('linux.patch')
 
     def install(self, spec, prefix):
         scram=which('scram')
@@ -134,7 +137,7 @@ class Fwlite(Package):
         values['XROOTD_PREFIX']=str(spec['xrootd'].prefix)
         values['BOOST_VER']=str(spec['boost'].version)
         values['BOOST_PREFIX']=str(spec['boost'].prefix)
-        values['TBB_VER']=str(spec['intel-tbb'].version)
+        values['TBB_VER']=str(spec['tbb'].version)
         values['TBB_PREFIX']=str(spec['tbb'].prefix)
         values['PYTHON_VER']=str(spec['python'].version)
         values['PYTHON_PREFIX']=str(spec['python'].prefix)
@@ -160,8 +163,8 @@ class Fwlite(Package):
         values['LIBXML2_PREFIX']=str(spec['libxml2'].prefix)
         values['LIBUUID_VER']=str(spec['libuuid'].version)
         values['LIBUUID_PREFIX']=str(spec['libuuid'].prefix)
-        values['CFE_VER']=str(spec['cfe-bindings'].version)
-        values['CFE_PREFIX']=str(spec['cfe-bindings'].prefix)
+        values['CFE_VER']=str(spec['llvm'].version)
+        values['CFE_PREFIX']=str(spec['llvm'].prefix)
         values['LIBUNGIF_VER']=str(spec['giflib'].version)
         values['LIBUNGIF_PREFIX']=str(spec['giflib'].prefix)
         values['LIBTIFF_VER']=str(spec['libtiff'].version)
