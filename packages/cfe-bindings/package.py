@@ -48,11 +48,13 @@ class CfeBindings(Package):
     url      = "http://releases.llvm.org/5.0.0/cfe-5.0.0.src.tar.xz"
 
     version('5.0.0', '699c448c6d6d0edb693c87beb1cc8c6e')
+    version('4.0.1', 'a6c7b3e953f8b93e252af5917df7db97')
 
     extends('python')
 
     
-    depends_on('llvm@5.0.0~gold+python+shared_libs', type='build')
+    depends_on('llvm@5.0.0~gold+python+shared_libs', type='build', when='@5.0.0')
+    depends_on('llvm@4.0.1~gold+python+shared_libs', type='build', when='@4.0.1')
 
     def install(self, spec, prefix):
         install_tree('%s/bindings/python/clang/' %

@@ -71,7 +71,7 @@ class Cmssw(Package):
     
     resource(name='toolbox',
              git='https://github.com/gartung/scram-tool-templ.git',
-             branch='linux-link',
+             commit='842dfff026e7f5a17c9d54aadcbcbbd13797f7c3',
              destination='.',
              placement='tools'
     )
@@ -108,6 +108,7 @@ class Cmssw(Package):
     depends_on('bzip2')
     depends_on('fireworks-data')
     depends_on('llvm@4.0.1~gold~libcxx+python+shared_libs')
+    depends_on('cfe-bindings@4.0.1')
     depends_on('libuuid')
     depends_on('valgrind')
     depends_on('geant4~qt')
@@ -118,6 +119,10 @@ class Cmssw(Package):
     depends_on('classlib')
     depends_on('davix')
     depends_on('gperftools')
+    depends_on('meschach')
+    depends_on('fastjet')
+    depends_on('pythia6')
+    depends_on('pythia8')
 
     if sys.platform == 'darwin':
         patch('macos.patch')
@@ -131,7 +136,7 @@ class Cmssw(Package):
         cmssw_version='CMSSW.'+str(self.version)
         cmssw_u_version=cmssw_version.replace('.','_')
         scram_version='V'+str(spec['scram'].version)
-        project_dir=join_path(build_directory,cmssw_u_version)
+        project_dir=join_path(prefix,cmssw_u_version)
         
         gcc=which(spack_f77)
         gcc_prefix=re.sub('/bin/.*$','',self.compiler.f77)
@@ -139,6 +144,8 @@ class Cmssw(Package):
         gcc_ver=gcc('-dumpversion',output=str)
 
         values = {}
+        values['SELF_LIB']=project_dir+'/lib/'+str(spec.architecture)
+        values['SELF_INC']=project_dir+'/src'
         values['GCC_VER']=gcc_ver.rstrip()
         values['GCC_PREFIX']=gcc_prefix
         values['GCC_MACHINE']=gcc_machine.rstrip()
@@ -172,8 +179,8 @@ class Cmssw(Package):
         values['OPENSSL_PREFIX']=str(spec['openssl'].prefix)
         values['LIBXML2_VER']=str(spec['libxml2'].version)
         values['LIBXML2_PREFIX']=str(spec['libxml2'].prefix)
-        values['CFE_VER']=str(spec['llvm'].version)
-        values['CFE_PREFIX']=str(spec['llvm'].prefix)
+        values['CFE_VER']=str(spec['cfe-bindings'].version)
+        values['CFE_PREFIX']=str(spec['cfe-bindings'].prefix)
         values['LIBUNGIF_VER']=str(spec['giflib'].version)
         values['LIBUNGIF_PREFIX']=str(spec['giflib'].prefix)
         values['LIBTIFF_VER']=str(spec['libtiff'].version)
@@ -200,8 +207,6 @@ class Cmssw(Package):
         values['CPPUNIT_PREFIX']=str(spec['cppunit'].prefix)
         values['FWLITEDATA_VER']=str(spec['fireworks-data'].version)
         values['FWLITEDATA_PREFIX']=str(spec['fireworks-data'].prefix)
-        values['SELF_LIB']=project_dir+'/lib/'+str(spec.architecture)
-        values['SELF_INC']=project_dir+'/src'
         values['VALGRIND_VER']=str(spec['valgrind'].version)
         values['VALGRIND_PREFIX']=str(spec['valgrind'].prefix)
         values['GEANT4CORE_VER']=str(spec['geant4'].version)
@@ -224,6 +229,14 @@ class Cmssw(Package):
         values['CLASSLIB_PREFIX']=str(spec['classlib'].prefix)
         values['DAVIX_VER']=str(spec['davix'].version)
         values['DAVIX_PREFIX']=str(spec['davix'].prefix)
+        values['MESCHACH_VER']=str(spec['meschach'].version)
+        values['MESCHACH_PREFIX']=str(spec['meschach'].prefix)
+        values['FASTJET_VER']=str(spec['fastjet'].version)
+        values['FASTJET_PREFIX']=str(spec['fastjet'].prefix)
+        values['PYTHIA6_VER']=str(spec['pythia6'].version)
+        values['PYTHIA6_PREFIX']=str(spec['pythia6'].prefix)
+        values['PYTHIA8_VER']=str(spec['pythia8'].version)
+        values['PYTHIA8_PREFIX']=str(spec['pythia8'].prefix)
 
         with working_dir(build_directory, create=True):
             rsync=which('rsync')
@@ -257,7 +270,7 @@ class Cmssw(Package):
                  '--keys', 'SCRAM_COMPILER=gcc', 
                  '--keys', 'PROJECT_GIT_HASH='+cmssw_u_version,
                  '--arch', str(spec.architecture))
-            scram('project','-d', build_directory, '-b', 'config/bootsrc.xml')
+            scram('project','-d', prefix, '-b', 'config/bootsrc.xml')
 
 
         with working_dir(project_dir,create=False):
@@ -277,15 +290,15 @@ class Cmssw(Package):
             scram('build', '-v', '-j8')
             relrelink('external')
             shutil.rmtree('tmp')
-            install_tree(project_dir,prefix)
+#            install_tree(project_dir,prefix)
 
 
-        with working_dir(join_path(prefix,cmssw_u_version), create=False):
-            os.environ[ 'LOCALTOP' ] = os.getcwd()
-            os.environ[ 'RELEASETOP' ] = os.getcwd()
-            os.environ[ 'CMSSW_RELEASE_BASE' ] = os.getcwd()
-            os.environ[ 'CMSSW_BASE' ] = os.getcwd()
-            scram('build', 'ProjectRename')
+#        with working_dir(join_path(prefix,cmssw_u_version), create=False):
+#            os.environ[ 'LOCALTOP' ] = os.getcwd()
+#            os.environ[ 'RELEASETOP' ] = os.getcwd()
+#            os.environ[ 'CMSSW_RELEASE_BASE' ] = os.getcwd()
+#            os.environ[ 'CMSSW_BASE' ] = os.getcwd()
+#            scram('build', 'ProjectRename')
            
 
 
@@ -303,10 +316,10 @@ class Cmssw(Package):
     def setup_environment(self, spack_env, run_env):
         cmssw_version='CMSSW.'+str(self.version)
         cmssw_u_version=cmssw_version.replace('.','_')
-#        spack_env.set('LOCALTOP', self.prefix+'/'+cmssw_u_version)
+        spack_env.set('LOCALTOP', self.prefix+'/'+cmssw_u_version)
 #        spack_env.set('RELEASETOP', self.prefix+'/'+cmssw_u_version)
 #        spack_env.set('CMSSW_RELEASE_BASE', self.prefix)
-#        spack_env.set('CMSSW_BASE', self.prefix)
+        spack_env.set('CMSSW_BASE', self.prefix)
         spack_env.append_path('LD_LIBRARY_PATH', self.prefix+'/'+cmssw_u_version+'/lib/'+str(self.spec.architecture))
         spack_env.append_path('LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib)
         spack_env.append_path('LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib64)

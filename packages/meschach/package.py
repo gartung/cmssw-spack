@@ -1,5 +1,5 @@
 ##############################################################################
-# Copyright (c) 2013-2016, Lawrence Livermore National Security, LLC.
+# Copyright (c) 2013-2017, Lawrence Livermore National Security, LLC.
 # Produced at the Lawrence Livermore National Laboratory.
 #
 # This file is part of Spack.
@@ -7,7 +7,7 @@
 # LLNL-CODE-647188
 #
 # For details, see https://github.com/llnl/spack
-# Please also see the LICENSE file for our notice and the LGPL.
+# Please also see the NOTICE and LICENSE files for our notice and the LGPL.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License (as
@@ -23,28 +23,24 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
 from spack import *
-import sys
+import glob
 
-class Md5(Package):
-    """."""
+class Meschach(Package):
+    """FIXME: Put a proper description of your package here."""
 
-    homepage = "https://github.com/cms-externals/md5"
-    url      = "http://cmsrep.cern.ch/cmssw/cms/SOURCES/slc6_amd64_gcc600/external/md5/1.0.0-giojec/md5.1.0.0-d97a571864a119cd5408d2670d095b4410e926cc.tgz"
+    homepage = "http://www.example.com"
+    url      = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/meschach/1.2.pCMS1/mesch12b.tar.gz"
 
-    version('1.0.0', 'b154f78e89a70ac1328099d9c3820d13',url='http://cmsrep.cern.ch/cmssw/cms/SOURCES/slc6_amd64_gcc600/external/md5/1.0.0-giojec/md5.1.0.0-d97a571864a119cd5408d2670d095b4410e926cc.tgz')
+    version('12b', '4ccd520f30934ebc34796d80dab29e5c')
 
+    patch('meschach-1.2b-fPIC.patch',level=0)
+    patch('meschach-1.2-slc4.patch')
 
     def install(self, spec, prefix):
-        comp=which('gcc')
-        cp=which('cp')
-        md=which('mkdir')
-        md('%s' % prefix.lib)
-        md('%s' % prefix.include)      
-        if sys.platform == 'darwin': 
-          comp('md5.c', '-shared', '-fPIC', '-o', 'libcms-md5.dylib')
-          cp('-v','libcms-md5.dylib',prefix.lib)
-          fix_darwin_install_name(prefix.lib)
-        else: 
-          comp('md5.c', '-shared', '-fPIC', '-o', 'libcms-md5.so')
-          cp('-v','libcms-md5.so',prefix.lib)
-        cp('-v','md5.h',prefix.include)
+        make()
+        mkdirp(prefix.lib)
+        mkdirp(prefix.include)
+        cp = which('cp')
+        for f in glob.glob('*.h'):
+            cp(f,prefix.include)
+        cp('meschach.a',prefix.lib+'/libmeschach.a')
