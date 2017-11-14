@@ -117,6 +117,7 @@ class Cmssw(Package):
     depends_on('curl')
     depends_on('classlib')
     depends_on('davix')
+    depends_on('gperftools')
 
     if sys.platform == 'darwin':
         patch('macos.patch')
@@ -205,6 +206,10 @@ class Cmssw(Package):
         values['VALGRIND_PREFIX']=str(spec['valgrind'].prefix)
         values['GEANT4CORE_VER']=str(spec['geant4'].version)
         values['GEANT4CORE_PREFIX']=str(spec['geant4'].prefix)
+        values['GEANT4_VER']=str(spec['geant4'].version)
+        values['GEANT4_PREFIX']=str(spec['geant4'].prefix)
+        values['GOOGLE_PERFTOOLS_VER']=str(spec['gperftools'].version)
+        values['GOOGLE_PERFTOOLS_PREFIX']=str(spec['gperftools'].prefix)
         values['EXPAT_VER']=str(spec['expat'].version)
         values['EXPAT_PREFIX']=str(spec['expat'].prefix)
         values['LLVM_VER']=str(spec['llvm'].version)
@@ -267,6 +272,7 @@ class Cmssw(Package):
             scram.add_default_env('LOCALTOP', project_dir)
             scram.add_default_env('CMSSW_BASE', project_dir)
             scram.add_default_env('LD_LIBRARY_PATH', project_dir+'/lib/'+str(self.spec.architecture))
+            scram.add_default_env('LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib)
             scram.add_default_env('LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib64)
             scram('build', '-v', '-j8')
             relrelink('external')
@@ -302,6 +308,7 @@ class Cmssw(Package):
 #        spack_env.set('CMSSW_RELEASE_BASE', self.prefix)
 #        spack_env.set('CMSSW_BASE', self.prefix)
         spack_env.append_path('LD_LIBRARY_PATH', self.prefix+'/'+cmssw_u_version+'/lib/'+str(self.spec.architecture))
+        spack_env.append_path('LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib)
         spack_env.append_path('LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib64)
 
     def url_for_version(self, version):
