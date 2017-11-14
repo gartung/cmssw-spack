@@ -106,7 +106,7 @@ class Fwlite(Package):
     depends_on('libxml2^python+shared')
     depends_on('bzip2')
     depends_on('fireworks-data')
-    depends_on('llvm~gold~libcxx+python+shared_libs')
+    depends_on('llvm@4.0.1~gold~libcxx+python+shared_libs')
     depends_on('libuuid')
 
     if sys.platform == 'darwin':
@@ -239,10 +239,10 @@ class Fwlite(Package):
                     replacement=line+'\n'
                     fout.write(replacement)
             fout.close()
-            scram('project','-d', build_directory, '-b', 'config/bootsrc.xml')
+            scram('project','-d', prefix, '-b', 'config/bootsrc.xml')
 
     
-        with working_dir(join_path(build_directory,cmssw_u_version),create=False):
+        with working_dir(join_path(prefix,cmssw_u_version),create=False):
             matches = []
             matches.append('src/CommonTools/Utils/src/TMVAEvaluator.cc')
             matches.append('src/FWCore/MessageLogger/python/MessageLogger_cfi.py')
@@ -253,20 +253,39 @@ class Fwlite(Package):
             for m in matches:
                 if os.path.exists(m):
                     os.remove(m)
+
+            os.environ[ 'LOCALTOP' ] = os.getcwd()
+            os.environ[ 'RELEASETOP' ] = os.getcwd()
+            os.environ[ 'CMSSW_RELEASE_BASE' ] = os.getcwd()
+            os.environ[ 'CMSSW_BASE' ] = os.getcwd()
+            if os.environ[ 'LD_LIBRARY_PATH' ]:
+                os.environ[ 'LD_LIBRARY_PATH'] += os.getcwd()+'/lib/'+str(self.spec.architecture)
+                os.environ[ 'LD_LIBRARY_PATH'] += self.spec['llvm'].prefix.lib
+            else: 
+                os.environ[ 'LD_LIBRARY_PATH'] = os.getcwd()+'/lib/'+str(self.spec.architecture)
+                os.environ[ 'LD_LIBRARY_PATH'] += self.spec['llvm'].prefix.lib
+            scram.add_default_env('CMSSW_RELEASE_BASE', os.getcwd())
+            scram.add_default_env('CMSSW_BASE', os.getcwd())
             scram('build', '-v', '-k', '-j8')
             relrelink('external')
             shutil.rmtree('tmp')
-            install_tree('.',prefix)
-
-
-        with working_dir(prefix, create=False):
-             scram('build', 'ProjectRename')
+#            install_tree('.',prefix)
+#
+#
+#        with working_dir(prefix, create=False):
+#            os.environ[ 'LOCALTOP' ] = os.getcwd()
+#            os.environ[ 'RELEASETOP' ] = os.getcwd()
+#            os.environ[ 'CMSSW_RELEASE_BASE' ] = os.getcwd()
+#            os.environ[ 'CMSSW_BASE' ] = os.getcwd()
+#            scram('build', 'ProjectRename')
             
 
 
     def setup_dependent_environment(self, spack_env, run_env, dspec):
         cmssw_version='CMSSW.'+str(self.version)
         cmssw_u_version=cmssw_version.replace('.','_')
+        spack_env.set('LOCALTOP', self.prefix+'/'+cmssw_u_version)
+        spack_env.set('RELEASETOP', self.prefix+'/'+cmssw_u_version)
         spack_env.set('CMSSW_RELEASE_BASE', self.prefix)
         spack_env.set('CMSSW_BASE', self.prefix)
         spack_env.append_path('LD_LIBRARY_PATH', self.prefix+'/'+cmssw_u_version+'/lib/'+str(self.spec.architecture))
@@ -275,6 +294,8 @@ class Fwlite(Package):
     def setup_environment(self, spack_env, run_env):
         cmssw_version='CMSSW.'+str(self.version)
         cmssw_u_version=cmssw_version.replace('.','_')
+        spack_env.set('LOCALTOP', self.prefix+'/'+cmssw_u_version)
+        spack_env.set('RELEASETOP', self.prefix+'/'+cmssw_u_version)
         spack_env.set('CMSSW_RELEASE_BASE', self.prefix)
         spack_env.set('CMSSW_BASE', self.prefix)
         spack_env.append_path('LD_LIBRARY_PATH', self.prefix+'/'+cmssw_u_version+'/lib/'+str(self.spec.architecture))
