@@ -108,3 +108,37 @@ class Openssl(Package):
         # if self.run_tests:
         #     make('test')            # 'VERBOSE=1'
         make('install')
+
+    def write_scram_toolfile(contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+
+        fname='openssl.xml'
+          template=Template("""<tool name="openssl" version="$VER">
+    <lib name="ssl"/>
+    <lib name="crypto"/>
+    <client>
+      <environment name="OPENSSL_BASE" default="$PFX"/>
+      <environment name="INCLUDE" default="$$OPENSSL_BASE/include"/>
+      <environment name="LIBDIR" default="$$OPENSSL_BASE/lib"/>
+    </client>
+    <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+    <use name="root_cxxdefaults"/>
+  </tool>""")
+
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)

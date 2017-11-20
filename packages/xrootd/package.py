@@ -39,3 +39,45 @@ class Xrootd(CMakePackage):
     version('4.3.0', '39c2fab9f632f35e12ff607ccaf9e16c')
 
     depends_on('cmake@2.6:', type='build')
+
+    def write_scram_toolfile(contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+        pyvers=str(self.spec['python'].version).split('.')
+        pyver=pyvers[0]+'.'+pyvers[1]
+
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+        values['PYVER']=pyver
+
+        fname='xrootd.xml'
+        template=Template("""<tool name="xrootd" version="$VER">
+  <lib name="XrdUtils"/>
+  <lib name="XrdClient"/>
+  <client>
+    <environment name="XROOTD_BASE" default="$PFX"/>
+    <environment name="INCLUDE" default="$$XROOTD_BASE/include/xrootd"/>
+    <environment name="INCLUDE" default="$$XROOTD_BASE/include/xrootd/private"/>
+    <environment name="LIBDIR" default="$$XROOTD_BASE/lib64"/>
+  </client>
+  <runtime name="PATH" value="$$XROOTD_BASE/bin" type="path"/>
+  <runtime name="PYTHONPATH" value="$XROOTD_BASE/lib/python${PYVER}/site-packages" type="path"/>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+</tool>""")
+
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)
+

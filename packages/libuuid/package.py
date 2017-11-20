@@ -32,3 +32,38 @@ class Libuuid(AutotoolsPackage):
     url      = "http://downloads.sourceforge.net/project/libuuid/libuuid-1.0.3.tar.gz?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Flibuuid%2F&ts=1433881396&use_mirror=iweb"
 
     version('1.0.3', 'd44d866d06286c08ba0846aba1086d68')
+
+    def write_scram_toolfile(contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+
+        fname='libuuid.xml'
+        template=Template("""<tool name="libuuid" version="$VER">
+  <lib name="uuid"/>
+  <client>
+    <environment name="LIBUUID_BASE" default="$PFX"/>
+    <environment name="LIBDIR" default="$$LIBUUID_BASE/lib"/>
+    <environment name="INCLUDE" default="$$LIBUUID_BASE/include"/>
+  </client>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+  <use name="sockets"/>
+</tool>""")
+
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)
+

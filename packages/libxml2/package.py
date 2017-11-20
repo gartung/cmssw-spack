@@ -36,7 +36,7 @@ class Libxml2(AutotoolsPackage):
     version('2.9.2', '9e6a9aca9d155737868b3dc5fd82f788')
     version('2.7.8', '8127a65e8c3b08856093099b52599c86')
 
-    variant('python', default=False, description='Enable Python support')
+    variant('python', default=True, description='Enable Python support')
 
     extends('python', when='+python',
             ignore=r'(bin.*$)|(include.*$)|(share.*$)|(lib/libxml2.*$)|'
@@ -60,3 +60,38 @@ class Libxml2(AutotoolsPackage):
             args.append('--without-python')
 
         return args
+
+    def write_scram_toolfile(contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+
+        fname='libxml2.xml'
+        template=Template("""<tool name="libxml2" version="$VER">
+  <info url="http://xmlsoft.org/"/>
+  <lib name="xml2"/>
+  <client>
+    <environment name="LIBXML2_BASE" default="$PFX"/>
+    <environment name="LIBDIR" default="$$LIBXML2_BASE/lib"/>
+    <environment name="INCLUDE" default="$$LIBXML2_BASE/include/libxml2"/>
+  </client>
+  <runtime name="PATH" value="$$LIBXML2_BASE/bin" type="path"/>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+</tool>""")
+
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)

@@ -33,3 +33,39 @@ class Giflib(AutotoolsPackage):
     url      = "https://downloads.sourceforge.net/project/giflib/giflib-5.1.4.tar.bz2"
 
     version('5.1.4', '2c171ced93c0e83bb09e6ccad8e3ba2b')
+
+    def write_scram_toolfile(contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+
+        fname='giflib.xml'
+        template=Template("""<tool name="giflib" version="$VER">
+    <info url="http://giflib.sourceforge.net"/>
+    <lib name="gif"/>
+    <client>
+      <environment name="GIFLIB_BASE" default="$PFX"/>
+      <environment name="LIBDIR" default="$$GIFLIB_BASE/lib"/>
+      <environment name="INCLUDE" default="$$GIFLIB_BASE/include"/>
+    </client>
+    <runtime name="PATH" value="$$GIFLIB_BASE/bin" type="path"/>
+    <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+    <use name="root_cxxdefaults"/>
+  </tool>""")
+
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)
+

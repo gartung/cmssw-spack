@@ -68,3 +68,42 @@ class FrontierClient(MakefilePackage):
     def url_for_version(self, version):
         """Handle version string."""
         return "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/frontier_client/%s/frontier_client__%s__src.tar.gz" % (version,version)
+
+    def write_scram_toolfile(contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+
+        fname='frontier_client.xml'
+        template=Template("""<tool name="frontier_client" version="$VER">
+  <lib name="frontier_client"/>
+  <client>
+    <environment name="FRONTIER_CLIENT_BASE" default="$PFX"/>
+    <environment name="INCLUDE" default="$$FRONTIER_CLIENT_BASE/include"/>
+    <environment name="LIBDIR" default="$$FRONTIER_CLIENT_BASE/lib"/>
+  </client>
+  <runtime name="FRONTIER_CLIENT" value="$$FRONTIER_CLIENT_BASE/"/>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+  <use name="zlib"/>
+  <use name="openssl"/>
+  <use name="expat"/>
+  <runtime name="PYTHONPATH" value="$$FRONTIER_CLIENT_BASE/python/lib" type="path"/>
+  <use name="python"/>
+</tool>""")
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)
+

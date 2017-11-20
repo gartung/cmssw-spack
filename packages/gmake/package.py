@@ -55,3 +55,33 @@ class Gmake(AutotoolsPackage):
     def symlink_gmake(self):
         with working_dir(self.prefix.bin):
             symlink('make', 'gmake')
+
+
+cram_toolfile(contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+
+        fname='gmake.xml'
+        template=Template("""<tool name="gmake" version="$VER">
+  <client>
+    <environment name="MAKE_BASE" default="$PFX"/>
+  </client>
+  <runtime name="PATH" value="$$MAKE_BASE/bin" type="path"/>
+</tool>""")
+
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)

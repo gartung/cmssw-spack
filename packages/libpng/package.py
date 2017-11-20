@@ -61,3 +61,40 @@ class Libpng(AutotoolsPackage):
             'LDFLAGS={0}'.format(self.spec['zlib'].libs.search_flags)
         ]
         return args
+
+
+    def write_scram_toolfile(contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+
+        fname='libpng.xml'
+        template=Template("""<tool name="libpng" version="$VER">
+  <info url="http://www.libpng.org/"/>
+  <lib name="png"/>
+  <client>
+    <environment name="LIBPNG_BASE" default="$PFX"/>
+    <environment name="LIBDIR" default="$$LIBPNG_BASE/lib"/>
+    <environment name="INCLUDE" default="$$LIBPNG_BASE/include"/>
+  </client>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+  <use name="zlib"/>
+</tool>""")
+
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)
+

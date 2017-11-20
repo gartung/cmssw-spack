@@ -36,3 +36,45 @@ class Vdt(CMakePackage):
     version('0.3.8', '25b07c72510aaa95fffc11e33579061c')
     version('0.3.7', 'd2621d4c489894fd1fe8e056d9a0a67c')
     version('0.3.6', '6eaff3bbbd5175332ccbd66cd71a741d')
+
+    def write_scram_toolfile(contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+
+        fname='vdt_headers.xml'
+        template=Template("""<tool name="vdt_headers" version="$VER">
+  <client>
+    <environment name="VDT_HEADERS_BASE" default="$PFX"/>
+    <environment name="INCLUDE" default="$$VDT_HEADERS_BASE/include"/>
+  </client>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+</tool>""")
+
+        fname='vdt.xml'
+        template=Template("""<tool name="vdt" version="$VER">
+  <lib name="vdt"/>
+  <use name="vdt_headers"/>
+  <client>
+    <environment name="VDT_BASE" default="$PFX"/>
+    <environment name="LIBDIR" default="$$VDT_BASE/lib"/>
+  </client>
+</tool>""")
+
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)
+

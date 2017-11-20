@@ -42,3 +42,36 @@ class Fftjet(AutotoolsPackage):
                 'DEPS_CFLAGS=-I%s' % self.spec['fftw'].prefix.include,
                 'DEPS_LIBS="-L%s -lfftw3"' % self.spec['fftw'].prefix.lib]
         return args
+
+    def write_scram_toolfile(contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+
+        fname='fftjet.xml'
+        template=Template("""<tool name="fftjet" version="$VER">
+  <lib name="fftjet"/>
+  <client>
+    <environment name="FFTJET_BASE" default="$PFX"/>
+    <environment name="LIBDIR" default="$$FFTJET_BASE/lib"/>
+    <environment name="INCLUDE" default="$$FFTJET_BASE/include"/>
+  </client>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+</tool>""")
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)
+

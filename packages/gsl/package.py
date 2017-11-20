@@ -42,3 +42,39 @@ class Gsl(AutotoolsPackage):
     version('2.1',   'd8f70abafd3e9f0bae03c52d1f4e8de5')
     version('2.0',   'ae44cdfed78ece40e73411b63a78c375')
     version('1.16',  'e49a664db13d81c968415cd53f62bc8b')
+
+    def write_scram_toolfile(contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+
+        fname='gsl.xml'
+        template=Template("""<tool name="gsl" version="$VER">
+  <info url="http://www.gnu.org/software/gsl/gsl.html"/>
+  <lib name="gsl"/>
+  <lib name="gslcblas"/>
+  <client>
+    <environment name="GSL_BASE" default="$PFX"/>
+    <environment name="LIBDIR" default="$$GSL_BASE/lib"/>
+    <environment name="INCLUDE" default="$$GSL_BASE/include"/>
+  </client>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+</tool>""")
+
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)
+

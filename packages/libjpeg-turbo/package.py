@@ -45,3 +45,39 @@ class LibjpegTurbo(AutotoolsPackage):
     # TODO: Implement the selection between two supported assemblers.
     # depends_on("yasm", type='build')
     depends_on("nasm", type='build')
+
+    def write_scram_toolfile(contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+
+        fname='libjpg.xml'
+        template=Template("""<tool name="libjpeg-turbo" version="$VER">
+  <info url="http://libjpeg-turbo.virtualgl.org"/>
+  <lib name="jpeg"/>
+  <lib name="turbojpeg"/>
+  <client>
+    <environment name="LIBJPEG_TURBO_BASE" default="$PFX"/>
+    <environment name="LIBDIR" default="$LIBJPEG_TURBO_BASE/lib"/>
+    <environment name="INCLUDE" default="$LIBJPEG_TURBO_BASE/include"/>
+  </client>
+  <runtime name="ROOT_INCLUDE_PATH" value="$INCLUDE" type="path"/>
+  <runtime name="PATH" value="$LIBJPEG_TURBO_BASE/bin" type="path"/>
+  <use name="root_cxxdefaults"/>
+</tool>""")
+
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)

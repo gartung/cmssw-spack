@@ -46,3 +46,49 @@ class Oracle(Package):
         for f in glob.glob('*/lib*'):
             install(f,self.prefix.lib)
         mkdirp(self.prefix.bin)
+
+    def write_scram_toolfile(contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+
+        fname='oracle.xml'
+        template=Template("""<tool name="oracle" version="$VER">
+  <lib name="clntsh"/>
+  @OS_LIBS@
+  <client>
+    <environment name="ORACLE_BASE" default="$PFX"/>
+    <environment name="ORACLE_ADMINDIR" value="@ORACLE_ENV_ROOT@/etc"/>
+    <environment name="LIBDIR" value="$$ORACLE_BASE/lib"/>
+    <environment name="BINDIR" value="$$ORACLE_BASE/bin"/>
+    <environment name="INCLUDE" value="$$ORACLE_BASE/include"/>
+  </client>
+  <runtime name="PATH" value="$$BINDIR" type="path"/>
+  <runtime name="TNS_ADMIN" default="$$ORACLE_ADMINDIR"/>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+  <use name="sockets"/>
+</tool>""")
+
+        fname='oracleocci.xml'
+        template=Template("""<tool name="oracleocci" version="$VER">
+  <lib name="occi"/>
+  <use name="oracle"/>
+</tool>""")
+
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)
+

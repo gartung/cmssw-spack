@@ -163,3 +163,38 @@ class Graphviz(AutotoolsPackage):
         shutil.copyfile('./config/config.guess', 'libltdl/config/config.guess')
 
         return options
+
+    def write_scram_toolfile(contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+
+        fname='graphviz.xml'
+        template=Template("""<tool name="graphviz" version="$VER">
+  <info url="http://www.research.att.com/sw/tools/graphviz/"/>
+  <client>
+    <environment name="GRAPHVIZ_BASE" default="$PFX"/>
+  </client>
+  <runtime name="PATH" value="$$GRAPHVIZ_BASE/bin" type="path"/>
+  <use name="expat"/>
+  <use name="zlib"/>
+  <use name="libjpeg-turbo"/>
+  <use name="libpng"/>
+</tool>""")
+
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)
+
