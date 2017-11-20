@@ -37,7 +37,7 @@ class Vdt(CMakePackage):
     version('0.3.7', 'd2621d4c489894fd1fe8e056d9a0a67c')
     version('0.3.6', '6eaff3bbbd5175332ccbd66cd71a741d')
 
-    def write_scram_toolfile(contents,filename):
+    def write_scram_toolfile(self,contents,filename):
         """Write scram tool config file"""
         with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
             f.write(contents)
@@ -76,5 +76,5 @@ class Vdt(CMakePackage):
 </tool>""")
 
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 

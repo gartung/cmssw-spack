@@ -450,7 +450,7 @@ class Llvm(CMakePackage):
             install_tree('bin', join_path(self.prefix, 'libexec', 'llvm'))
 
 
-    def write_scram_toolfile(contents,filename):
+    def write_scram_toolfile(self,contents,filename):
         """Write scram tool config file"""
         with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
             f.write(contents)
@@ -517,7 +517,7 @@ class Llvm(CMakePackage):
     <runtime name="COMPILER_RUNTIME_OBJECTS" value="${GCC_PREFIX}"/>
   </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
         fname='iwyu-cxxcompiler.xml'
@@ -529,7 +529,7 @@ class Llvm(CMakePackage):
     </client>
   </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
         fname='llvm-ccompiler.xml'
@@ -541,7 +541,7 @@ class Llvm(CMakePackage):
     </client>
   </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
         fname='llvm-f77compiler.xml'
@@ -552,7 +552,7 @@ class Llvm(CMakePackage):
     </client>
   </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 #Clang analyzer compilers
@@ -566,7 +566,7 @@ class Llvm(CMakePackage):
     <runtime name="COMPILER_RUNTIME_OBJECTS" value="${GCC_PREFIX}"/>
   </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
         fname='llvm-analyzer-ccompiler.xml'
@@ -578,7 +578,7 @@ class Llvm(CMakePackage):
     </client>
   </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # This is a toolfile to use llvm / clang as a library, not as a compiler.
@@ -597,7 +597,7 @@ class Llvm(CMakePackage):
     <flags CXXFLAGS="-Wno-strict-aliasing -fno-rtti"/>
   </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
         fname='pyclang.xml'
@@ -609,5 +609,5 @@ class Llvm(CMakePackage):
   <use name="python"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 

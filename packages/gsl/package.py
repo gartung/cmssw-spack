@@ -43,7 +43,7 @@ class Gsl(AutotoolsPackage):
     version('2.0',   'ae44cdfed78ece40e73411b63a78c375')
     version('1.16',  'e49a664db13d81c968415cd53f62bc8b')
 
-    def write_scram_toolfile(contents,filename):
+    def write_scram_toolfile(self,contents,filename):
         """Write scram tool config file"""
         with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
             f.write(contents)
@@ -76,5 +76,5 @@ class Gsl(AutotoolsPackage):
 </tool>""")
 
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 

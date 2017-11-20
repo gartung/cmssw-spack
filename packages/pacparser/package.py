@@ -34,11 +34,10 @@ class Pacparser(Package):
     version('1.3.5', '9db90bd4d88dfd8d31fa707466259566')
 
     def install(self, spec, prefix):
-        # FIXME: Unknown build system
         make('-C','src','PREFIX=%s'%prefix)
         make('-C','src','install','PREFIX=%s'%prefix)
 
-    def write_scram_toolfile(contents,filename):
+    def write_scram_toolfile(self,contents,filename):
         """Write scram tool config file"""
         with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
             f.write(contents)
@@ -71,5 +70,5 @@ class Pacparser(Package):
 </tool>""")
 
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 

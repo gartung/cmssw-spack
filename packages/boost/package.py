@@ -380,7 +380,7 @@ class Boost(Package):
             fix_darwin_install_name(prefix.lib)
 
 
-    def write_scram_toolfile(contents,filename):
+    def write_scram_toolfile(self,contents,filename):
         """Write scram tool config file"""
         with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
             f.write(contents)
@@ -418,7 +418,7 @@ class Boost(Package):
   <use name="sockets"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # boost_chrono toolfile
@@ -430,7 +430,7 @@ class Boost(Package):
   <use name="boost"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # boost_filesystem toolfile
@@ -442,7 +442,7 @@ class Boost(Package):
   <use name="boost"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # boost_system toolfile
@@ -453,7 +453,7 @@ class Boost(Package):
   <use name="boost"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # boost_program_options toolfile
@@ -464,12 +464,13 @@ class Boost(Package):
   <use name="boost"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # boost_python toolfile
-		  fname='boost_python.xml'
-        template=Template("""<tool name="boost_python" version="$VER">
+        fname='boost_python.xml'
+        template="""
+<tool name="boost_python" version="$VER">
   <info url="http://www.boost.org"/>
   <lib name="libboost_python${LIBEXT}"/>
   <client>
@@ -480,9 +481,9 @@ class Boost(Package):
   <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
   <use name="root_cxxdefaults"/>
   <use name="python"/>
-</tool>""")
-        contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+</tool>"""
+        contents = Template(template).substitute(values)
+        self.write_scram_toolfile(contents,fname)
 
 
 # boost_regex toolfile
@@ -493,7 +494,7 @@ class Boost(Package):
   <use name="boost"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # boost_signals toolfile
@@ -504,7 +505,7 @@ class Boost(Package):
   <use name="boost"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
         fname='boost_serialization.xml'
@@ -514,7 +515,7 @@ class Boost(Package):
   <use name="boost"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
         fname='boost_test.xml'
@@ -524,7 +525,7 @@ class Boost(Package):
   <use name="boost"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
         fname='boost_iostreams.xml'
@@ -534,7 +535,7 @@ class Boost(Package):
   <use name="boost"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # boost_header toolfile
@@ -549,4 +550,4 @@ class Boost(Package):
   <use name="root_cxxdefaults"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)

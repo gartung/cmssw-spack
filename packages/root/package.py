@@ -124,7 +124,7 @@ class Root(CMakePackage):
         """Handle ROOT's unusual version string."""
         return "https://root.cern.ch/download/root_v%s.source.tar.gz" % version
 
-    def write_scram_toolfile(contents,filename):
+    def write_scram_toolfile(self,contents,filename):
         """Write scram tool config file"""
         with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
             f.write(contents)
@@ -167,7 +167,7 @@ class Root(CMakePackage):
   <use name="root_cxxdefaults"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
         fname='root_cxxdefaults.xml'
         template=Template("""<tool name="root_cxxdefaults" version="$VER">
@@ -179,7 +179,7 @@ class Root(CMakePackage):
   <runtime name="ROOT_INCLUDE_PATH" value="/usr/include" type="path"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 # rootcling toolfile
         fname='rootcling.xml'
@@ -197,7 +197,7 @@ class Root(CMakePackage):
   <use name="xz"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 # rootrint toolfile
         fname='rootrint.xml'
@@ -207,7 +207,7 @@ class Root(CMakePackage):
   <use name="rootcling"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 # rootsmatrix toolfile
         fname='rootsmatrix.xml'
@@ -217,7 +217,7 @@ class Root(CMakePackage):
   <use name="rootcling"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # rootrio toolfile
@@ -228,18 +228,18 @@ class Root(CMakePackage):
   <use name="rootcling"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # rootthread toolfile
-         fname='rootthread.xml'
+        fname='rootthread.xml'
         template=Template("""<tool name="rootthread" version="$VER">
   <info url="http://root.cern.ch/root/"/>
   <lib name="Thread"/>
   <use name="rootrio"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # rootxmlio toolfile
@@ -250,7 +250,7 @@ class Root(CMakePackage):
   <use name="rootrio"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # rootmathcore toolfile
@@ -261,7 +261,7 @@ class Root(CMakePackage):
   <use name="rootcling"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # rootcore toolfile
@@ -274,7 +274,7 @@ class Root(CMakePackage):
   <use name="rootthread"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # roothistmatrix toolfile
@@ -286,7 +286,7 @@ class Root(CMakePackage):
   <use name="rootcore"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # rootspectrum toolfile
@@ -297,7 +297,7 @@ class Root(CMakePackage):
   <use name="roothistmatrix"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # rootphysics toolfile
@@ -308,7 +308,7 @@ class Root(CMakePackage):
   <use name="roothistmatrix"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # root toolfile, alias for rootphysics. Using rootphysics is preferred.
@@ -321,7 +321,7 @@ class Root(CMakePackage):
   </ifversion>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # rootgpad toolfile
@@ -333,7 +333,7 @@ class Root(CMakePackage):
   <use name="roothistmatrix"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # rootgraphics toolfile, identical to old "root" toolfile
@@ -346,7 +346,7 @@ class Root(CMakePackage):
   <use name="rootgpad"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # rooteg toolfile, identical to old "root" toolfile
@@ -357,7 +357,7 @@ class Root(CMakePackage):
   <use name="rootgraphics"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # rootpy toolfile, identical to old "root" toolfile
@@ -368,7 +368,7 @@ class Root(CMakePackage):
   <use name="rootgraphics"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # rootinteractive toolfile 
@@ -382,7 +382,7 @@ class Root(CMakePackage):
   <use name="rootrint"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # rootmath toolfile
@@ -395,7 +395,7 @@ class Root(CMakePackage):
   <use name="gsl"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # rootminuit toolfile
@@ -406,7 +406,7 @@ class Root(CMakePackage):
   <use name="rootgpad"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # rootminuit2 toolfile
@@ -417,7 +417,7 @@ class Root(CMakePackage):
   <use name="rootgpad"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # rootrflx toolfile
@@ -444,7 +444,7 @@ class Root(CMakePackage):
   <use name="rootgpad"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # rootmlp toolfile
@@ -455,7 +455,7 @@ class Root(CMakePackage):
   <use name="rootgraphics"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # roottmva toolfile
@@ -467,7 +467,7 @@ class Root(CMakePackage):
   <use name="rootminuit"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # rootxml toolfile
@@ -479,7 +479,7 @@ class Root(CMakePackage):
   <use name="libxml2"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # rootfoam toolfile
@@ -490,7 +490,7 @@ class Root(CMakePackage):
   <use name="roothistmatrix"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # rootgeom toolfile
@@ -502,7 +502,7 @@ class Root(CMakePackage):
   <use name="rootmathcore"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # rootgeompainter toolfile
@@ -514,7 +514,7 @@ class Root(CMakePackage):
   <use name="rootgraphics"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # rootrgl toolfile
@@ -526,7 +526,7 @@ class Root(CMakePackage):
   <use name="rootgraphics"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # rooteve toolfile
@@ -538,7 +538,7 @@ class Root(CMakePackage):
   <use name="rootrgl"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # rootguihtml toolfile
@@ -549,7 +549,7 @@ class Root(CMakePackage):
   <use name="rootinteractive"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # roofitcore toolfile
@@ -572,7 +572,7 @@ class Root(CMakePackage):
   <use name="root_cxxdefaults"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # roofit toolfile
@@ -586,7 +586,7 @@ class Root(CMakePackage):
   <use name="roothistmatrix"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # roostats toolfile
@@ -601,7 +601,7 @@ class Root(CMakePackage):
   <use name="rootgpad"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
 # histfactory toolfile
@@ -619,4 +619,4 @@ class Root(CMakePackage):
   <use name="rootfoam"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)

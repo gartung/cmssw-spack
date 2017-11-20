@@ -43,7 +43,7 @@ class Bzip2(Package):
     # override default implementation
     @property
     def libs(self):
-        shared = '+shared' in self.spec
+				shared = '+shared' in self.spec
         return find_libraries(
             'libbz2', root=self.prefix, shared=shared, recurse=True
         )
@@ -117,23 +117,35 @@ class Bzip2(Package):
             symlink('bzip2', 'bunzip2')
             symlink('bzip2', 'bzcat')
 
-    @run_after('install')
-    def write_scram_toolfile(self):
-        contents="""<tool name="bz2lib" version="%s">
-  <lib name="bz2"/>
-  <client>
-    <environment name="BZ2LIB_BASE" default="%s"/>
-    <environment name="LIBDIR" default="$$BZ2LIB_BASE/lib"/>
-    <environment name="BINDIR" default="$$BZ2LIB_BASE/bin"/>
-    <environment name="INCLUDE" default="$$BZ2LIB_BASE/include"/>
-  </client>
-  <runtime name="PATH" value="$$BINDIR" type="path"/>
-  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
-  <use name="root_cxxdefaults"/>
-</tool>"""  % (self.spec['bzip2'].version, self.spec['bzip2'].prefix)
-
-        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
-        with open(self.spec.prefix.etc+'/scram.d/bz2lib.xml','w') as f:
+    def write_scram_toolfile(self,contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
             f.write(contents)
             f.close()
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+
+        fname='bz2lib.xml'
+        template=Template("""<tool name="bz2lib" version="$VER">
+  <lib name="bz2"/>
+  <client>
+    <environment name="BZ2LIB_BASE" default="$PFX"/>
+    <environment name="LIBDIR" default="$$BZ2LIB_BASE/lib"/>
+    <environment name="INCLUDE" default="$$BZ2LIB_BASE/include"/>
+  </client>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+</tool>""")
+
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents,fname)
 

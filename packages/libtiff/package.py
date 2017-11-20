@@ -39,7 +39,7 @@ class Libtiff(AutotoolsPackage):
     depends_on('zlib')
     depends_on('xz')
 
-    def write_scram_toolfile(contents,filename):
+    def write_scram_toolfile(self,contents,filename):
         """Write scram tool config file"""
         with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
             f.write(contents)
@@ -73,5 +73,5 @@ class Libtiff(AutotoolsPackage):
 </tool>""")
 
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 

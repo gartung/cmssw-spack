@@ -65,22 +65,35 @@ class Sqlite(AutotoolsPackage):
 
         return args
 
-    @run_after('install')
-    def write_scram_toolfile(self):
-        contents="""<tool name="sqlite" version="%s">
-  <lib name="sqlite3"/>
-  <client>
-    <environment name="SQLITE_BASE" default="%s"/>
-    <environment name="LIBDIR" default="$SQLITE_BASE/lib"/>
-    <environment name="BINDIR" default="$SQLITE_BASE/bin"/>
-    <environment name="INCLUDE" default="$SQLITE_BASE/include"/>
-  </client>
-  <runtime name="PATH" value="$BINDIR" type="path"/>
-  <runtime name="ROOT_INCLUDE_PATH" value="$INCLUDE" type="path"/>
-  <use name="root_cxxdefaults"/>
-</tool>"""  % (self.spec['sqlite'].version, self.spec['sqlite'].prefix)
-
-        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
-        with open(self.spec.prefix.etc+'/scram.d/sqlite.xml','w') as f:
+    def write_scram_toolfile(self,contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
             f.write(contents)
             f.close()
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+
+        fname='sqlite.xml'
+        template=Template("""<tool name="sqlite" version="$VER">
+  <lib name="sqlite3"/>
+  <client>
+    <environment name="SQLITE_BASE" default="$PFX"/>
+    <environment name="LIBDIR" default="$$SQLITE_BASE/lib"/>
+    <environment name="BINDIR" default="$$SQLITE_BASE/bin"/>
+    <environment name="INCLUDE" default="$$SQLITE_BASE/include"/>
+  </client>
+  <runtime name="PATH" value="$$BINDIR" type="path"/>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+</tool>""")
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents,fname)

@@ -657,8 +657,15 @@ class Python(AutotoolsPackage):
                 exts,
                 prefix=extensions_layout.extendee_target_directory(self))
 
+    def write_scram_toolfile(self, contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
+
     @run_after('install')
-    def write_scram_toolfile(self):
+    def write_scram_toolfiles(self):
         from string import Template
         pyvers=str(self.spec['python'].version).split('.')
         pyver=pyvers[0]+'.'+pyvers[1]
@@ -666,6 +673,7 @@ class Python(AutotoolsPackage):
         values['VER']=self.spec.version
         values['PFX']=self.spec.prefix
         values['PYVER']=pyver
+        fname='python.xml'
         template=Template("""<tool name="python" version="$VER">
   <lib name="python${PYVER}"/>
   <client>
@@ -678,10 +686,6 @@ class Python(AutotoolsPackage):
   <runtime name="ROOT_INCLUDE_PATH" value="$PFX/include/python${PYVER}" type="path"/>
   <use name="root_cxxdefaults"/>
   <use name="sockets"/>
-</tool>"""
+</tool>""")
         contents=template.substitute(values)
-        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
-        with open(self.spec.prefix.etc+'/scram.d/python.xml','w') as f:
-            f.write(contents)
-            f.close()
-
+        self.write_scram_toolfile(contents,fname)

@@ -40,7 +40,7 @@ class Xrootd(CMakePackage):
 
     depends_on('cmake@2.6:', type='build')
 
-    def write_scram_toolfile(contents,filename):
+    def write_scram_toolfile(self,contents,filename):
         """Write scram tool config file"""
         with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
             f.write(contents)
@@ -79,5 +79,5 @@ class Xrootd(CMakePackage):
 </tool>""")
 
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 

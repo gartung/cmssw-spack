@@ -107,8 +107,15 @@ class Tbb(Package):
             for f in fs:
                 install(f, prefix.lib)
 
+
+    def write_scram_toolfile(self,contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
     @run_after('install')
-    def write_scram_toolfile(self):
+    def write_scram_toolfiles(self):
         from string import Template
         gcc=which(spack_f77)
         gcc_prefix=re.sub('/bin/.*$','',self.compiler.f77)
@@ -122,6 +129,7 @@ class Tbb(Package):
         values['GCC_GLIBCXX_VER']=gcc_ver.rstrip().sub('.','0')
         values['GCC_PREFIX']=gcc_prefix
         values['GCC_MACHINE']=gcc_machine.rstrip()
+        fname='tbb.xml'
         template=Template("""
 <tool name="tbb" version="$VER">
   <info url="http://threadingbuildingblocks.org"/>
@@ -135,10 +143,6 @@ class Tbb(Package):
   <use name="root_cxxdefaults"/>
   <flags CPPDEFINES="TBB_USE_GLIBCXX_VERSION=$GCC_GLIBCXX_VER"/>
 </tool>
-"""
+""")
         contents=template.substitute(values)
-        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
-        with open(self.spec.prefix.etc+'/scram.d/tbb.xml','w') as f:
-            f.write(contents)
-            f.close()
-
+        self.write_scram_toolfile(contents,fname)

@@ -69,7 +69,7 @@ class FrontierClient(MakefilePackage):
         """Handle version string."""
         return "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/frontier_client/%s/frontier_client__%s__src.tar.gz" % (version,version)
 
-    def write_scram_toolfile(contents,filename):
+    def write_scram_toolfile(self,contents,filename):
         """Write scram tool config file"""
         with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
             f.write(contents)
@@ -105,5 +105,5 @@ class FrontierClient(MakefilePackage):
   <use name="python"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 

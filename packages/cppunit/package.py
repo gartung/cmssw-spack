@@ -33,24 +33,35 @@ class Cppunit(AutotoolsPackage):
 
     version('1.13.2', '0eaf8bb1dcf4d16b12bec30d0732370390d35e6f')
 
-    @run_after('install')
-    def write_scram_toolfile(self):
-        contents="""<tool name="cppunit" version="%s">
-  <lib name="cppunit"/>
-  <client>
-    <environment name="CPPUNIT_BASE" default="%s"/>
-    <environment name="LIBDIR" default="$CPPUNIT_BASE/lib"/>
-    <environment name="BINDIR" default="$CPPUNIT_BASE/bin"/>
-    <environment name="INCLUDE" default="$CPPUNIT_BASE/include"/>
-  </client>
-  <runtime name="PATH" value="$BINDIR" type="path"/>
-  <runtime name="ROOT_INCLUDE_PATH" value="$INCLUDE" type="path"/>
-  <use name="root_cxxdefaults"/>
-  <use name="sockets"/>
-</tool>"""  % (self.spec['cppunit'].version, self.spec['cppunit'].prefix)
-
-        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
-        with open(self.spec.prefix.etc+'/scram.d/cppunit.xml','w') as f:
+    def write_scram_toolfile(self,contents,filename):
+        """Write scram tool config file"""
+					 with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
             f.write(contents)
             f.close()
 
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+
+        fname='cppunit.xml'
+
+        template=Template("""<tool name="cppunit" version="$VER">
+  <lib name="cppunit"/>
+  <client>
+    <environment name="CPPUNIT_BASE" default="$PFX"/>
+    <environment name="LIBDIR" default="$$CPPUNIT_BASE/lib"/>
+    <environment name="INCLUDE" default="$$CPPUNIT_BASE/include"/>
+  </client>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+  <use name="sockets"/>
+</tool>""")
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)

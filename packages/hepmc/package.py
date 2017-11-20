@@ -57,6 +57,12 @@ class Hepmc(Package):
     def setup_dependent_environment(self, spack_env, run_env, dspec):
         spack_env.prepend_path('LD_LIBRARY_PATH', self.prefix.lib)
 
+    def write_scram_toolfile(self,contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
     @run_after('install')
     def write_scram_toolfiles(self):
         """Create contents of scram tool config files for this package."""
@@ -80,10 +86,10 @@ class Hepmc(Package):
   <runtime name="CMSSW_FWLITE_INCLUDE_PATH" value="$$HEPMC_BASE/include" type="path"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 
 
-		  fname='hepmc_headers.xml'
+        fname='hepmc_headers.xml'
         template=Template("""<tool name="hepmc_headers" version="$VER">
   <client>
     <environment name="HEPMC_HEADERS_BASE" default="$PFX"/>
@@ -93,5 +99,5 @@ class Hepmc(Package):
   <use name="root_cxxdefaults"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)
 

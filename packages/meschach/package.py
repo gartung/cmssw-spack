@@ -45,7 +45,7 @@ class Meschach(Package):
             cp(f,prefix.include)
         cp('meschach.a',prefix.lib+'/libmeschach.a')
 
-    def write_scram_toolfile(contents,filename):
+    def write_scram_toolfile(self,contents,filename):
         """Write scram tool config file"""
         with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
             f.write(contents)
@@ -77,4 +77,4 @@ class Meschach(Package):
 </tool>""")
 
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)

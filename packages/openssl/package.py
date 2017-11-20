@@ -109,7 +109,7 @@ class Openssl(Package):
         #     make('test')            # 'VERBOSE=1'
         make('install')
 
-    def write_scram_toolfile(contents,filename):
+    def write_scram_toolfile(self,contents,filename):
         """Write scram tool config file"""
         with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
             f.write(contents)
@@ -128,7 +128,7 @@ class Openssl(Package):
         values['PFX']=self.spec.prefix
 
         fname='openssl.xml'
-          template=Template("""<tool name="openssl" version="$VER">
+        template=Template("""<tool name="openssl" version="$VER">
     <lib name="ssl"/>
     <lib name="crypto"/>
     <client>
@@ -141,4 +141,4 @@ class Openssl(Package):
   </tool>""")
 
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self,write_scram_toolfile(contents,fname)

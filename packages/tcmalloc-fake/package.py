@@ -48,4 +48,44 @@ namespace gptmp {
        mkdirp('%s' % prefix.lib)
        install('libgptmp.so','%s/libtcmalloc.so' % prefix.lib)
        install('libgptmp.so','%s/libtcmalloc_minimal.so' % prefix.lib)
+
+
+    def write_scram_toolfile(self,contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+
+        fname='tcmalloc_minimal.xml'
+        template=Template("""<tool name="tcmalloc_minimal" version="$VER">
+  <lib name="tcmalloc_minimal"/>
+  <client>
+    <environment name="TCMALLOC_MINIMAL_BASE" default="$PFX"/>
+    <environment name="LIBDIR"                default="$$TCMALLOC_MINIMAL_BASE/lib"/>
+  </client>
+</tool>""")
+
+        fname='tcmalloc.xml'
+        template=Template("""<tool name="tcmalloc" version="$VER">
+  <lib name="tcmalloc"/>
+  <client>
+    <environment name="TCMALLOC_BASE" default="$PFX"/>
+    <environment name="LIBDIR"        default="$$TCMALLOC_BASE/lib"/>
+  </client>
+</tool>""")
+
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents,fname)
        

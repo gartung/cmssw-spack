@@ -64,7 +64,7 @@ class Classlib(AutotoolsPackage):
     depends_on('zlib')
 
     def configure_args(self):
-        args = ['--with-zlib-includes=%s' % self.spec['zlib'].prefix.include,
+				args = ['--with-zlib-includes=%s' % self.spec['zlib'].prefix.include,
                 '--with-zlib-libraries=%s' % self.spec['zlib'].prefix.lib,
                 '--with-bz2lib-includes=%s' % self.spec['bzip2'].prefix.include,
                 '--with-bz2lib-libraries=%s' % self.spec['bzip2'].prefix.lib,
@@ -87,12 +87,30 @@ class Classlib(AutotoolsPackage):
     def build(self,spec,prefix):
         make('CXXFLAGS=-Wno-error -ansi -pedantic -W -Wall -Wno-long-long ')
 
+    def write_scram_toolfile(self,contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
+
     @run_after('install')
-    def write_scram_toolfile(self):
-        contents="""<tool name="classlib" version="%s">
+    def write_scram_toolfiles(self):
+
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+
+        fname='classlib.xml'
+
+        template=Template("""<tool name="classlib" version="$VER">
     <info url="http://cmsmac01.cern.ch/~lat/exports/"/>
     <client>
-      <environment name="CLASSLIB_BASE" default="%s"/>
+      <environment name="CLASSLIB_BASE" default="$PFX"/>
       <environment name="LIBDIR" default="$$CLASSLIB_BASE/lib"/>
       <environment name="INCLUDE" default="$$CLASSLIB_BASE/include"/>
       <flags CPPDEFINES="__STDC_LIMIT_MACROS"/>
@@ -105,10 +123,8 @@ class Classlib(AutotoolsPackage):
     </client>
     <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
     <use name="root_cxxdefaults"/>
-  </tool>"""  % (self.spec['classlib'].version, self.spec['classlib'].prefix)
+  </tool>""") 
 
-        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
-        with open(self.spec.prefix.etc+'/scram.d/classlib.xml','w') as f:
-            f.write(contents)
-            f.close()
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents,fname)
 

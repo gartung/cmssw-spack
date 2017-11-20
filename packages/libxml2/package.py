@@ -38,9 +38,6 @@ class Libxml2(AutotoolsPackage):
 
     variant('python', default=True, description='Enable Python support')
 
-    extends('python', when='+python',
-            ignore=r'(bin.*$)|(include.*$)|(share.*$)|(lib/libxml2.*$)|'
-            '(lib/xml2.*$)|(lib/cmake.*$)')
     depends_on('zlib')
     depends_on('xz')
 
@@ -61,7 +58,7 @@ class Libxml2(AutotoolsPackage):
 
         return args
 
-    def write_scram_toolfile(contents,filename):
+    def write_scram_toolfile(self,contents,filename):
         """Write scram tool config file"""
         with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
             f.write(contents)
@@ -80,7 +77,7 @@ class Libxml2(AutotoolsPackage):
         values['PFX']=self.spec.prefix
 
         fname='libxml2.xml'
-        template=Template("""<tool name="libxml2" version="$VER">
+        template="""<tool name="libxml2" version="$VER">
   <info url="http://xmlsoft.org/"/>
   <lib name="xml2"/>
   <client>
@@ -91,7 +88,7 @@ class Libxml2(AutotoolsPackage):
   <runtime name="PATH" value="$$LIBXML2_BASE/bin" type="path"/>
   <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
   <use name="root_cxxdefaults"/>
-</tool>""")
-
-        contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+</tool>
+"""
+        contents = Template(template).substitute(values)
+        self.write_scram_toolfile(contents,fname)

@@ -73,3 +73,38 @@ class Zlib(Package):
         if self.run_tests:
             make('check')
         make('install')
+
+
+    def write_scram_toolfile(self,contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+
+        fname='zlib.xml'
+        template=Template("""<tool name="zlib" version="$VER">
+  <lib name="z"/>
+  <client>
+    <environment name="ZLIB_BASE" default="$PFX"/>
+    <environment name="INCLUDE" default="$$ZLIB_BASE/include"/>
+    <environment name="LIBDIR" default="$$ZLIB_BASE/lib"/>
+  </client>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+</tool>""")
+
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents,fname)
+

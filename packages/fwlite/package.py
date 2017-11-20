@@ -69,13 +69,6 @@ class Fwlite(Package):
              placement='config'
     )
     
-    resource(name='toolbox',
-             git='https://github.com/gartung/scram-tool-templ.git',
-             branch='linux',
-             destination='.',
-             placement='tools'
-    )
-
 
     depends_on('scram')
     depends_on('gmake')
@@ -127,74 +120,12 @@ class Fwlite(Package):
         gcc_machine=gcc('-dumpmachine',output=str)
         gcc_ver=gcc('-dumpversion',output=str)
 
-        values = {}
-        values['GCC_VER']=gcc_ver.rstrip()
-        values['GCC_PREFIX']=gcc_prefix
-        values['GCC_MACHINE']=gcc_machine.rstrip()
-        values['ROOT_VER']=str(spec['root'].version)
-        values['ROOT_PREFIX']=str(spec['root'].prefix)
-        values['XROOTD_VER']=str(spec['xrootd'].version)
-        values['XROOTD_PREFIX']=str(spec['xrootd'].prefix)
-        values['BOOST_VER']=str(spec['boost'].version)
-        values['BOOST_PREFIX']=str(spec['boost'].prefix)
-        values['TBB_VER']=str(spec['tbb'].version)
-        values['TBB_PREFIX']=str(spec['tbb'].prefix)
-        values['PYTHON_VER']=str(spec['python'].version)
-        values['PYTHON_PREFIX']=str(spec['python'].prefix)
-        values['XERCESC_VER']=str(spec['xerces-c'].version)
-        values['XERCESC_PREFIX']=str(spec['xerces-c'].prefix)
-        values['MD5_VER']=str(spec['md5'].version)
-        values['MD5_PREFIX']=str(spec['md5'].prefix)
-        values['TINYXML_VER']=str(spec['tinyxml'].version)
-        values['TINYXML_PREFIX']=str(spec['tinyxml'].prefix)
-        values['VDT_VER']=str(spec['vdt'].version)
-        values['VDT_PREFIX']=str(spec['vdt'].prefix)
-        values['XZ_VER']=str(spec['xz'].version)
-        values['XZ_PREFIX']=str(spec['xz'].prefix)
-        values['ZLIB_VER']=str(spec['zlib'].version)
-        values['ZLIB_PREFIX']=str(spec['zlib'].prefix)
-        values['SIGCPP_VER']=str(spec['libsigcpp'].version)
-        values['SIGCPP_PREFIX']=str(spec['libsigcpp'].prefix)
-        values['PCRE_VER']=str(spec['pcre'].version)
-        values['PCRE_PREFIX']=str(spec['pcre'].prefix)
-        values['OPENSSL_VER']=str(spec['openssl'].version)
-        values['OPENSSL_PREFIX']=str(spec['openssl'].prefix)
-        values['LIBXML2_VER']=str(spec['libxml2'].version)
-        values['LIBXML2_PREFIX']=str(spec['libxml2'].prefix)
-        values['CFE_VER']=str(spec['llvm'].version)
-        values['CFE_PREFIX']=str(spec['llvm'].prefix)
-        values['LIBUNGIF_VER']=str(spec['giflib'].version)
-        values['LIBUNGIF_PREFIX']=str(spec['giflib'].prefix)
-        values['LIBTIFF_VER']=str(spec['libtiff'].version)
-        values['LIBTIFF_PREFIX']=str(spec['libtiff'].prefix)
-        values['LIBPNG_VER']=str(spec['libpng'].version)
-        values['LIBPNG_PREFIX']=str(spec['libpng'].prefix)
-        values['LIBJPEG_VER']=str(spec['jpeg'].version)
-        values['LIBJPEG_PREFIX']=str(spec['jpeg'].prefix)
-        values['LIBUUID_VER']=str(spec['libuuid'].version)
-        values['LIBUUID_PREFIX']=str(spec['libuuid'].prefix)
-        values['HEPMC_VER']=str(spec['hepmc'].version)
-        values['HEPMC_PREFIX']=str(spec['hepmc'].prefix)
-        values['GSL_VER']=str(spec['gsl'].version)
-        values['GSL_PREFIX']=str(spec['gsl'].prefix)
-        values['CLHEP_VER']=str(spec['clhep'].version)
-        values['CLHEP_PREFIX']=str(spec['clhep'].prefix)
-        values['BZ2_VER']=str(spec['bzip2'].version)
-        values['BZ2_PREFIX']=str(spec['bzip2'].prefix)
-        values['GMAKE_VER']=str(spec['gmake'].version)
-        values['GMAKE_PREFIX']=str(spec['gmake'].prefix)
-        values['CPPUNIT_VER']=str(spec['cppunit'].version)
-        values['CPPUNIT_PREFIX']=str(spec['cppunit'].prefix)
-        values['FWLITEDATA_VER']=str(spec['fireworks-data'].version)
-        values['FWLITEDATA_PREFIX']=str(spec['fireworks-data'].prefix)
-        values['SELF_LIB']=prefix+'/'+cmssw_u_version+'/lib/'+str(spec.architecture)
-        values['SELF_INC']=prefix+'/'+cmssw_u_version+'/src'
 
         with working_dir(build_directory, create=True):
             rsync=which('rsync')
             mkdirp('src')
             rsync('-a', '--exclude', '.git', '--exclude', 'config',
-                  '--exclude', 'tools', '--exclude', 'spack-build.*',
+                  '--exclude', 'spack-build.*',
                   source_directory+'/','src/')
             mkdirp('config')
             rsync('-a', '--exclude', '.git', 
@@ -203,16 +134,10 @@ class Fwlite(Package):
                 f.write(self.config_tag)
                 f.close()
             mkdirp('tools')
-            rsync('-a', '--exclude', '.git', source_directory+'/tools/','tools/')
-            xmlfiles = glob(join_path('tools','selected','*.xml'))
-            for xmlfile in xmlfiles:
-                fin = open(xmlfile,'r')
-                tmpl = Template( fin.read() )
-                fin.close()
-                res = tmpl.substitute(values)
-                fout = open(xmlfile,'w')
-                fout.write(res)
-                fout.close() 
+            for key in spec.keys:      
+                xmlfiles = glob(join_path(spec[key].prefix.etc,'scram.d','*.xml'))
+                for xmlfile in xmlfiles:
+                    install(xmlfile,'tools')
             perl=which('perl')
             perl('config/updateConfig.pl',
                  '-p', 'CMSSW', 
