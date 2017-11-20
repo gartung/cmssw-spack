@@ -25,33 +25,15 @@
 from spack import *
 
 
-class Gmake(AutotoolsPackage):
-    """GNU Make is a tool which controls the generation of executables and
-    other non-source files of a program from the program's source files."""
+class Pacparser(Package):
+    """FIXME: Put a proper description of your package here."""
 
-    homepage = "https://www.gnu.org/software/make/"
-    url      = "https://ftp.gnu.org/gnu/make/make-4.2.1.tar.gz"
+    homepage = "http://www.example.com"
+    url      = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/pacparser/1.3.5/pacparser-1.3.5.tar.gz"
 
-    version('4.2.1', '7d0dcb6c474b258aab4d54098f2cf5a7')
-    version('4.0',   'b5e558f981326d9ca1bfdb841640721a')
+    version('1.3.5', '9db90bd4d88dfd8d31fa707466259566')
 
-    variant('guile', default=False, description='Support GNU Guile for embedded scripting')
-
-    depends_on('guile', when='+guile')
-
-    build_directory = 'spack-build'
-
-    def configure_args(self):
-        args = []
-
-        if '+guile' in self.spec:
-            args.append('--with-guile')
-        else:
-            args.append('--without-guile')
-
-        return args
-
-    @run_after('install')
-    def symlink_gmake(self):
-        with working_dir(self.prefix.bin):
-            symlink('make', 'gmake')
+    def install(self, spec, prefix):
+        # FIXME: Unknown build system
+        make('-C','src','PREFIX=%s'%prefix)
+        make('-C','src','install','PREFIX=%s'%prefix)

@@ -25,33 +25,15 @@
 from spack import *
 
 
-class Gmake(AutotoolsPackage):
-    """GNU Make is a tool which controls the generation of executables and
-    other non-source files of a program from the program's source files."""
+class Xz(AutotoolsPackage):
+    """XZ Utils is free general-purpose data compression software with
+       high compression ratio. XZ Utils were written for POSIX-like
+       systems, but also work on some not-so-POSIX systems. XZ Utils are
+       the successor to LZMA Utils."""
+    homepage = "http://tukaani.org/xz/"
+    url      = "http://tukaani.org/xz/xz-5.2.0.tar.bz2"
+    list_url = "http://tukaani.org/xz/old.html"
 
-    homepage = "https://www.gnu.org/software/make/"
-    url      = "https://ftp.gnu.org/gnu/make/make-4.2.1.tar.gz"
-
-    version('4.2.1', '7d0dcb6c474b258aab4d54098f2cf5a7')
-    version('4.0',   'b5e558f981326d9ca1bfdb841640721a')
-
-    variant('guile', default=False, description='Support GNU Guile for embedded scripting')
-
-    depends_on('guile', when='+guile')
-
-    build_directory = 'spack-build'
-
-    def configure_args(self):
-        args = []
-
-        if '+guile' in self.spec:
-            args.append('--with-guile')
-        else:
-            args.append('--without-guile')
-
-        return args
-
-    @run_after('install')
-    def symlink_gmake(self):
-        with working_dir(self.prefix.bin):
-            symlink('make', 'gmake')
+    version('5.2.3', '1592e7ca3eece099b03b35f4d9179e7c')
+    version('5.2.2', 'f90c9a0c8b259aee2234c4e0d7fd70af')
+    version('5.2.0', '867cc8611760240ebf3440bd6e170bb9')

@@ -25,33 +25,10 @@
 from spack import *
 
 
-class Gmake(AutotoolsPackage):
-    """GNU Make is a tool which controls the generation of executables and
-    other non-source files of a program from the program's source files."""
+class Cppunit(AutotoolsPackage):
+    """Obsolete Unit testing framework for C++"""
 
-    homepage = "https://www.gnu.org/software/make/"
-    url      = "https://ftp.gnu.org/gnu/make/make-4.2.1.tar.gz"
+    homepage = "https://wiki.freedesktop.org/www/Software/cppunit/"
+    url = "http://dev-www.libreoffice.org/src/cppunit-1.13.2.tar.gz"
 
-    version('4.2.1', '7d0dcb6c474b258aab4d54098f2cf5a7')
-    version('4.0',   'b5e558f981326d9ca1bfdb841640721a')
-
-    variant('guile', default=False, description='Support GNU Guile for embedded scripting')
-
-    depends_on('guile', when='+guile')
-
-    build_directory = 'spack-build'
-
-    def configure_args(self):
-        args = []
-
-        if '+guile' in self.spec:
-            args.append('--with-guile')
-        else:
-            args.append('--without-guile')
-
-        return args
-
-    @run_after('install')
-    def symlink_gmake(self):
-        with working_dir(self.prefix.bin):
-            symlink('make', 'gmake')
+    version('1.13.2', '0eaf8bb1dcf4d16b12bec30d0732370390d35e6f')

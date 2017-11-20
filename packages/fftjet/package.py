@@ -25,33 +25,20 @@
 from spack import *
 
 
-class Gmake(AutotoolsPackage):
-    """GNU Make is a tool which controls the generation of executables and
-    other non-source files of a program from the program's source files."""
+class Fftjet(AutotoolsPackage):
+    """FIXME: Put a proper description of your package here."""
 
-    homepage = "https://www.gnu.org/software/make/"
-    url      = "https://ftp.gnu.org/gnu/make/make-4.2.1.tar.gz"
+    homepage = "http://www.example.com"
+    url      = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/fftjet/1.5.0/fftjet-1.5.0.tar.gz"
 
-    version('4.2.1', '7d0dcb6c474b258aab4d54098f2cf5a7')
-    version('4.0',   'b5e558f981326d9ca1bfdb841640721a')
+    version('1.5.0', '9f91b6974c00ba546833c38d5b3aa563')
 
-    variant('guile', default=False, description='Support GNU Guile for embedded scripting')
-
-    depends_on('guile', when='+guile')
-
-    build_directory = 'spack-build'
+    depends_on('fftw')
 
     def configure_args(self):
-        args = []
-
-        if '+guile' in self.spec:
-            args.append('--with-guile')
-        else:
-            args.append('--without-guile')
-
+        args = ['--disable-dependency-tracking',
+                '--enable-threads',
+                'CFLAGS=-fpic',
+                'DEPS_CFLAGS=-I%s' % self.spec['fftw'].prefix.include,
+                'DEPS_LIBS="-L%s -lfftw3"' % self.spec['fftw'].prefix.lib]
         return args
-
-    @run_after('install')
-    def symlink_gmake(self):
-        with working_dir(self.prefix.bin):
-            symlink('make', 'gmake')

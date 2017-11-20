@@ -1,7 +1,7 @@
-diff --git a/include/clang/Basic/Attr.td b/include/clang/Basic/Attr.td
+diff --git a/tools/clang/include/clang/Basic/Attr.td b/tools/clang/include/clang/Basic/Attr.td
 index fa60d51..8700028 100644
---- a/include/clang/Basic/Attr.td
-+++ b/include/clang/Basic/Attr.td
+--- a/tools/clang/include/clang/Basic/Attr.td
++++ b/tools/clang/include/clang/Basic/Attr.td
 @@ -375,6 +375,17 @@ def AbiTag : Attr {
    let Documentation = [AbiTagsDocs];
  }
@@ -20,10 +20,10 @@ index fa60d51..8700028 100644
  def AddressSpace : TypeAttr {
    let Spellings = [GNU<"address_space">];
    let Args = [IntArgument<"AddressSpace">];
-diff --git a/lib/Driver/ToolChains.cpp b/lib/Driver/ToolChains.cpp
+diff --git a/tools/clang/lib/Driver/ToolChains.cpp b/tools/clang/lib/Driver/ToolChains.cpp
 index 9bc9ae4..34bbf0b 100644
---- a/lib/Driver/ToolChains.cpp
-+++ b/lib/Driver/ToolChains.cpp
+--- a/tools/clang/lib/Driver/ToolChains.cpp
++++ b/tools/clang/lib/Driver/ToolChains.cpp
 @@ -1389,6 +1389,8 @@ bool Generic_GCC::GCCVersion::isOlderThan(int RHSMajor, int RHSMinor,
  }
  
@@ -42,10 +42,10 @@ index 9bc9ae4..34bbf0b 100644
    static const char *const X32LibDirs[] = {"/libx32"};
    static const char *const X86LibDirs[] = {"/lib32", "/lib"};
    static const char *const X86Triples[] = {
-diff --git a/lib/Sema/SemaDeclAttr.cpp b/lib/Sema/SemaDeclAttr.cpp
+diff --git a/tools/clang/lib/Sema/SemaDeclAttr.cpp b/tools/clang/lib/Sema/SemaDeclAttr.cpp
 index c6a5bc7..a637ecd 100644
---- a/lib/Sema/SemaDeclAttr.cpp
-+++ b/lib/Sema/SemaDeclAttr.cpp
+--- a/tools/clang/lib/Sema/SemaDeclAttr.cpp
++++ b/tools/clang/lib/Sema/SemaDeclAttr.cpp
 @@ -5628,6 +5628,37 @@ static void handleOpenCLAccessAttr(Sema &S, Decl *D,
        Attr.getRange(), S.Context, Attr.getAttributeSpellingListIndex()));
  }
@@ -97,58 +97,3 @@ index c6a5bc7..a637ecd 100644
    }
  }
  
-diff --git a/tools/scan-build/bin/scan-build b/tools/scan-build/bin/scan-build
-index cbf3bf3..cacba7b 100755
---- a/tools/scan-build/bin/scan-build
-+++ b/tools/scan-build/bin/scan-build
-@@ -293,6 +293,7 @@ sub ComputeDigest {
- my $Prefix;
- 
- sub UpdatePrefix {
-+  return $CurrentDir;
-   my $x = shift;
-   my $y = basename($x);
-   $x =~ s/\Q$y\E$//;
-@@ -306,7 +307,7 @@ sub UpdatePrefix {
- }
- 
- sub GetPrefix {
--  return $Prefix;
-+  return $CurrentDir;
- }
- 
- ##----------------------------------------------------------------------------##
-diff --git a/tools/scan-build/libexec/ccc-analyzer b/tools/scan-build/libexec/ccc-analyzer
-index bfda1d3..ca493b0 100755
---- a/tools/scan-build/libexec/ccc-analyzer
-+++ b/tools/scan-build/libexec/ccc-analyzer
-@@ -456,11 +456,9 @@ my $Output;
- my %Uniqued;
- 
- # Forward arguments to gcc.
--my $Status = system($Compiler,@ARGV);
- if (defined $ENV{'CCC_ANALYZER_LOG'}) {
-   print STDERR "$Compiler @ARGV\n";
- }
--if ($Status) { exit($Status >> 8); }
- 
- # Get the analysis options.
- my $Analyses = $ENV{'CCC_ANALYZER_ANALYSIS'};
-diff --git a/tools/scan-view/share/Reporter.py b/tools/scan-view/share/Reporter.py
-index 294e05b..fdf2dfd 100644
---- a/tools/scan-view/share/Reporter.py
-+++ b/tools/scan-view/share/Reporter.py
-@@ -1,3 +1,4 @@
-+#!/usr/bin/env python
- """Methods for reporting bugs."""
- 
- import subprocess, sys, os
-diff --git a/tools/scan-view/share/startfile.py b/tools/scan-view/share/startfile.py
-index e8fbe2d..94d5f14 100644
---- a/tools/scan-view/share/startfile.py
-+++ b/tools/scan-view/share/startfile.py
-@@ -1,3 +1,4 @@
-+#!/usr/bin/env python
- """Utility for opening a file using the default application in a cross-platform
- manner. Modified from http://code.activestate.com/recipes/511443/.
- """

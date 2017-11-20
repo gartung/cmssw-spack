@@ -25,33 +25,38 @@
 from spack import *
 
 
-class Gmake(AutotoolsPackage):
-    """GNU Make is a tool which controls the generation of executables and
-    other non-source files of a program from the program's source files."""
+class Libxml2(AutotoolsPackage):
+    """Libxml2 is the XML C parser and toolkit developed for the Gnome
+       project (but usable outside of the Gnome platform), it is free
+       software available under the MIT License."""
+    homepage = "http://xmlsoft.org"
+    url      = "http://xmlsoft.org/sources/libxml2-2.9.2.tar.gz"
 
-    homepage = "https://www.gnu.org/software/make/"
-    url      = "https://ftp.gnu.org/gnu/make/make-4.2.1.tar.gz"
+    version('2.9.4', 'ae249165c173b1ff386ee8ad676815f5')
+    version('2.9.2', '9e6a9aca9d155737868b3dc5fd82f788')
+    version('2.7.8', '8127a65e8c3b08856093099b52599c86')
 
-    version('4.2.1', '7d0dcb6c474b258aab4d54098f2cf5a7')
-    version('4.0',   'b5e558f981326d9ca1bfdb841640721a')
+    variant('python', default=False, description='Enable Python support')
 
-    variant('guile', default=False, description='Support GNU Guile for embedded scripting')
+    extends('python', when='+python',
+            ignore=r'(bin.*$)|(include.*$)|(share.*$)|(lib/libxml2.*$)|'
+            '(lib/xml2.*$)|(lib/cmake.*$)')
+    depends_on('zlib')
+    depends_on('xz')
 
-    depends_on('guile', when='+guile')
-
-    build_directory = 'spack-build'
+    depends_on('pkg-config@0.9.0:', type='build')
 
     def configure_args(self):
-        args = []
+        spec = self.spec
 
-        if '+guile' in self.spec:
-            args.append('--with-guile')
+        args = ["--with-lzma=%s" % spec['xz'].prefix]
+
+        if '+python' in spec:
+            args.extend([
+                '--with-python={0}'.format(spec['python'].home),
+                '--with-python-install-dir={0}'.format(site_packages_dir)
+            ])
         else:
-            args.append('--without-guile')
+            args.append('--without-python')
 
         return args
-
-    @run_after('install')
-    def symlink_gmake(self):
-        with working_dir(self.prefix.bin):
-            symlink('make', 'gmake')

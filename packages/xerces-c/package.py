@@ -25,33 +25,17 @@
 from spack import *
 
 
-class Gmake(AutotoolsPackage):
-    """GNU Make is a tool which controls the generation of executables and
-    other non-source files of a program from the program's source files."""
+class XercesC(AutotoolsPackage):
+    """Xerces-C++ is a validating XML parser written in a portable subset of
+    C++. Xerces-C++ makes it easy to give your application the ability to read
+    and write XML data. A shared library is provided for parsing, generating,
+    manipulating, and validating XML documents using the DOM, SAX, and SAX2
+    APIs."""
 
-    homepage = "https://www.gnu.org/software/make/"
-    url      = "https://ftp.gnu.org/gnu/make/make-4.2.1.tar.gz"
+    homepage = "https://xerces.apache.org/xerces-c"
+    url      = "https://archive.apache.org/dist/xerces/c/3/sources/xerces-c-3.1.4.tar.bz2"
 
-    version('4.2.1', '7d0dcb6c474b258aab4d54098f2cf5a7')
-    version('4.0',   'b5e558f981326d9ca1bfdb841640721a')
-
-    variant('guile', default=False, description='Support GNU Guile for embedded scripting')
-
-    depends_on('guile', when='+guile')
-
-    build_directory = 'spack-build'
+    version('3.1.4', 'd04ae9d8b2dee2157c6db95fa908abfd')
 
     def configure_args(self):
-        args = []
-
-        if '+guile' in self.spec:
-            args.append('--with-guile')
-        else:
-            args.append('--without-guile')
-
-        return args
-
-    @run_after('install')
-    def symlink_gmake(self):
-        with working_dir(self.prefix.bin):
-            symlink('make', 'gmake')
+        return ['--disable-network']

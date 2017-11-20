@@ -25,33 +25,16 @@
 from spack import *
 
 
-class Gmake(AutotoolsPackage):
-    """GNU Make is a tool which controls the generation of executables and
-    other non-source files of a program from the program's source files."""
+class Libtiff(AutotoolsPackage):
+    """libtiff graphics format library"""
+    homepage = "http://www.simplesystems.org/libtiff/"
+    url      = "http://download.osgeo.org/libtiff/tiff-4.0.8.tar.gz"
 
-    homepage = "https://www.gnu.org/software/make/"
-    url      = "https://ftp.gnu.org/gnu/make/make-4.2.1.tar.gz"
+    version('4.0.8', '2a7d1c1318416ddf36d5f6fa4600069b')
+    version('4.0.7', '77ae928d2c6b7fb46a21c3a29325157b')
+    version('4.0.6', 'd1d2e940dea0b5ad435f21f03d96dd72')
+    version('4.0.3', '051c1068e6a0627f461948c365290410')
 
-    version('4.2.1', '7d0dcb6c474b258aab4d54098f2cf5a7')
-    version('4.0',   'b5e558f981326d9ca1bfdb841640721a')
-
-    variant('guile', default=False, description='Support GNU Guile for embedded scripting')
-
-    depends_on('guile', when='+guile')
-
-    build_directory = 'spack-build'
-
-    def configure_args(self):
-        args = []
-
-        if '+guile' in self.spec:
-            args.append('--with-guile')
-        else:
-            args.append('--without-guile')
-
-        return args
-
-    @run_after('install')
-    def symlink_gmake(self):
-        with working_dir(self.prefix.bin):
-            symlink('make', 'gmake')
+    depends_on('jpeg')
+    depends_on('zlib')
+    depends_on('xz')

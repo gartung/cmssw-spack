@@ -25,33 +25,27 @@
 from spack import *
 
 
-class Gmake(AutotoolsPackage):
-    """GNU Make is a tool which controls the generation of executables and
-    other non-source files of a program from the program's source files."""
+class SqliteToolfile(Package):
 
-    homepage = "https://www.gnu.org/software/make/"
-    url      = "https://ftp.gnu.org/gnu/make/make-4.2.1.tar.gz"
+    url = ''
+    depends_on('sqlite@3.16.02')
+    version('1','')
 
-    version('4.2.1', '7d0dcb6c474b258aab4d54098f2cf5a7')
-    version('4.0',   'b5e558f981326d9ca1bfdb841640721a')
+    def install(self, spec, prefix):
+        contents="""<tool name="sqlite" version="%s">
+  <lib name="sqlite3"/>
+  <client>
+    <environment name="SQLITE_BASE" default="%s"/>
+    <environment name="LIBDIR" default="$SQLITE_BASE/lib"/>
+    <environment name="BINDIR" default="$SQLITE_BASE/bin"/>
+    <environment name="INCLUDE" default="$SQLITE_BASE/include"/>
+  </client>
+  <runtime name="PATH" value="$BINDIR" type="path"/>
+  <runtime name="ROOT_INCLUDE_PATH" value="$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+</tool>"""  % (self.spec['sqlite'].version, self.spec['sqlite'].prefix)
 
-    variant('guile', default=False, description='Support GNU Guile for embedded scripting')
-
-    depends_on('guile', when='+guile')
-
-    build_directory = 'spack-build'
-
-    def configure_args(self):
-        args = []
-
-        if '+guile' in self.spec:
-            args.append('--with-guile')
-        else:
-            args.append('--without-guile')
-
-        return args
-
-    @run_after('install')
-    def symlink_gmake(self):
-        with working_dir(self.prefix.bin):
-            symlink('make', 'gmake')
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+        with open(self.spec.prefix.etc+'/scram.d/sqlite.xml','w') as f:
+            f.write(contents)
+            f.close()

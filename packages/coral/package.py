@@ -52,28 +52,29 @@ def relrelink(top):
                    os.remove(p)
                    os.symlink(rel, p)
 
-class Cmssw(Package):
-    """CMSSW built as a scram project"""
+class Coral(Package):
+    """CORAL built as a scram project"""
 
     homepage = "http://cms-sw.github.io"
-    url      = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc_amd64_gcc630/cms/cmssw/CMSSW_9_2_12/src.tar.gz"
+    url      = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/cms/coral/CORAL_2_3_21/src.tar.gz"
 
-    version('9.2.12','c66e3769785321309f70f85bc315e948')
+    version('2.3.21','cad0b744fd18efc3a4aa045dc266fdb3')
 
     config_tag='V05-05-56'
 
-    resource(name='config',
+    resource(name='scram-config',
              git='https://github.com/gartung/cmssw-config.git',
              branch='macos',
-             placement='config'
+             destination='.',
+             placement='scram-config'
     )
     
     resource(name='toolbox',
              git='https://github.com/gartung/scram-tool-templ.git',
-             commit='97071c1',
-             placement='tools'
+             commit='a92faa1',
+             destination='.',
+             placement='scram-tool-templ'
     )
-
 
     depends_on('scram')
     depends_on('gmake')
@@ -90,7 +91,7 @@ class Cmssw(Package):
     depends_on('cppunit')
     depends_on('xerces-c')
     depends_on('expat')
-    depends_on('sqlite')
+    depends_on('sqlite@3.16.02')
     depends_on('bzip2')
     depends_on('gsl')
     depends_on('hepmc')
@@ -123,19 +124,13 @@ class Cmssw(Package):
     depends_on('pythia6')
     depends_on('pythia8')
     depends_on('oracle')
-    depends_on('sqlite@3.16.02')
-    depends_on('coral')
-
-    if sys.platform == 'darwin':
-        patch('macos.patch')
-    else:
-        patch('linux.patch')
+    depends_on('frontier-client')
 
     def install(self, spec, prefix):
         scram=which('scram')
         build_directory = join_path(self.stage.path, 'spack-build')
         source_directory = self.stage.source_path
-        cmssw_version='CMSSW.'+str(self.version)
+        cmssw_version='CORAL.'+str(self.version)
         cmssw_u_version=cmssw_version.replace('.','_')
         scram_version='V'+str(spec['scram'].version)
         project_dir=join_path(prefix,cmssw_u_version)
@@ -243,21 +238,23 @@ class Cmssw(Package):
         values['PYTHIA8_PREFIX']=str(spec['pythia8'].prefix)
         values['ORACLE_VER']=str(spec['oracle'].version)
         values['ORACLE_PREFIX']=str(spec['oracle'].prefix)
+        values['FRONTIER_CLIENT_VER']=str(spec['frontier-client'].version)
+        values['FRONTIER_CLIENT_PREFIX']=str(spec['frontier-client'].prefix)
 
         with working_dir(build_directory, create=True):
             rsync=which('rsync')
             mkdirp('src')
-            rsync('-a', '--exclude', '.git', '--exclude', 'config',
-                  '--exclude', 'tools', '--exclude', 'spack-build.*',
+            rsync('-a', '--exclude', '.git', '--exclude', 'scram-config',
+                  '--exclude', 'scram-tool-templ', '--exclude', 'spack-build.*',
                   source_directory+'/','src/')
             mkdirp('config')
             rsync('-a', '--exclude', '.git', 
-                  source_directory+'/config/','config/')
+                  source_directory+'/scram-config/','config/')
             with open('config/config_tag','w') as f:
                 f.write(self.config_tag)
                 f.close()
             mkdirp('tools')
-            rsync('-a', '--exclude', '.git', source_directory+'/tools/','tools/')
+            rsync('-a', '--exclude', '.git', source_directory+'/scram-tool-templ/','tools/')
             xmlfiles = glob(join_path('tools','selected','*.xml'))
             for xmlfile in xmlfiles:
                 fin = open(xmlfile,'r')
@@ -269,7 +266,7 @@ class Cmssw(Package):
                 fout.close() 
             perl=which('perl')
             perl('config/updateConfig.pl',
-                 '-p', 'CMSSW', 
+                 '-p', 'CORAL', 
                  '-v', cmssw_u_version,
                  '-s', scram_version,
                  '-t', build_directory,
@@ -289,48 +286,32 @@ class Cmssw(Package):
                     os.remove(m)
 
             scram.add_default_env('LOCALTOP', project_dir)
-            scram.add_default_env('CMSSW_BASE', project_dir)
+            scram.add_default_env('CORAL_BASE', project_dir)
             scram.add_default_env('LD_LIBRARY_PATH', project_dir+'/lib/'+str(self.spec.architecture))
-            scram.add_default_env('LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib)
-            scram.add_default_env('LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib64)
             scram('build', '-v', '-k', '-j8')
             relrelink('external')
             shutil.rmtree('tmp')
-#            install_tree(project_dir,prefix)
-
-
-#        with working_dir(join_path(prefix,cmssw_u_version), create=False):
-#            os.environ[ 'LOCALTOP' ] = os.getcwd()
-#            os.environ[ 'RELEASETOP' ] = os.getcwd()
-#            os.environ[ 'CMSSW_RELEASE_BASE' ] = os.getcwd()
-#            os.environ[ 'CMSSW_BASE' ] = os.getcwd()
-#            scram('build', 'ProjectRename')
            
 
 
     def setup_dependent_environment(self, spack_env, run_env, dspec):
-        cmssw_version='CMSSW.'+str(self.version)
+        cmssw_version='CORAL_'+str(self.version)
         cmssw_u_version=cmssw_version.replace('.','_')
         spack_env.set('LOCALTOP', self.prefix+'/'+cmssw_u_version)
         spack_env.set('RELEASETOP', self.prefix+'/'+cmssw_u_version)
-        spack_env.set('CMSSW_RELEASE_BASE', self.prefix)
-        spack_env.set('CMSSW_BASE', self.prefix)
+        spack_env.set('CORAL_RELEASE_BASE', self.prefix)
+        spack_env.set('CORAL_BASE', self.prefix)
         spack_env.append_path('LD_LIBRARY_PATH', self.prefix+'/'+cmssw_u_version+'/lib/'+str(self.spec.architecture))
-        spack_env.append_path('LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib64)
 
 
     def setup_environment(self, spack_env, run_env):
-        cmssw_version='CMSSW.'+str(self.version)
+        cmssw_version='CORAL.'+str(self.version)
         cmssw_u_version=cmssw_version.replace('.','_')
         spack_env.set('LOCALTOP', self.prefix+'/'+cmssw_u_version)
-#        spack_env.set('RELEASETOP', self.prefix+'/'+cmssw_u_version)
-#        spack_env.set('CMSSW_RELEASE_BASE', self.prefix)
-        spack_env.set('CMSSW_BASE', self.prefix)
+        spack_env.set('CORAL_BASE', self.prefix)
         spack_env.append_path('LD_LIBRARY_PATH', self.prefix+'/'+cmssw_u_version+'/lib/'+str(self.spec.architecture))
-        spack_env.append_path('LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib)
-        spack_env.append_path('LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib64)
 
     def url_for_version(self, version):
-        """Handle CMSSW's version string."""
+        """Handle CORAL's version string."""
         version_underscore=str(self.version).replace('.','_')
-        return "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc7_amd64_gcc630/cms/cmssw/CMSSW_%s/src.tar.gz" % version_underscore
+        return "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/cms/coral/CORAL_%s/src.tar.gz" % version_underscore

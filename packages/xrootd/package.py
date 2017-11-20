@@ -22,36 +22,20 @@
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
+
 from spack import *
 
 
-class Gmake(AutotoolsPackage):
-    """GNU Make is a tool which controls the generation of executables and
-    other non-source files of a program from the program's source files."""
+class Xrootd(CMakePackage):
+    """The XROOTD project aims at giving high performance, scalable fault
+       tolerant access to data repositories of many kinds."""
+    homepage = "http://xrootd.org"
+    url      = "http://xrootd.org/download/v4.6.0/xrootd-4.6.0.tar.gz"
 
-    homepage = "https://www.gnu.org/software/make/"
-    url      = "https://ftp.gnu.org/gnu/make/make-4.2.1.tar.gz"
+    version('4.6.0', '5d60aade2d995b68fe0c46896bc4a5d1')
+    version('4.5.0', 'd485df3d4a991e1c35efa4bf9ef663d7')
+    version('4.4.1', '72b0842f802ccc94dede4ac5ab2a589e')
+    version('4.4.0', '58f55e56801d3661d753ff5fd33dbcc9')
+    version('4.3.0', '39c2fab9f632f35e12ff607ccaf9e16c')
 
-    version('4.2.1', '7d0dcb6c474b258aab4d54098f2cf5a7')
-    version('4.0',   'b5e558f981326d9ca1bfdb841640721a')
-
-    variant('guile', default=False, description='Support GNU Guile for embedded scripting')
-
-    depends_on('guile', when='+guile')
-
-    build_directory = 'spack-build'
-
-    def configure_args(self):
-        args = []
-
-        if '+guile' in self.spec:
-            args.append('--with-guile')
-        else:
-            args.append('--without-guile')
-
-        return args
-
-    @run_after('install')
-    def symlink_gmake(self):
-        with working_dir(self.prefix.bin):
-            symlink('make', 'gmake')
+    depends_on('cmake@2.6:', type='build')

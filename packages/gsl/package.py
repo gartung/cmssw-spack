@@ -22,36 +22,23 @@
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
+
 from spack import *
 
 
-class Gmake(AutotoolsPackage):
-    """GNU Make is a tool which controls the generation of executables and
-    other non-source files of a program from the program's source files."""
+class Gsl(AutotoolsPackage):
+    """The GNU Scientific Library (GSL) is a numerical library for C and C++
+    programmers. It is free software under the GNU General Public License. The
+    library provides a wide range of mathematical routines such as random
+    number generators, special functions and least-squares fitting. There are
+    over 1000 functions in total with an extensive test suite."""
 
-    homepage = "https://www.gnu.org/software/make/"
-    url      = "https://ftp.gnu.org/gnu/make/make-4.2.1.tar.gz"
+    homepage = "http://www.gnu.org/software/gsl"
+    url      = "http://mirror.switch.ch/ftp/mirror/gnu/gsl/gsl-2.3.tar.gz"
 
-    version('4.2.1', '7d0dcb6c474b258aab4d54098f2cf5a7')
-    version('4.0',   'b5e558f981326d9ca1bfdb841640721a')
-
-    variant('guile', default=False, description='Support GNU Guile for embedded scripting')
-
-    depends_on('guile', when='+guile')
-
-    build_directory = 'spack-build'
-
-    def configure_args(self):
-        args = []
-
-        if '+guile' in self.spec:
-            args.append('--with-guile')
-        else:
-            args.append('--without-guile')
-
-        return args
-
-    @run_after('install')
-    def symlink_gmake(self):
-        with working_dir(self.prefix.bin):
-            symlink('make', 'gmake')
+    version('2.4',   'dba736f15404807834dc1c7b93e83b92')
+    version('2.3',   '905fcbbb97bc552d1037e34d200931a0')
+    version('2.2.1', '3d90650b7cfe0a6f4b29c2d7b0f86458')
+    version('2.1',   'd8f70abafd3e9f0bae03c52d1f4e8de5')
+    version('2.0',   'ae44cdfed78ece40e73411b63a78c375')
+    version('1.16',  'e49a664db13d81c968415cd53f62bc8b')
