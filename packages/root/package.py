@@ -54,9 +54,6 @@ class Root(CMakePackage):
     depends_on("freetype")
 
     def cmake_args(self):
-        libext='so'
-        if sys.platform == 'darwin':
-            libext='dylib'
         pyvers=str(self.spec['python'].version).split('.')
         pyver=pyvers[0]+'.'+pyvers[1]
         options=[ '-Dcxx17=on'
@@ -68,27 +65,27 @@ class Root(CMakePackage):
                  ,'-DPCRE_INCLUDE_DIR=%s/include' %
                    self.spec['pcre'].prefix
                  ,'-DPCRE_PCRE_LIBRARY=%s/lib/libpcre.%s' %
-                  (self.spec['pcre'].prefix,libext)
+                  (self.spec['pcre'].prefix,dso_suffix)
                  ,'-DPCRE_PCREPOSIX_LIBRARY=%s/lib/libpcreposix.%s' %
-                  (self.spec['pcre'].prefix,libext)
+                  (self.spec['pcre'].prefix,dso_suffix)
                  ,'-DLZMA_DIR=%s' %
                    self.spec['xz'].prefix
                  ,'-DLZMA_INCLUDE_DIR=%s/include' %
                    self.spec['xz'].prefix
                  ,'-DLZMA_LIBRARY=%s/lib/liblzma.%s' %
-                  (self.spec['xz'].prefix,libext)
+                  (self.spec['xz'].prefix,dso_suffix)
                  ,'-DXROOTD_ROOT_DIR=%s' %
                    self.spec['xrootd'].prefix
                  ,'-DPNG_INCLUDE_DIR=%s/include' %
                    self.spec['libpng'].prefix
                  ,'-DPNG_LIBRARY=%s/lib/libpng.%s' %
-                  (self.spec['libpng'].prefix,libext)
+                  (self.spec['libpng'].prefix,dso_suffix)
                  ,'-DPYTHON_EXECUTABLE=%s/python' %
                   (self.spec['python'].prefix.bin)
                  ,'-DPYTHON_INCLUDE=%s' %
                   (self.spec['python'].prefix.include)
                  ,'-DPYTHON_LIBRARY=%s/libpython%s.%s' %
-                  (self.spec['python'].prefix.lib,pyver,libext) ]               
+                  (self.spec['python'].prefix.lib,pyver,dso_suffix) ]               
         if sys.platform == 'darwin':
             darwin_options = [
                 '-Dx11=off',

@@ -468,7 +468,9 @@ class Llvm(CMakePackage):
         gcc_prefix=re.sub('/bin/.*$','',self.compiler.f77)
         gcc_machine=gcc('-dumpmachine',output=str)
         gcc_ver=gcc('-dumpversion',output=str)
-
+        pyvers=str(self.spec['python'].version).split('.')
+        pyver=pyvers[0]+'.'+pyvers[1]
+ 
         values={}
         values['VER']=self.spec.version
         values['PFX']=self.spec.prefix
@@ -477,7 +479,7 @@ class Llvm(CMakePackage):
         values['GCC_VER']=gcc_ver.rstrip()
         values['GCC_PREFIX']=gcc_prefix
         values['GCC_MACHINE']=gcc_machine.rstrip()
-        values['PYVER']=join(self.spec['python'].version.split('.')[0-1], '.')
+        values['PYVER']=pyver
         values['LDPATH_NAME']='LD_LIBRARY_PATH'
         if sys.platform == 'darwin':
             values['LDPATH_NAME']='DYLD_LIBRARY_PATH'

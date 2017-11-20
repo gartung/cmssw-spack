@@ -660,10 +660,12 @@ class Python(AutotoolsPackage):
     @run_after('install')
     def write_scram_toolfile(self):
         from string import Template
+        pyvers=str(self.spec['python'].version).split('.')
+        pyver=pyvers[0]+'.'+pyvers[1]
         values={}
         values['VER']=self.spec.version
         values['PFX']=self.spec.prefix
-        values['PYVER']=join(self.spec.version.split('.')[0-1], '.')
+        values['PYVER']=pyver
         template=Template("""<tool name="python" version="$VER">
   <lib name="python${PYVER}"/>
   <client>

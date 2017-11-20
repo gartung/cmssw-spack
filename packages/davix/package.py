@@ -22,41 +22,64 @@
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
-#
-# This is a template package file for Spack.  We've put "FIXME"
-# next to all the things you'll want to change. Once you've handled
-# them, you can save this file and test your package like this:
-#
-#     spack install davix
-#
-# You can edit this file again by typing:
-#
-#     spack edit davix
-#
-# See the Spack documentation for more information on packaging.
-# If you submit this package back to Spack as a pull request,
-# please first remove this boilerplate and all FIXME comments.
-#
 from spack import *
 
 
 class Davix(CMakePackage):
     """FIXME: Put a proper description of your package here."""
 
-    # FIXME: Add a proper url for your package's homepage here.
     homepage = "http://www.example.com"
     url      = "https://github.com/cern-it-sdc-id/davix/archive/R_0_6_5.tar.gz"
 
     version('0_6_5', 'a7f09dfa0bd0daaa46aafc8e0f4b1a25')
 
-    # FIXME: Add dependencies if required.
     depends_on('libxml2+python')
     depends_on('boost+python')
     depends_on('cmake',type='build')
 
     def cmake_args(self):
-        # FIXME: Add arguments other than
-        # FIXME: CMAKE_INSTALL_PREFIX and CMAKE_BUILD_TYPE
-        # FIXME: If not needed delete this function
-        args = ['-DLIBXML2_INCLUDE_DIR=%s/include/libxml2' % self.spec['libxml2'].prefix ]
+        args = ['-DLIBXML2_INCLUDE_DIR=%s/include/libxml2' % self.spec['libxml2'].prefix,
+                '-DLIBXML2_LIBRARIES="%s/lib/libxml2.%s"' % 
+                (self.spec['libxml2'].prefix, dso_suffix),
+                '-DBoost_NO_SYSTEM_PATHS:BOOL=TRUE',
+                '-DBOOST_ROOT:PATH=%s' % self.spec['boost'].prefix,
+                '-DOPENSSL_ROOT_DIR=%s' % self.spec['openssl'].prefix ]
         return args
+
+
+    def write_scram_toolfile(contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+        
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+        values['LIB']=self.spec.prefix.lib
+ 
+        fname='davix.xml'
+		  template=Template("""<tool name="davix" version="$VER">
+    <info url="https://dmc.web.cern.ch/projects/davix/home"/>
+    <lib name="davix"/>
+    <client>
+      <environment name="DAVIX_BASE" default="$PFX"/>
+      <environment name="LIBDIR" default="$LIB"/>
+      <environment name="INCLUDE" default="$$DAVIX_BASE/include/davix"/>
+    </client>
+    <runtime name="PATH" value="$DAVIX_BASE/bin" type="path"/>
+    <use name="boost_system"/>
+    <use name="openssl"/>
+    <use name="libxml2"/>
+  </tool>""")
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)
+

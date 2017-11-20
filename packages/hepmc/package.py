@@ -56,3 +56,42 @@ class Hepmc(Package):
 
     def setup_dependent_environment(self, spack_env, run_env, dspec):
         spack_env.prepend_path('LD_LIBRARY_PATH', self.prefix.lib)
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+
+        fname='hepmc.xml'
+        template=Template("""<tool name="HepMC" version="$VER">
+  <lib name="HepMCfio"/>
+  <lib name="HepMC"/>
+  <client>
+    <environment name="HEPMC_BASE" default="$PFX"/>
+    <environment name="LIBDIR" default="$$HEPMC_BASE/lib"/>
+  </client>
+  <use name="hepmc_headers"/>
+  <runtime name="CMSSW_FWLITE_INCLUDE_PATH" value="$$HEPMC_BASE/include" type="path"/>
+</tool>""")
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)
+
+
+		  fname='hepmc_headers.xml'
+        template=Template("""<tool name="hepmc_headers" version="$VER">
+  <client>
+    <environment name="HEPMC_HEADERS_BASE" default="$PFX"/>
+    <environment name="INCLUDE" default="$$HEPMC_HEADERS_BASE/include"/>
+  </client>
+  <runtime name="ROOT_INCLUDE_PATH"  value="$$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+</tool>""")
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)
+

@@ -116,3 +116,24 @@ class Bzip2(Package):
             force_remove('bunzip2', 'bzcat')
             symlink('bzip2', 'bunzip2')
             symlink('bzip2', 'bzcat')
+
+    @run_after('install')
+    def write_scram_toolfile(self):
+        contents="""<tool name="bz2lib" version="%s">
+  <lib name="bz2"/>
+  <client>
+    <environment name="BZ2LIB_BASE" default="%s"/>
+    <environment name="LIBDIR" default="$$BZ2LIB_BASE/lib"/>
+    <environment name="BINDIR" default="$$BZ2LIB_BASE/bin"/>
+    <environment name="INCLUDE" default="$$BZ2LIB_BASE/include"/>
+  </client>
+  <runtime name="PATH" value="$$BINDIR" type="path"/>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+</tool>"""  % (self.spec['bzip2'].version, self.spec['bzip2'].prefix)
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+        with open(self.spec.prefix.etc+'/scram.d/bz2lib.xml','w') as f:
+            f.write(contents)
+            f.close()
+

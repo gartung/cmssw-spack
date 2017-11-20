@@ -40,7 +40,7 @@ class Expat(AutotoolsPackage):
     # someone's asking for an older version and also libbsd.
     # In order to install an older version, you'll need to add
     # `~libbsd`.
-    variant('libbsd', default=sys.platform != 'darwin',
+    variant('libbsd', default=False,
             description="Use libbsd (for high quality randomness)")
     depends_on('libbsd', when="@2.2.1:+libbsd")
 
@@ -53,3 +53,38 @@ class Expat(AutotoolsPackage):
         if '+libbsd' in spec and '@2.2.1:' in spec:
             args = ['--with-libbsd']
         return args
+
+    def write_scram_toolfile(contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+        
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+
+        fname='expat.xml'
+        template=Template("""<tool name="expat" version="$VER">
+  <lib name="expat"/>
+  <client>
+    <environment name="EXPAT_BASE" default="$PFX"/>
+    <environment name="LIBDIR" default="$EXPAT_BASE/lib"/>
+    <environment name="INCLUDE" default="$EXPAT_BASE/include"/>
+    <environment name="BINDIR" default="$EXPAT_BASE/bin"/>
+  </client>
+  <runtime name="PATH" value="$BINDIR" type="path"/>
+  <runtime name="ROOT_INCLUDE_PATH" value="$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+</tool>""")
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)
+

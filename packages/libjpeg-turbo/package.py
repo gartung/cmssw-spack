@@ -25,32 +25,23 @@
 from spack import *
 
 
-class Cppunit(AutotoolsPackage):
-    """Obsolete Unit testing framework for C++"""
+class LibjpegTurbo(AutotoolsPackage):
+    """libjpeg-turbo is a fork of the original IJG libjpeg which uses SIMD to
+       accelerate baseline JPEG compression and decompression. libjpeg is a
+       library that implements JPEG image encoding, decoding and
+       transcoding."""
 
-    homepage = "https://wiki.freedesktop.org/www/Software/cppunit/"
-    url = "http://dev-www.libreoffice.org/src/cppunit-1.13.2.tar.gz"
+    homepage = "http://libjpeg-turbo.virtualgl.org"
+    url      = "http://downloads.sourceforge.net/libjpeg-turbo/libjpeg-turbo-1.3.1.tar.gz"
 
-    version('1.13.2', '0eaf8bb1dcf4d16b12bec30d0732370390d35e6f')
+    version('1.5.0', '3fc5d9b6a8bce96161659ae7a9939257')
+    version('1.3.1', '2c3a68129dac443a72815ff5bb374b05')
 
-    @run_after('install')
-    def write_scram_toolfile(self):
-        contents="""<tool name="cppunit" version="%s">
-  <lib name="cppunit"/>
-  <client>
-    <environment name="CPPUNIT_BASE" default="%s"/>
-    <environment name="LIBDIR" default="$CPPUNIT_BASE/lib"/>
-    <environment name="BINDIR" default="$CPPUNIT_BASE/bin"/>
-    <environment name="INCLUDE" default="$CPPUNIT_BASE/include"/>
-  </client>
-  <runtime name="PATH" value="$BINDIR" type="path"/>
-  <runtime name="ROOT_INCLUDE_PATH" value="$INCLUDE" type="path"/>
-  <use name="root_cxxdefaults"/>
-  <use name="sockets"/>
-</tool>"""  % (self.spec['cppunit'].version, self.spec['cppunit'].prefix)
+    provides('jpeg')
 
-        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
-        with open(self.spec.prefix.etc+'/scram.d/cppunit.xml','w') as f:
-            f.write(contents)
-            f.close()
-
+    # Can use either of these. But in the current version of the package
+    # only nasm is used. In order to use yasm an environmental variable
+    # NASM must be set.
+    # TODO: Implement the selection between two supported assemblers.
+    # depends_on("yasm", type='build')
+    depends_on("nasm", type='build')

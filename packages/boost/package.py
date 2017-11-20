@@ -111,7 +111,7 @@ class Boost(Package):
     # mpi/python are not installed by default because they pull in many
     # dependencies and/or because there is a great deal of customization
     # possible (and it would be difficult to choose sensible defaults)
-    default_noinstall_libs = set(['mpi', 'python'])
+    default_noinstall_libs = set(['mpi'])
 
     all_libs = default_install_libs | default_noinstall_libs
 
@@ -378,3 +378,175 @@ class Boost(Package):
         # on Darwin; correct this
         if (sys.platform == 'darwin') and ('+shared' in spec):
             fix_darwin_install_name(prefix.lib)
+
+
+    def write_scram_toolfile(contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+        import sys
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+        values['LIBEXT']=dso_suffix
+
+        fname='boost.xml'
+        template=Template("""<tool name="boost" version="$VER">
+  <info url="http://www.boost.org"/>
+  <lib name="libboost_thread${LIBEXT}"/>
+  <lib name="libboost_signals${LIBEXT}"/>
+  <lib name="libboost_date_time${LIBEXT}"/>
+  <client>
+    <environment name="BOOST_BASE" default="$PFX"/>
+    <environment name="LIBDIR" default="$$BOOST_BASE/lib"/>
+    <environment name="INCLUDE" default="$$BOOST_BASE/include"/>
+  </client>
+  <runtime name="CMSSW_FWLITE_INCLUDE_PATH" value="$$BOOST_BASE/include" type="path"/>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+  <flags CPPDEFINES="BOOST_SPIRIT_THREADSAFE PHOENIX_THREADSAFE"/>
+  <flags CXXFLAGS="-Wno-error=unused-variable"/>
+  <use name="sockets"/>
+</tool>""")
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)
+
+
+# boost_chrono toolfile
+        fname='boost_chrono.xml'
+        template=Template("""<tool name="boost_chrono" version="$VER">
+  <info url="http://www.boost.org"/>
+  <lib name="libboost_chrono${LIBEXT}"/>
+  <use name="boost_system"/>
+  <use name="boost"/>
+</tool>""")
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)
+
+
+# boost_filesystem toolfile
+        fname='boost_filesystem.xml'
+        template=Template("""<tool name="boost_filesystem" version="$VER">
+  <info url="http://www.boost.org"/>
+  <lib name="libboost_filesystem${LIBEXT}"/>
+  <use name="boost_system"/>
+  <use name="boost"/>
+</tool>""")
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)
+
+
+# boost_system toolfile
+        fname='boost_system.xml'
+        template=Template("""<tool name="boost_system" version="$VER">
+  <info url="http://www.boost.org"/>
+  <lib name="libboost_system${LIBEXT}"/>
+  <use name="boost"/>
+</tool>""")
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)
+
+
+# boost_program_options toolfile
+        fname='boost_program_options.xml'
+        template=Template("""<tool name="boost_program_options" version="$VER">
+  <info url="http://www.boost.org"/>
+  <lib name="libboost_program_options${LIBEXT}"/>
+  <use name="boost"/>
+</tool>""")
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)
+
+
+# boost_python toolfile
+		  fname='boost_python.xml'
+        template=Template("""<tool name="boost_python" version="$VER">
+  <info url="http://www.boost.org"/>
+  <lib name="libboost_python${LIBEXT}"/>
+  <client>
+    <environment name="BOOST_PYTHON_BASE" default="$PFX"/>
+    <environment name="LIBDIR" default="$$BOOST_PYTHON_BASE/lib"/>
+    <environment name="INCLUDE" default="$$BOOST_PYTHON_BASE/include"/>
+  </client>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+  <use name="python"/>
+</tool>""")
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)
+
+
+# boost_regex toolfile
+        fname='boost_regex.xml'
+        template=Template("""<tool name="boost_regex" version="$VER">
+  <info url="http://www.boost.org"/>
+  <lib name="libboost_regex${LIBEXT}"/>
+  <use name="boost"/>
+</tool>""")
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)
+
+
+# boost_signals toolfile
+        fname='boost_signals.xml'
+        template=Template("""<tool name="boost_signals" version="$VER">
+  <info url="http://www.boost.org"/>
+  <lib name="libboost_signals${LIBEXT}"/>
+  <use name="boost"/>
+</tool>""")
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)
+
+
+        fname='boost_serialization.xml'
+        template=Template("""<tool name="boost_serialization" version="$VER">
+  <info url="http://www.boost.org"/>
+  <lib name="libboost_serialization${LIBEXT}"/>
+  <use name="boost"/>
+</tool>""")
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)
+
+
+        fname='boost_test.xml'
+        template=Template("""<tool name="boost_test" version="$VER">
+  <info url="http://www.boost.org"/>
+  <lib name="boost_unit_test_framework"/>
+  <use name="boost"/>
+</tool>""")
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)
+
+
+        fname='boost_iostreams.xml'
+        template=Template("""<tool name="boost_iostreams" version="$VER">
+  <info url="http://www.boost.org"/>
+  <lib name="libboost_iostreams${LIBEXT}"/>
+  <use name="boost"/>
+</tool>""")
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)
+
+
+# boost_header toolfile
+        fname='boost_header.xml'
+        template=Template("""<tool name="boost_header" version="$VER">
+  <info url="http://www.boost.org"/>
+  <client>
+    <environment name="BOOSTHEADER_BASE" default="$PFX"/>
+    <environment name="INCLUDE" default="$$BOOSTHEADER_BASE/include"/>
+  </client>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+</tool>""")
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)

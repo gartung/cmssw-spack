@@ -85,3 +85,55 @@ class Clhep(CMakePackage):
                               self.compiler.cxx14_flag)
 
         return cmake_args
+
+    def write_scram_toolfile(contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+
+        fname='clhep.xml'
+        template=Template("""<tool name="clhep" version="$VER">
+  <info url="http://wwwinfo.cern.ch/asd/lhc++/clhep"/>
+  <lib name="CLHEP"/>
+  <client>
+    <environment name="CLHEP_BASE" default="$PFX"/>
+    <environment name="LIBDIR" default="$CLHEP_BASE/lib"/>
+    <environment name="INCLUDE" default="$CLHEP_BASE/include"/>
+  </client>
+  <runtime name="CLHEP_PARAM_PATH" value="$CLHEP_BASE"/>
+  <runtime name="CMSSW_FWLITE_INCLUDE_PATH" value="$CLHEP_BASE/include" type="path"/>
+  <runtime name="ROOT_INCLUDE_PATH" value="$INCLUDE" type="path"/>
+  <flags CXXFLAGS="-Wno-error=unused-variable"/>
+  <use name="root_cxxdefaults"/>
+</tool>""")
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)
+
+
+        fname='clhepheader.xml'
+        template=Template("""<tool name="clhepheader" version="$VER">
+  <info url="http://wwwinfo.cern.ch/asd/lhc++/clhep"/>
+  <client>
+    <environment name="CLHEPHEADER_BASE" default="$PFX"/>
+    <environment name="INCLUDE"    default="$CLHEPHEADER_BASE/include"/>
+  </client>
+  <runtime name="ROOT_INCLUDE_PATH"  value="$INCLUDE" type="path"/>
+  <flags CXXFLAGS="-Wno-error=unused-variable"/>
+  <use name="root_cxxdefaults"/>
+</tool>""")
+        contents = template.substitute(values)
+        write_scram_toolfile(contents,fname)
+
