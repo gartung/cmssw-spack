@@ -25,6 +25,7 @@
 from spack import *
 import glob
 import shutil
+import os
 
 class Oracle(Package):
     """FIXME: Put a proper description of your package here."""
@@ -47,6 +48,12 @@ class Oracle(Package):
             install(f,self.prefix.lib)
         mkdirp(self.prefix.bin)
 
+        with working_dir(prefix.lib, create=False):
+            for f in glob.glob('lib*.'+dso_suffix+'.[0-9]*'):
+                dest=str(os.path.basename(f)).split('.')[0]+'.'+dso_suffix
+                os.symlink(f,dest)
+
+
     def write_scram_toolfile(self,contents,filename):
         """Write scram tool config file"""
         with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
@@ -68,10 +75,9 @@ class Oracle(Package):
         fname='oracle.xml'
         template=Template("""<tool name="oracle" version="$VER">
   <lib name="clntsh"/>
-  @OS_LIBS@
   <client>
     <environment name="ORACLE_BASE" default="$PFX"/>
-    <environment name="ORACLE_ADMINDIR" value="@ORACLE_ENV_ROOT@/etc"/>
+    <environment name="ORACLE_ADMINDIR" value="$PFX/etc"/>
     <environment name="LIBDIR" value="$$ORACLE_BASE/lib"/>
     <environment name="BINDIR" value="$$ORACLE_BASE/bin"/>
     <environment name="INCLUDE" value="$$ORACLE_BASE/include"/>
@@ -82,6 +88,8 @@ class Oracle(Package):
   <use name="root_cxxdefaults"/>
   <use name="sockets"/>
 </tool>""")
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents,fname)
 
         fname='oracleocci.xml'
         template=Template("""<tool name="oracleocci" version="$VER">

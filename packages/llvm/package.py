@@ -460,7 +460,7 @@ class Llvm(CMakePackage):
     def write_scram_toolfiles(self):
         """Create contents of scram tool config files for this package."""
         from string import Template
-        import sys
+        import sys,re
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
@@ -484,102 +484,102 @@ class Llvm(CMakePackage):
         if sys.platform == 'darwin':
             values['LDPATH_NAME']='DYLD_LIBRARY_PATH'
 
-        fname='llvm-cxxcompiler.xml'
-        template=Template("""<tool name="llvm-cxxcompiler" version="${VER}" type="compiler">
-    <use name="gcc-cxxcompiler"/>
-    <client>
-      <environment name="LLVM_CXXCOMPILER_BASE" default="${PFX}"/>
-      <environment name="CXX" value="clang++"/>
-    </client>
-    # drop flags not supported by llvm
-    # -Wno-non-template-friend removed since it's not supported, yet, by llvm.
-    <flags REM_CXXFLAGS="-Wno-non-template-friend"/>
-    <flags REM_CXXFLAGS="-Werror=format-contains-nul"/>
-    <flags REM_CXXFLAGS="-Werror=maybe-uninitialized"/>
-    <flags REM_CXXFLAGS="-Werror=unused-but-set-variable"/>
-    <flags REM_CXXFLAGS="-Werror=return-local-addr"/>
-    <flags REM_CXXFLAGS="-fipa-pta"/>
-    <flags REM_CXXFLAGS="-frounding-math"/>
-    <flags REM_CXXFLAGS="-mrecip"/>
-    <flags REM_CXXFLAGS="-Wno-psabi"/>
-    <flags REM_CXXFLAGS="-fno-crossjumping"/>
-    <flags REM_CXXFLAGS="-fno-aggressive-loop-optimizations"/>
-    <flags CXXFLAGS="-Wno-c99-extensions"/>
-    <flags CXXFLAGS="-Wno-c++11-narrowing"/>
-    <flags CXXFLAGS="-D__STRICT_ANSI__"/>
-    <flags CXXFLAGS="-Wno-unused-private-field"/>
-    <flags CXXFLAGS="-Wno-unknown-pragmas"/>
-    <flags CXXFLAGS="-Wno-unused-command-line-argument"/>
-    <flags CXXFLAGS="-ftemplate-depth=512"/>
-    <flags CXXFLAGS="-Wno-error=potentially-evaluated-expression"/>
-    <runtime name="${LDPATH_NAME}" value="${LIB}" type="path"/>
-    <runtime name="PATH" value="${BIN}" type="path"/>
-    <runtime name="COMPILER_RUNTIME_OBJECTS" value="${GCC_PREFIX}"/>
-  </tool>""")
-        contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
-
-        fname='iwyu-cxxcompiler.xml'
-        template=Template("""<tool name="iwyu-cxxcompiler" version="${VER}" type="compiler">
-    <use name="llvm-cxxcompiler"/>
-    <client>
-      <environment name="LLVM_CXXCOMPILER_BASE" default="${PFX}"/>
-      <environment name="CXX" value="${BIN}/include-what-you-use"/>
-    </client>
-  </tool>""")
-        contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
-
-        fname='llvm-ccompiler.xml'
-        template=Template("""<tool name="llvm-ccompiler" version="${VER}" type="compiler">
-    <use name="gcc-ccompiler"/>
-    <client>
-      <environment name="LLVM_CCOMPILER_BASE" default="${PFX}"/>
-      <environment name="CC" value="clang"/>
-    </client>
-  </tool>""")
-        contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
-
-        fname='llvm-f77compiler.xml'
-        template=Template("""  <tool name="llvm-f77compiler" version="${VER}" type="compiler">
-    <use name="gcc-f77compiler"/>    
-    <client>
-      <environment name="FC" default="gfortran"/>
-    </client>
-  </tool>""")
-        contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
-
-#Clang analyzer compilers
-        fname='llvm-analyzer-cxxcompiler.xml'
-        template=Template("""  <tool name="llvm-analyzer-cxxcompiler" version="${VER}" type="compiler">
-    <use name="llvm-cxxcompiler"/>
-    <client>
-      <environment name="LLVM_ANALYZER_CXXCOMPILER_BASE" default="${PFX}"/>
-      <environment name="CXX" value="${BIN}/c++-analyzer"/>
-    </client>
-    <runtime name="COMPILER_RUNTIME_OBJECTS" value="${GCC_PREFIX}"/>
-  </tool>""")
-        contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
-
-        fname='llvm-analyzer-ccompiler.xml'
-        template=Template("""  <tool name="llvm-analyzer-ccompiler" version="${VER}" type="compiler">
-    <use name="llvm-ccompiler"/>
-    <client>
-      <environment name="LLVM_ANALYZER_CCOMPILER_BASE" default="${PFX}"/>
-      <environment name="CC" value="${BIN}/ccc-analyzer"/>
-    </client>
-  </tool>""")
-        contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
+#        fname='llvm-cxxcompiler.xml'
+#        template=Template("""<tool name="llvm-cxxcompiler" version="${VER}" type="compiler">
+#    <use name="gcc-cxxcompiler"/>
+#    <client>
+#      <environment name="LLVM_CXXCOMPILER_BASE" default="${PFX}"/>
+#      <environment name="CXX" value="clang++"/>
+#    </client>
+#    # drop flags not supported by llvm
+#    # -Wno-non-template-friend removed since it's not supported, yet, by llvm.
+#    <flags REM_CXXFLAGS="-Wno-non-template-friend"/>
+#    <flags REM_CXXFLAGS="-Werror=format-contains-nul"/>
+#    <flags REM_CXXFLAGS="-Werror=maybe-uninitialized"/>
+#    <flags REM_CXXFLAGS="-Werror=unused-but-set-variable"/>
+#    <flags REM_CXXFLAGS="-Werror=return-local-addr"/>
+#    <flags REM_CXXFLAGS="-fipa-pta"/>
+#    <flags REM_CXXFLAGS="-frounding-math"/>
+#    <flags REM_CXXFLAGS="-mrecip"/>
+#    <flags REM_CXXFLAGS="-Wno-psabi"/>
+#    <flags REM_CXXFLAGS="-fno-crossjumping"/>
+#    <flags REM_CXXFLAGS="-fno-aggressive-loop-optimizations"/>
+#    <flags CXXFLAGS="-Wno-c99-extensions"/>
+#    <flags CXXFLAGS="-Wno-c++11-narrowing"/>
+#    <flags CXXFLAGS="-D__STRICT_ANSI__"/>
+#    <flags CXXFLAGS="-Wno-unused-private-field"/>
+#    <flags CXXFLAGS="-Wno-unknown-pragmas"/>
+#    <flags CXXFLAGS="-Wno-unused-command-line-argument"/>
+#    <flags CXXFLAGS="-ftemplate-depth=512"/>
+#    <flags CXXFLAGS="-Wno-error=potentially-evaluated-expression"/>
+#    <runtime name="${LDPATH_NAME}" value="${LIB}" type="path"/>
+#    <runtime name="PATH" value="${BIN}" type="path"/>
+#    <runtime name="COMPILER_RUNTIME_OBJECTS" value="${GCC_PREFIX}"/>
+#  </tool>""")
+#        contents = template.substitute(values)
+#        self.write_scram_toolfile(contents,fname)
+#
+#
+#        fname='iwyu-cxxcompiler.xml'
+#        template=Template("""<tool name="iwyu-cxxcompiler" version="${VER}" type="compiler">
+#    <use name="llvm-cxxcompiler"/>
+#    <client>
+#      <environment name="LLVM_CXXCOMPILER_BASE" default="${PFX}"/>
+#      <environment name="CXX" value="${BIN}/include-what-you-use"/>
+#    </client>
+#  </tool>""")
+#        contents = template.substitute(values)
+#        self.write_scram_toolfile(contents,fname)
+#
+#
+#        fname='llvm-ccompiler.xml'
+#        template=Template("""<tool name="llvm-ccompiler" version="${VER}" type="compiler">
+#    <use name="gcc-ccompiler"/>
+#    <client>
+#      <environment name="LLVM_CCOMPILER_BASE" default="${PFX}"/>
+#      <environment name="CC" value="clang"/>
+#    </client>
+#  </tool>""")
+#        contents = template.substitute(values)
+#        self.write_scram_toolfile(contents,fname)
+#
+#
+#        fname='llvm-f77compiler.xml'
+#        template=Template("""  <tool name="llvm-f77compiler" version="${VER}" type="compiler">
+#    <use name="gcc-f77compiler"/>    
+#    <client>
+#      <environment name="FC" default="gfortran"/>
+#    </client>
+#  </tool>""")
+#        contents = template.substitute(values)
+#        self.write_scram_toolfile(contents,fname)
+#
+#
+##Clang analyzer compilers
+#        fname='llvm-analyzer-cxxcompiler.xml'
+#        template=Template("""  <tool name="llvm-analyzer-cxxcompiler" version="${VER}" type="compiler">
+#    <use name="llvm-cxxcompiler"/>
+#    <client>
+#      <environment name="LLVM_ANALYZER_CXXCOMPILER_BASE" default="${PFX}"/>
+#      <environment name="CXX" value="${BIN}/c++-analyzer"/>
+#    </client>
+#    <runtime name="COMPILER_RUNTIME_OBJECTS" value="${GCC_PREFIX}"/>
+#  </tool>""")
+#        contents = template.substitute(values)
+#        self.write_scram_toolfile(contents,fname)
+#
+#
+#        fname='llvm-analyzer-ccompiler.xml'
+#        template=Template("""  <tool name="llvm-analyzer-ccompiler" version="${VER}" type="compiler">
+#    <use name="llvm-ccompiler"/>
+#    <client>
+#      <environment name="LLVM_ANALYZER_CCOMPILER_BASE" default="${PFX}"/>
+#      <environment name="CC" value="${BIN}/ccc-analyzer"/>
+#    </client>
+#  </tool>""")
+#        contents = template.substitute(values)
+#        self.write_scram_toolfile(contents,fname)
+#
 
 # This is a toolfile to use llvm / clang as a library, not as a compiler.
         fname='llvm.xml'

@@ -43,7 +43,7 @@ class Bzip2(Package):
     # override default implementation
     @property
     def libs(self):
-				shared = '+shared' in self.spec
+        shared = '+shared' in self.spec
         return find_libraries(
             'libbz2', root=self.prefix, shared=shared, recurse=True
         )

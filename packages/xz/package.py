@@ -65,7 +65,7 @@ class Xz(AutotoolsPackage):
       <environment name="LIBDIR" default="$$XZ_BASE/lib"/>
       <environment name="INCLUDE" default="$$XZ_BASE/include"/>
     </client>
-    <runtime name="PATH" value="$XZ_BASE/bin" type="path"/>
+    <runtime name="PATH" value="$$XZ_BASE/bin" type="path"/>
     <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
     <use name="root_cxxdefaults"/>
   </tool>""")

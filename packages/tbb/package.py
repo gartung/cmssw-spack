@@ -23,7 +23,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
 from spack import *
-import os
+import os, re
 import glob
 
 class Tbb(Package):
@@ -110,6 +110,7 @@ class Tbb(Package):
 
     def write_scram_toolfile(self,contents,filename):
         """Write scram tool config file"""
+        mkdirp(self.spec.prefix.etc+'/scram.d/')
         with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
             f.write(contents)
             f.close()
@@ -126,7 +127,7 @@ class Tbb(Package):
         values['VER']=self.spec.version
         values['PFX']=self.spec.prefix
         values['GCC_VER']=gcc_ver.rstrip()
-        values['GCC_GLIBCXX_VER']=gcc_ver.rstrip().sub('.','0')
+        values['GCC_GLIBCXX_VER']=gcc_ver.rstrip().replace('.','0')
         values['GCC_PREFIX']=gcc_prefix
         values['GCC_MACHINE']=gcc_machine.rstrip()
         fname='tbb.xml'

@@ -24,7 +24,7 @@
 ##############################################################################
 
 from spack import *
-import sys
+import sys,re
 
 
 class Root(CMakePackage):
@@ -40,7 +40,7 @@ class Root(CMakePackage):
     depends_on('cmake@3.4.3:', type='build')
     depends_on('pkg-config',   type='build')
     depends_on("pcre")
-    depends_on("fftw")
+    depends_on("fftw~mpi")
     depends_on("python+shared")
     depends_on("gsl")
     depends_on("libxml2+python^python+shared")

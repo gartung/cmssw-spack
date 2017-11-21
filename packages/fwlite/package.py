@@ -60,11 +60,11 @@ class Fwlite(Package):
 
     version('9.2.12','b640a7fc68a41805d55c481846add97d')
 
-    config_tag='V05-05-56'
+    config_tag='V05-05-40'
 
     resource(name='config',
-             git='https://github.com/gartung/cmssw-config.git',
-             branch='macos',
+             url='http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/cms/fwlite/CMSSW_9_2_12_FWLITE/%s.tar.gz'%config_tag,
+             md5='87af022eba2084d0db2b4d92245c3629',
              destination='.',
              placement='config'
     )
@@ -85,7 +85,7 @@ class Fwlite(Package):
     depends_on('cppunit')
     depends_on('xerces-c')
     depends_on('expat')
-    depends_on('sqlite')
+    depends_on('sqlite@3.16.02')
     depends_on('bzip2')
     depends_on('gsl')
     depends_on('hepmc')
@@ -106,6 +106,10 @@ class Fwlite(Package):
         patch('macos.patch')
     else:
         patch('linux.patch')
+
+    scram_arch='linux_amd64_gcc'
+    if sys.platform == 'darwin':
+        scram_arch='osx10_amd64_clang'
 
     def install(self, spec, prefix):
         scram=which('scram')
@@ -133,11 +137,15 @@ class Fwlite(Package):
             with open('config/config_tag','w') as f:
                 f.write(self.config_tag)
                 f.close()
-            mkdirp('tools')
-            for key in spec.keys:      
-                xmlfiles = glob(join_path(spec[key].prefix.etc,'scram.d','*.xml'))
+            mkdirp('tools/selected')
+            mkdirp('tools/available')
+            for dep in spec.dependencies():      
+                xmlfiles = glob(join_path(dep.prefix.etc,'scram.d','*.xml'))
                 for xmlfile in xmlfiles:
-                    install(xmlfile,'tools')
+                    install(xmlfile,'tools/selected')
+            curl=which('curl')
+            curl('-O', 'https://raw.githubusercontent.com/cms-sw/cmsdist/IB/CMSSW_10_0_X/gcc630/fwlite_build_set.file')
+
             perl=which('perl')
             perl('config/updateConfig.pl',
                  '-p', 'CMSSW', 
@@ -146,7 +154,7 @@ class Fwlite(Package):
                  '-t', build_directory,
                  '--keys', 'SCRAM_COMPILER=gcc', 
                  '--keys', 'PROJECT_GIT_HASH='+cmssw_u_version,
-                 '--arch', str(spec.architecture))
+                 '--arch', self.scram_arch)
             fin='config/bootsrc.xml'
             matchexp=re.compile(r"(\s*\<download.*)(file:src)(.*)(name=\"src)(\"/\>)")
             lines = [line.rstrip('\n') for line in open(fin,'r')]
@@ -156,7 +164,7 @@ class Fwlite(Package):
                 if mobj:
                     replacement='#'+line+'\n'
                     fout.write(replacement)
-                    reps = [line.rstrip('\n') for line in open('tools/fwlite_build_set.file','r')]
+                    reps = [line.rstrip('\n') for line in open('fwlite_build_set.file','r')]
                     for rep in reps:
                          replacement=mobj.group(1)+mobj.group(2)+'/'+rep+mobj.group(3)+mobj.group(4)+'/'+rep+mobj.group(5)+'\n'
                          fout.write(replacement)
@@ -184,10 +192,10 @@ class Fwlite(Package):
             os.environ[ 'CMSSW_RELEASE_BASE' ] = os.getcwd()
             os.environ[ 'CMSSW_BASE' ] = os.getcwd()
             if os.environ[ 'LD_LIBRARY_PATH' ]:
-                os.environ[ 'LD_LIBRARY_PATH'] += os.getcwd()+'/lib/'+str(self.spec.architecture)
+                os.environ[ 'LD_LIBRARY_PATH'] += os.getcwd()+'/lib/'+self.scram_arch
                 os.environ[ 'LD_LIBRARY_PATH'] += self.spec['llvm'].prefix.lib
             else: 
-                os.environ[ 'LD_LIBRARY_PATH'] = os.getcwd()+'/lib/'+str(self.spec.architecture)
+                os.environ[ 'LD_LIBRARY_PATH'] = os.getcwd()+'/lib/'+self.scram_arch
                 os.environ[ 'LD_LIBRARY_PATH'] += self.spec['llvm'].prefix.lib
             scram.add_default_env('CMSSW_RELEASE_BASE', os.getcwd())
             scram.add_default_env('CMSSW_BASE', os.getcwd())
@@ -213,7 +221,7 @@ class Fwlite(Package):
         spack_env.set('RELEASETOP', self.prefix+'/'+cmssw_u_version)
         spack_env.set('CMSSW_RELEASE_BASE', self.prefix)
         spack_env.set('CMSSW_BASE', self.prefix)
-        spack_env.append_path('LD_LIBRARY_PATH', self.prefix+'/'+cmssw_u_version+'/lib/'+str(self.spec.architecture))
+        spack_env.append_path('LD_LIBRARY_PATH', self.prefix+'/'+cmssw_u_version+'/lib/'+self.scram_arch)
 
 
     def setup_environment(self, spack_env, run_env):
@@ -223,7 +231,7 @@ class Fwlite(Package):
         spack_env.set('RELEASETOP', self.prefix+'/'+cmssw_u_version)
         spack_env.set('CMSSW_RELEASE_BASE', self.prefix)
         spack_env.set('CMSSW_BASE', self.prefix)
-        spack_env.append_path('LD_LIBRARY_PATH', self.prefix+'/'+cmssw_u_version+'/lib/'+str(self.spec.architecture))
+        spack_env.append_path('LD_LIBRARY_PATH', self.prefix+'/'+cmssw_u_version+'/lib/'+self.scram_arch)
 
     def url_for_version(self, version):
         """Handle CMSSW's version string."""

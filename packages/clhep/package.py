@@ -110,12 +110,12 @@ class Clhep(CMakePackage):
   <lib name="CLHEP"/>
   <client>
     <environment name="CLHEP_BASE" default="$PFX"/>
-    <environment name="LIBDIR" default="$CLHEP_BASE/lib"/>
-    <environment name="INCLUDE" default="$CLHEP_BASE/include"/>
+    <environment name="LIBDIR" default="$$CLHEP_BASE/lib"/>
+    <environment name="INCLUDE" default="$$CLHEP_BASE/include"/>
   </client>
-  <runtime name="CLHEP_PARAM_PATH" value="$CLHEP_BASE"/>
-  <runtime name="CMSSW_FWLITE_INCLUDE_PATH" value="$CLHEP_BASE/include" type="path"/>
-  <runtime name="ROOT_INCLUDE_PATH" value="$INCLUDE" type="path"/>
+  <runtime name="CLHEP_PARAM_PATH" value="$$CLHEP_BASE"/>
+  <runtime name="CMSSW_FWLITE_INCLUDE_PATH" value="$$CLHEP_BASE/include" type="path"/>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
   <flags CXXFLAGS="-Wno-error=unused-variable"/>
   <use name="root_cxxdefaults"/>
 </tool>""")
@@ -128,9 +128,9 @@ class Clhep(CMakePackage):
   <info url="http://wwwinfo.cern.ch/asd/lhc++/clhep"/>
   <client>
     <environment name="CLHEPHEADER_BASE" default="$PFX"/>
-    <environment name="INCLUDE"    default="$CLHEPHEADER_BASE/include"/>
+    <environment name="INCLUDE"    default="$$CLHEPHEADER_BASE/include"/>
   </client>
-  <runtime name="ROOT_INCLUDE_PATH"  value="$INCLUDE" type="path"/>
+  <runtime name="ROOT_INCLUDE_PATH"  value="$$INCLUDE" type="path"/>
   <flags CXXFLAGS="-Wno-error=unused-variable"/>
   <use name="root_cxxdefaults"/>
 </tool>""")

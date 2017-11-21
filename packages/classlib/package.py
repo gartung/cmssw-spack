@@ -43,7 +43,6 @@ from spack import *
 class Classlib(AutotoolsPackage):
     """FIXME: Put a proper description of your package here."""
 
-    # FIXME: Add a proper url for your package's homepage here.
     homepage = "http://www.example.com"
     url      = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/classlib/3.1.3/classlib-3.1.3.tar.bz2"
 
@@ -64,7 +63,7 @@ class Classlib(AutotoolsPackage):
     depends_on('zlib')
 
     def configure_args(self):
-				args = ['--with-zlib-includes=%s' % self.spec['zlib'].prefix.include,
+        args = ['--with-zlib-includes=%s' % self.spec['zlib'].prefix.include,
                 '--with-zlib-libraries=%s' % self.spec['zlib'].prefix.lib,
                 '--with-bz2lib-includes=%s' % self.spec['bzip2'].prefix.include,
                 '--with-bz2lib-libraries=%s' % self.spec['bzip2'].prefix.lib,

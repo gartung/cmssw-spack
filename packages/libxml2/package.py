@@ -38,6 +38,7 @@ class Libxml2(AutotoolsPackage):
 
     variant('python', default=True, description='Enable Python support')
 
+    depends_on('python')
     depends_on('zlib')
     depends_on('xz')
 

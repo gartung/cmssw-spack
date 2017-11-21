@@ -35,7 +35,7 @@ class Cppunit(AutotoolsPackage):
 
     def write_scram_toolfile(self,contents,filename):
         """Write scram tool config file"""
-					 with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
             f.write(contents)
             f.close()
 
@@ -64,4 +64,4 @@ class Cppunit(AutotoolsPackage):
   <use name="sockets"/>
 </tool>""")
         contents = template.substitute(values)
-        write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)

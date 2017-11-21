@@ -98,6 +98,7 @@ class Boost(Package):
                                 'log',
                                 'math',
                                 'program_options',
+                                'python',
                                 'random',
                                 'regex',
                                 'serialization',
@@ -437,7 +438,7 @@ class Boost(Package):
         fname='boost_filesystem.xml'
         template=Template("""<tool name="boost_filesystem" version="$VER">
   <info url="http://www.boost.org"/>
-  <lib name="libboost_filesystem${LIBEXT}"/>
+  <lib name="boost_filesystem"/>
   <use name="boost_system"/>
   <use name="boost"/>
 </tool>""")
@@ -449,7 +450,7 @@ class Boost(Package):
         fname='boost_system.xml'
         template=Template("""<tool name="boost_system" version="$VER">
   <info url="http://www.boost.org"/>
-  <lib name="libboost_system${LIBEXT}"/>
+  <lib name="boost_system"/>
   <use name="boost"/>
 </tool>""")
         contents = template.substitute(values)
@@ -460,7 +461,7 @@ class Boost(Package):
         fname='boost_program_options.xml'
         template=Template("""<tool name="boost_program_options" version="$VER">
   <info url="http://www.boost.org"/>
-  <lib name="libboost_program_options${LIBEXT}"/>
+  <lib name="boost_program_options"/>
   <use name="boost"/>
 </tool>""")
         contents = template.substitute(values)
@@ -472,7 +473,7 @@ class Boost(Package):
         template="""
 <tool name="boost_python" version="$VER">
   <info url="http://www.boost.org"/>
-  <lib name="libboost_python${LIBEXT}"/>
+  <lib name="boost_python"/>
   <client>
     <environment name="BOOST_PYTHON_BASE" default="$PFX"/>
     <environment name="LIBDIR" default="$$BOOST_PYTHON_BASE/lib"/>
@@ -490,7 +491,7 @@ class Boost(Package):
         fname='boost_regex.xml'
         template=Template("""<tool name="boost_regex" version="$VER">
   <info url="http://www.boost.org"/>
-  <lib name="libboost_regex${LIBEXT}"/>
+  <lib name="boost_regex"/>
   <use name="boost"/>
 </tool>""")
         contents = template.substitute(values)
@@ -501,7 +502,7 @@ class Boost(Package):
         fname='boost_signals.xml'
         template=Template("""<tool name="boost_signals" version="$VER">
   <info url="http://www.boost.org"/>
-  <lib name="libboost_signals${LIBEXT}"/>
+  <lib name="boost_signals"/>
   <use name="boost"/>
 </tool>""")
         contents = template.substitute(values)
@@ -531,7 +532,7 @@ class Boost(Package):
         fname='boost_iostreams.xml'
         template=Template("""<tool name="boost_iostreams" version="$VER">
   <info url="http://www.boost.org"/>
-  <lib name="libboost_iostreams${LIBEXT}"/>
+  <lib name="boost_iostreams"/>
   <use name="boost"/>
 </tool>""")
         contents = template.substitute(values)

@@ -39,6 +39,7 @@ class Xrootd(CMakePackage):
     version('4.3.0', '39c2fab9f632f35e12ff607ccaf9e16c')
 
     depends_on('cmake@2.6:', type='build')
+    depends_on('python')
 
     def write_scram_toolfile(self,contents,filename):
         """Write scram tool config file"""
@@ -73,7 +74,7 @@ class Xrootd(CMakePackage):
     <environment name="LIBDIR" default="$$XROOTD_BASE/lib64"/>
   </client>
   <runtime name="PATH" value="$$XROOTD_BASE/bin" type="path"/>
-  <runtime name="PYTHONPATH" value="$XROOTD_BASE/lib/python${PYVER}/site-packages" type="path"/>
+  <runtime name="PYTHONPATH" value="$$XROOTD_BASE/lib/python${PYVER}/site-packages" type="path"/>
   <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
   <use name="root_cxxdefaults"/>
 </tool>""")

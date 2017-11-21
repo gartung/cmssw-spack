@@ -141,4 +141,4 @@ class Openssl(Package):
   </tool>""")
 
         contents = template.substitute(values)
-        self,write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents,fname)

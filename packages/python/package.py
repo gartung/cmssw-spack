@@ -659,6 +659,7 @@ class Python(AutotoolsPackage):
 
     def write_scram_toolfile(self, contents,filename):
         """Write scram tool config file"""
+        mkdirp(self.spec.prefix.etc+'/scram.d')
         with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
             f.write(contents)
             f.close()

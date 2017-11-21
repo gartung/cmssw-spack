@@ -77,12 +77,12 @@ class Expat(AutotoolsPackage):
   <lib name="expat"/>
   <client>
     <environment name="EXPAT_BASE" default="$PFX"/>
-    <environment name="LIBDIR" default="$EXPAT_BASE/lib"/>
-    <environment name="INCLUDE" default="$EXPAT_BASE/include"/>
-    <environment name="BINDIR" default="$EXPAT_BASE/bin"/>
+    <environment name="LIBDIR" default="$$EXPAT_BASE/lib"/>
+    <environment name="INCLUDE" default="$$EXPAT_BASE/include"/>
+    <environment name="BINDIR" default="$$EXPAT_BASE/bin"/>
   </client>
-  <runtime name="PATH" value="$BINDIR" type="path"/>
-  <runtime name="ROOT_INCLUDE_PATH" value="$INCLUDE" type="path"/>
+  <runtime name="PATH" value="$$BINDIR" type="path"/>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
   <use name="root_cxxdefaults"/>
 </tool>""")
         contents = template.substitute(values)
