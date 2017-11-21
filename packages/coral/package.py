@@ -56,14 +56,14 @@ class Coral(Package):
     """CORAL built as a scram project"""
 
     homepage = "http://cms-sw.github.io"
-    url      = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/cms/coral/CORAL_2_3_21/src.tar.gz"
+    url      = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/cms/coral/CORAL_2_3_21-oenich2/src.tar.gz"
 
     version('2.3.21','cad0b744fd18efc3a4aa045dc266fdb3')
     
-    config_tag='V05-05-21'
+    config_tag='V05-05-22'
     resource(name='scram-config',
-             url='http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/cms/coral/CORAL_2_3_21/%s.tar.gz'%config_tag,
-             md5='cfd1645786bb86ebe61221be6c3b2b9e',
+             url='http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/cms/coral/CORAL_2_3_21-oenich2/%s.tar.gz'%config_tag,
+             md5='785f25f05c5b446728172ef89ddfab9b',
              destination='.',
              placement='scram-config'
     )
@@ -96,10 +96,8 @@ class Coral(Package):
         scram=which('scram')
         build_directory = join_path(self.stage.path, 'spack-build')
         source_directory = self.stage.source_path
-        cmssw_version='CORAL.'+str(self.version)
-        cmssw_u_version=cmssw_version.replace('.','_')
         scram_version='V'+str(spec['scram'].version)
-        project_dir=join_path(prefix,cmssw_u_version)
+        project_dir=join_path(prefix,self.version.underscored)
 
         with working_dir(build_directory, create=True):
             rsync=which('rsync')
@@ -126,13 +124,13 @@ class Coral(Package):
             perl=which('perl')
             perl('config/updateConfig.pl',
                  '-p', 'CORAL', 
-                 '-v', cmssw_u_version,
+                 '-v', '%s' % self.version.underscored,
                  '-s', scram_version,
                  '-t', build_directory,
                  '--keys', 'SCRAM_COMPILER=gcc', 
-                 '--keys', 'PROJECT_GIT_HASH='+cmssw_u_version,
-                 '--arch', self.scram_arch)
-            scram('project','-d', prefix, '-b', 'config/bootsrc.xml')
+                 '--keys', 'PROJECT_GIT_HASH=V%s' % self.version.underscored,
+                 '--arch', '%s' % self.scram_arch)
+            scram('project','-d', '%s' % prefix, '-b', 'config/bootsrc.xml')
 
 
         with working_dir(project_dir,create=False):
@@ -146,7 +144,7 @@ class Coral(Package):
 
             scram.add_default_env('LOCALTOP', project_dir)
             scram.add_default_env('CORAL_BASE', project_dir)
-            scram.add_default_env('LD_LIBRARY_PATH', project_dir+'/lib/'+self.scram_arch)
+            scram.add_default_env('LD_LIBRARY_PATH', '%s/lib/%s'%(project_dir,self.scram_arch))
             scram('build', '-v', '-j8')
             relrelink('external')
             shutil.rmtree('tmp')
@@ -154,23 +152,55 @@ class Coral(Package):
 
 
     def setup_dependent_environment(self, spack_env, run_env, dspec):
-        cmssw_version='CORAL_'+str(self.version)
-        cmssw_u_version=cmssw_version.replace('.','_')
-        spack_env.set('LOCALTOP', self.prefix+'/'+cmssw_u_version)
-        spack_env.set('RELEASETOP', self.prefix+'/'+cmssw_u_version)
+        spack_env.set('LOCALTOP', self.prefix+'/'+self.version.underscored.string)
+        spack_env.set('RELEASETOP', self.prefix+'/'+self.version.underscored.string)
         spack_env.set('CORAL_RELEASE_BASE', self.prefix)
         spack_env.set('CORAL_BASE', self.prefix)
-        spack_env.append_path('LD_LIBRARY_PATH', self.prefix+'/'+cmssw_u_version+'/lib/'+self.scram_arch)
+        spack_env.append_path('LD_LIBRARY_PATH', '%s/%s/lib/%s'% (self.prefix,self.version.underscored,self.scram_arch))
 
 
     def setup_environment(self, spack_env, run_env):
-        cmssw_version='CORAL.'+str(self.version)
-        cmssw_u_version=cmssw_version.replace('.','_')
-        spack_env.set('LOCALTOP', self.prefix+'/'+cmssw_u_version)
+        spack_env.set('LOCALTOP', self.prefix+'/'+self.version.underscored.string)
         spack_env.set('CORAL_BASE', self.prefix)
-        spack_env.append_path('LD_LIBRARY_PATH', self.prefix+'/'+cmssw_u_version+'/lib/'+self.scram_arch)
+        spack_env.append_path('LD_LIBRARY_PATH', '%s/%s/lib/%s' % (self.prefix,self.version.underscored,self.scram_arch))
 
     def url_for_version(self, version):
         """Handle CORAL's version string."""
-        version_underscore=str(self.version).replace('.','_')
-        return "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/cms/coral/CORAL_%s/src.tar.gz" % version_underscore
+        return "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/cms/coral/V%s-oenich2/src.tar.gz" % version.underscored
+
+    def write_scram_toolfile(self,contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+        values['UVER']=self.version.underscored.string
+                 
+        fname='coral.xml'
+        template=Template("""
+<tool name="coral" version="${VER}" type="scram">
+  <client>
+    <environment name="CORAL_BASE" default="${PFX}/${UVER}"/>
+    <environment name="LIBDIR" default="$$CORAL_BASE/$$SCRAM_ARCH/lib"/>
+    <environment name="INCLUDE" default="$$CORAL_BASE/include/LCG"/>
+  </client>
+  <runtime name="PYTHONPATH" default="$$CORAL_BASE/$$SCRAM_ARCH/python" type="path"/>
+  <runtime name="PYTHONPATH" default="$$CORAL_BASE/$$SCRAM_ARCH/lib" type="path"/>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+</tool>
+""")
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents,fname)
+
+

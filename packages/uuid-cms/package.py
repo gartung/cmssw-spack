@@ -109,3 +109,19 @@ class UuidCms(Package):
         contents = template.substitute(values)
         self.write_scram_toolfile(contents,fname)
 
+        fname='libuuid.xml'
+        template=Template("""<tool name="libuuid" version="$VER">
+  <lib name="uuid"/>
+  <client>
+    <environment name="LIBUUID_BASE" default="$PFX"/>
+    <environment name="LIBDIR" default="$$LIBUUID_BASE/lib"/>
+    <environment name="INCLUDE" default="$$LIBUUID_BASE/include"/>
+  </client>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+  <use name="sockets"/>
+</tool>""")
+
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents,fname)
+
