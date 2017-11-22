@@ -97,7 +97,7 @@ class Coral(Package):
         build_directory = join_path(self.stage.path, 'spack-build')
         source_directory = self.stage.source_path
         scram_version='V'+str(spec['scram'].version)
-        project_dir=join_path(prefix,self.version.underscored)
+        project_dir=join_path(prefix,'CORAL_%s' % self.version.underscored)
 
         with working_dir(build_directory, create=True):
             rsync=which('rsync')
@@ -124,11 +124,11 @@ class Coral(Package):
             perl=which('perl')
             perl('config/updateConfig.pl',
                  '-p', 'CORAL', 
-                 '-v', '%s' % self.version.underscored,
+                 '-v', 'CORAL_%s' % self.version.underscored,
                  '-s', scram_version,
                  '-t', build_directory,
                  '--keys', 'SCRAM_COMPILER=gcc', 
-                 '--keys', 'PROJECT_GIT_HASH=V%s' % self.version.underscored,
+                 '--keys', 'PROJECT_GIT_HASH=CORAL_%s' % self.version.underscored,
                  '--arch', '%s' % self.scram_arch)
             scram('project','-d', '%s' % prefix, '-b', 'config/bootsrc.xml')
 
@@ -156,13 +156,13 @@ class Coral(Package):
         spack_env.set('RELEASETOP', self.prefix+'/'+self.version.underscored.string)
         spack_env.set('CORAL_RELEASE_BASE', self.prefix)
         spack_env.set('CORAL_BASE', self.prefix)
-        spack_env.append_path('LD_LIBRARY_PATH', '%s/%s/lib/%s'% (self.prefix,self.version.underscored,self.scram_arch))
+        spack_env.append_path('LD_LIBRARY_PATH', '%s/CORAL_%s/lib/%s'% (self.prefix,self.version.underscored,self.scram_arch))
 
 
     def setup_environment(self, spack_env, run_env):
         spack_env.set('LOCALTOP', self.prefix+'/'+self.version.underscored.string)
         spack_env.set('CORAL_BASE', self.prefix)
-        spack_env.append_path('LD_LIBRARY_PATH', '%s/%s/lib/%s' % (self.prefix,self.version.underscored,self.scram_arch))
+        spack_env.append_path('LD_LIBRARY_PATH', '%s/CORAL_%s/lib/%s' % (self.prefix,self.version.underscored,self.scram_arch))
 
     def url_for_version(self, version):
         """Handle CORAL's version string."""
@@ -184,7 +184,7 @@ class Coral(Package):
         values={}
         values['VER']=self.spec.version
         values['PFX']=self.spec.prefix
-        values['UVER']=self.version.underscored.string
+        values['UVER']='CORAL_%s' % self.version.underscored
                  
         fname='coral.xml'
         template=Template("""
