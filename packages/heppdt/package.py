@@ -61,7 +61,7 @@ class Heppdt(AutotoolsPackage):
         values['VER']=self.spec.version
         values['PFX']=self.spec.prefix
 
-        fname='hepmc.xml'
+        fname='heppdt.xml'
         template=Template("""
 <tool name="heppdt" version="${VER}">
   <lib name="HepPDT"/>

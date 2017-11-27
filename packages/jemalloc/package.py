@@ -64,3 +64,44 @@ class Jemalloc(Package):
         # FIXME: Add logic to build and install here.
         make()
         make('install')
+
+    def write_scram_toolfile(self,contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+
+        fname='jemalloc.xml'
+        template=Template("""
+<tool name="jemalloc" version="${VER}">
+  <architecture name="slc.*|fc.*|linux*">
+    <lib name="jemalloc"/>
+  </architecture>
+  <client>
+    <environment name="JEMALLOC_BASE" default="${PFX}"/>
+    <environment name="LIBDIR"        default="$$JEMALLOC_BASE/lib"/>
+    <environment name="INCLUDE"        default="$$JEMALLOC_BASE/include"/>
+  </client>
+  <runtime name="MALLOC_CONF" value="lg_chunk:18,lg_dirty_mult:4"/>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+  <flags SKIP_TOOL_SYMLINKS="1"/>
+</tool>
+""")
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents,fname)
+
+
+

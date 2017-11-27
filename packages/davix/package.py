@@ -39,7 +39,7 @@ class Davix(CMakePackage):
 
     def cmake_args(self):
         args = ['-DLIBXML2_INCLUDE_DIR=%s/include/libxml2' % self.spec['libxml2'].prefix,
-                '-DLIBXML2_LIBRARIES="%s/lib/libxml2.%s"' % 
+                '-DLIBXML2_LIBRARIES=%s/lib/libxml2.%s' % 
                 (self.spec['libxml2'].prefix, dso_suffix),
                 '-DBoost_NO_SYSTEM_PATHS:BOOL=TRUE',
                 '-DBOOST_ROOT:PATH=%s' % self.spec['boost'].prefix,
@@ -75,7 +75,7 @@ class Davix(CMakePackage):
       <environment name="LIBDIR" default="$LIB"/>
       <environment name="INCLUDE" default="$$DAVIX_BASE/include/davix"/>
     </client>
-    <runtime name="PATH" value="$DAVIX_BASE/bin" type="path"/>
+    <runtime name="PATH" value="$$DAVIX_BASE/bin" type="path"/>
     <use name="boost_system"/>
     <use name="openssl"/>
     <use name="libxml2"/>

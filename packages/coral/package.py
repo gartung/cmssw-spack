@@ -152,10 +152,7 @@ class Coral(Package):
 
 
     def setup_dependent_environment(self, spack_env, run_env, dspec):
-        spack_env.set('LOCALTOP', self.prefix+'/'+self.version.underscored.string)
-        spack_env.set('RELEASETOP', self.prefix+'/'+self.version.underscored.string)
         spack_env.set('CORAL_RELEASE_BASE', self.prefix)
-        spack_env.set('CORAL_BASE', self.prefix)
         spack_env.append_path('LD_LIBRARY_PATH', '%s/CORAL_%s/lib/%s'% (self.prefix,self.version.underscored,self.scram_arch))
 
 

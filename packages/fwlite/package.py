@@ -96,6 +96,7 @@ class Fwlite(Package):
     depends_on('cmssw.zlib')
     depends_on('cmssw.xz')
     depends_on('cmssw.libtiff')
+    depends_on('cmssw.libjpeg-turbo')
     depends_on('cmssw.libxml2^python+shared')
     depends_on('cmssw.bzip2')
     depends_on('cmssw.fireworks-data')

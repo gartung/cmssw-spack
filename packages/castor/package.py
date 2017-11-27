@@ -56,7 +56,63 @@ class Castor(Package):
         source_directory = self.stage.source_path
         mkdirp('%s' % prefix.include)
         mkdirp('%s/shift' % prefix.include)
+        mkdirp(prefix.lib)
+        mkdirp(prefix.bin)
+
         install('%s/h/shift.h' % source_directory,prefix.include)
         for file in glob.glob('%s/h/*' % source_directory): 
            f = join_path(source_directory,'h',file)
            install(f, '%s/shift' % prefix.include)
+
+    def write_scram_toolfile(self,contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+        import sys
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+
+        fname='castor_header.xml'
+        template=Template("""
+<tool name="castor_header" version="${VER}">
+  <client>
+    <environment name="CASTOR_HEADER_BASE" default="${PFX}"/>
+    <environment name="INCLUDE" default="$$CASTOR_HEADER_BASE/include"/>
+    <environment name="INCLUDE" default="$$CASTOR_HEADER_BASE/include/shift"/>
+  </client>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$CASTOR_HEADER_BASE/include" type="path"/>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$CASTOR_HEADER_BASE/include/shift" type="path"/>
+  <use name="root_cxxdefaults"/>
+</tool>
+""")
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents,fname)
+
+        fname='castor.xml'
+        template=Template("""
+<tool name="castor" version="${VER}">
+  <lib name="shift"/>
+  <lib name="castorrfio"/>
+  <lib name="castorclient"/>
+  <lib name="castorcommon"/>
+  <client>
+    <environment name="CASTOR_BASE" default="${PFX}"/>
+    <environment name="LIBDIR" default="$$CASTOR_BASE/lib"/>
+  </client>
+  <runtime name="PATH" value="$$CASTOR_BASE/bin" type="path"/>
+  <use name="castor_header"/>
+  <use name="libuuid"/>
+</tool>
+""")
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents,fname)

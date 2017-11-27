@@ -68,12 +68,6 @@ class Cmssw(Package):
              placement='config'
     )
     
-    resource(name='toolbox',
-             git='https://github.com/gartung/scram-tool-templ.git',
-             commit='97071c1',
-             placement='tools'
-    )
-
 
     depends_on('cmssw.scram')
     depends_on('cmssw.gmake')
@@ -107,7 +101,7 @@ class Cmssw(Package):
     depends_on('cmssw.fireworks-data')
     depends_on('cmssw.cmssw.llvm@4.0.1~gold~libcxx+python+shared_libs')
     depends_on('cmssw.cfe-bindings@4.0.1')
-    depends_on('cmssw.libuuid')
+    depends_on('cmssw.uuid-cms')
     depends_on('cmssw.valgrind')
     depends_on('cmssw.geant4~qt')
     depends_on('cmssw.expat')
@@ -116,7 +110,7 @@ class Cmssw(Package):
     depends_on('cmssw.curl')
     depends_on('cmssw.classlib')
     depends_on('cmssw.davix')
-    depends_on('cmssw.gperftools')
+    depends_on('cmssw.tcmalloc-fake')
     depends_on('cmssw.meschach')
     depends_on('cmssw.fastjet')
     depends_on('cmssw.fftjet')
@@ -150,7 +144,7 @@ class Cmssw(Package):
         gcc_ver=gcc('-dumpversion',output=str)
 
         values = {}
-        values['SELF_LIB']=project_dir+'/lib/'+scram_arch
+        values['SELF_LIB']=project_dir+'/lib/'+self.scram_arch
         values['SELF_INC']=project_dir+'/src'
         values['GCC_VER']=gcc_ver.rstrip()
         values['GCC_PREFIX']=gcc_prefix
@@ -170,11 +164,10 @@ class Cmssw(Package):
                 f.close()
             mkdirp('tools/selected')
             mkdirp('tools/available')
-            for key in spec.keys:
-                xmlfiles = glob(join_path(spec[key].prefix.etc,'scram.d','*.xml'))
+            for dep in spec.dependencies():
+                xmlfiles = glob(join_path(dep.prefix.etc,'scram.d','*.xml'))
                 for xmlfile in xmlfiles:
                     install(xmlfile,'tools/selected')
-
             perl=which('perl')
             perl('config/updateConfig.pl',
                  '-p', 'CMSSW', 
@@ -183,7 +176,7 @@ class Cmssw(Package):
                  '-t', build_directory,
                  '--keys', 'SCRAM_COMPILER=gcc', 
                  '--keys', 'PROJECT_GIT_HASH='+cmssw_u_version,
-                 '--arch', scram_arch)
+                 '--arch', self.scram_arch)
             scram('project','-d', prefix, '-b', 'config/bootsrc.xml')
 
 
@@ -198,7 +191,7 @@ class Cmssw(Package):
 
             scram.add_default_env('LOCALTOP', project_dir)
             scram.add_default_env('CMSSW_BASE', project_dir)
-            scram.add_default_env('LD_LIBRARY_PATH', project_dir+'/lib/'+scram_arch)
+            scram.add_default_env('LD_LIBRARY_PATH', project_dir+'/lib/'+self.scram_arch)
             scram.add_default_env('LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib)
             scram.add_default_env('LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib64)
             scram('build', '-v', '-k', '-j8')
@@ -223,7 +216,7 @@ class Cmssw(Package):
         spack_env.set('RELEASETOP', self.prefix+'/'+cmssw_u_version)
         spack_env.set('CMSSW_RELEASE_BASE', self.prefix)
         spack_env.set('CMSSW_BASE', self.prefix)
-        spack_env.append_path('LD_LIBRARY_PATH', self.prefix+'/'+cmssw_u_version+'/lib/'+scram_arch)
+        spack_env.append_path('LD_LIBRARY_PATH', self.prefix+'/'+cmssw_u_version+'/lib/'+self.scram_arch)
         spack_env.append_path('LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib64)
 
 
@@ -234,7 +227,7 @@ class Cmssw(Package):
 #        spack_env.set('RELEASETOP', self.prefix+'/'+cmssw_u_version)
 #        spack_env.set('CMSSW_RELEASE_BASE', self.prefix)
         spack_env.set('CMSSW_BASE', self.prefix)
-        spack_env.append_path('LD_LIBRARY_PATH', self.prefix+'/'+cmssw_u_version+'/lib/'+scram_arch)
+        spack_env.append_path('LD_LIBRARY_PATH', self.prefix+'/'+cmssw_u_version+'/lib/'+self.scram_arch)
         spack_env.append_path('LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib)
         spack_env.append_path('LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib64)
 

@@ -76,6 +76,8 @@ namespace gptmp {
     <environment name="LIBDIR"                default="$$TCMALLOC_MINIMAL_BASE/lib"/>
   </client>
 </tool>""")
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents,fname)
 
         fname='tcmalloc.xml'
         template=Template("""<tool name="tcmalloc" version="$VER">

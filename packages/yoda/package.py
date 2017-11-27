@@ -45,3 +45,39 @@ class Yoda(Package):
             configure('--enable-root', '--prefix=%s' % self.prefix)
             make('all')
             make('install')
+    def write_scram_toolfile(self,contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+
+        fname='yoda.xml'
+        template=Template("""
+<tool name="yoda" version="${VER}">
+  <lib name="YODA"/>
+  <client>
+    <environment name="YODA_BASE" default="${PFX}"/>
+    <environment name="LIBDIR" default="$$YODA_BASE/lib"/>
+    <environment name="INCLUDE" default="$$YODA_BASE/include"/>
+  </client>
+  <use name="root_cxxdefaults"/>
+  <runtime name="PYTHONPATH" value="$$YODA_BASE/lib/python2.7/site-packages" type="path"/>
+  <runtime name="PATH"       value="$$YODA_BASE/bin" type="path"/>
+</tool>
+""")
+
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents,fname)
+
