@@ -25,26 +25,25 @@
 from spack import *
 
 
-class LibjpegTurbo(AutotoolsPackage):
-    """libjpeg-turbo is a fork of the original IJG libjpeg which uses SIMD to
-       accelerate baseline JPEG compression and decompression. libjpeg is a
-       library that implements JPEG image encoding, decoding and
-       transcoding."""
+class Freetype(AutotoolsPackage):
+    """FreeType is a freely available software library to render fonts.
+    It is written in C, designed to be small, efficient, highly customizable,
+    and portable while capable of producing high-quality output (glyph images)
+    of most vector and bitmap font formats."""
 
-    homepage = "http://libjpeg-turbo.virtualgl.org"
-    url      = "http://downloads.sourceforge.net/libjpeg-turbo/libjpeg-turbo-1.3.1.tar.gz"
+    homepage = "https://www.freetype.org/index.html"
+    url      = "http://download.savannah.gnu.org/releases/freetype/freetype-2.7.1.tar.gz"
 
-    version('1.5.0', '3fc5d9b6a8bce96161659ae7a9939257')
-    version('1.3.1', '2c3a68129dac443a72815ff5bb374b05')
+    version('2.7.1', '78701bee8d249578d83bb9a2f3aa3616')
+    version('2.7',   '337139e5c7c5bd645fe130608e0fa8b5')
+    version('2.5.3', 'cafe9f210e45360279c730d27bf071e9')
 
-    provides('jpeg')
+    depends_on('libpng')
+    depends_on('bzip2')
+    depends_on('pkg-config@0.24:', type='build')
 
-    # Can use either of these. But in the current version of the package
-    # only nasm is used. In order to use yasm an environmental variable
-    # NASM must be set.
-    # TODO: Implement the selection between two supported assemblers.
-    # depends_on("yasm", type='build')
-    depends_on("nasm", type='build')
+    def configure_args(self):
+        return ['--with-harfbuzz=no']
 
     def write_scram_toolfile(self,contents,filename):
         """Write scram tool config file"""
@@ -64,20 +63,21 @@ class LibjpegTurbo(AutotoolsPackage):
         values['VER']=self.spec.version
         values['PFX']=self.spec.prefix
 
-        fname='libjpg.xml'
-        template=Template("""<tool name="libjpeg-turbo" version="$VER">
-  <info url="http://libjpeg-turbo.virtualgl.org"/>
-  <lib name="jpeg"/>
-  <lib name="turbojpeg"/>
+        fname='freetype.xml'
+        template=Template("""
+<tool name="freetype" version="${VER}">
+  <lib name="freetype-cms"/>
   <client>
-    <environment name="LIBJPEG_TURBO_BASE" default="$PFX"/>
-    <environment name="LIBDIR" default="$$LIBJPEG_TURBO_BASE/lib"/>
-    <environment name="INCLUDE" default="$$LIBJPEG_TURBO_BASE/include"/>
+    <environment name="FREETYPE_BASE" default="${PFX}"/>
+    <environment name="INCLUDE"      default="$$FREETYPE_BASE/include"/>
+    <environment name="LIBDIR"       default="$$FREETYPE_BASE/lib"/>
   </client>
+  <runtime name="PATH" value="$$FREETYPE_BASE/bin" type="path"/>
   <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
-  <runtime name="PATH" value="$$LIBJPEG_TURBO_BASE/bin" type="path"/>
   <use name="root_cxxdefaults"/>
-</tool>""")
+</tool>
+""")
 
         contents = template.substitute(values)
         self.write_scram_toolfile(contents,fname)
+

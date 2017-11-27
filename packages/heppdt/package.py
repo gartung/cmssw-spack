@@ -22,36 +22,33 @@
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
+
 from spack import *
 
 
-class LibjpegTurbo(AutotoolsPackage):
-    """libjpeg-turbo is a fork of the original IJG libjpeg which uses SIMD to
-       accelerate baseline JPEG compression and decompression. libjpeg is a
-       library that implements JPEG image encoding, decoding and
-       transcoding."""
+class Heppdt(AutotoolsPackage):
+    """The HepPID library contains translation methods for particle ID's
+    to and from various Monte Carlo generators and the PDG standard
+    numbering scheme. We realize that the generators adhere closely
+    to the standard, but there are occasional differences."""
+    homepage = "http://lcgapp.cern.ch/project/simu/HepPDT/"
+    url      = "http://lcgapp.cern.ch/project/simu/HepPDT/download/HepPDT-2.06.01.tar.gz"
 
-    homepage = "http://libjpeg-turbo.virtualgl.org"
-    url      = "http://downloads.sourceforge.net/libjpeg-turbo/libjpeg-turbo-1.3.1.tar.gz"
+    version('3.04.01', 'a8e93c7603d844266b62d6f189f0ac7e')
+    version('3.04.00', '2d2cd7552d3e9539148febacc6287db2')
+    version('3.03.02', '0b85f1809bb8b0b28a46f23c718b2773')
+    version('3.03.01', 'd411f3bfdf9c4350d802241ba2629cc2')
+    version('3.03.00', 'cd84d0a0454be982dcd8c285e060a7b3')
+    version('2.06.01', '5688b4bdbd84b48ed5dd2545a3dc33c0')
 
-    version('1.5.0', '3fc5d9b6a8bce96161659ae7a9939257')
-    version('1.3.1', '2c3a68129dac443a72815ff5bb374b05')
-
-    provides('jpeg')
-
-    # Can use either of these. But in the current version of the package
-    # only nasm is used. In order to use yasm an environmental variable
-    # NASM must be set.
-    # TODO: Implement the selection between two supported assemblers.
-    # depends_on("yasm", type='build')
-    depends_on("nasm", type='build')
+    def setup_dependent_environment(self, spack_env, run_env, dspec):
+        spack_env.prepend_path('LD_LIBRARY_PATH', self.prefix.lib)
 
     def write_scram_toolfile(self,contents,filename):
         """Write scram tool config file"""
         with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -64,20 +61,21 @@ class LibjpegTurbo(AutotoolsPackage):
         values['VER']=self.spec.version
         values['PFX']=self.spec.prefix
 
-        fname='libjpg.xml'
-        template=Template("""<tool name="libjpeg-turbo" version="$VER">
-  <info url="http://libjpeg-turbo.virtualgl.org"/>
-  <lib name="jpeg"/>
-  <lib name="turbojpeg"/>
+        fname='hepmc.xml'
+        template=Template("""
+<tool name="heppdt" version="${VER}">
+  <lib name="HepPDT"/>
+  <lib name="HepPID"/>
   <client>
-    <environment name="LIBJPEG_TURBO_BASE" default="$PFX"/>
-    <environment name="LIBDIR" default="$$LIBJPEG_TURBO_BASE/lib"/>
-    <environment name="INCLUDE" default="$$LIBJPEG_TURBO_BASE/include"/>
+    <environment name="HEPPDT_BASE" default="${PFX}"/>
+    <environment name="LIBDIR" default="$$HEPPDT_BASE/lib"/>
+    <environment name="INCLUDE" default="$$HEPPDT_BASE/include"/>
   </client>
+  <runtime name="HEPPDT_PARAM_PATH" value="$$HEPPDT_BASE"/>
   <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
-  <runtime name="PATH" value="$$LIBJPEG_TURBO_BASE/bin" type="path"/>
   <use name="root_cxxdefaults"/>
-</tool>""")
-
+  <flags SKIP_TOOL_SYMLINKS="1"/>
+</tool>
+""")
         contents = template.substitute(values)
         self.write_scram_toolfile(contents,fname)
