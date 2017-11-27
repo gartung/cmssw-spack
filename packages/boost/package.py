@@ -398,7 +398,6 @@ class Boost(Package):
         values={}
         values['VER']=self.spec.version
         values['PFX']=self.spec.prefix
-        values['LIBEXT']=dso_suffix
 
         fname='boost.xml'
         template=Template("""<tool name="boost" version="$VER">
@@ -426,7 +425,7 @@ class Boost(Package):
         fname='boost_chrono.xml'
         template=Template("""<tool name="boost_chrono" version="$VER">
   <info url="http://www.boost.org"/>
-  <lib name="libboost_chrono${LIBEXT}"/>
+  <lib name="boost_chrono"/>
   <use name="boost_system"/>
   <use name="boost"/>
 </tool>""")
@@ -512,7 +511,7 @@ class Boost(Package):
         fname='boost_serialization.xml'
         template=Template("""<tool name="boost_serialization" version="$VER">
   <info url="http://www.boost.org"/>
-  <lib name="libboost_serialization${LIBEXT}"/>
+  <lib name="boost_serialization"/>
   <use name="boost"/>
 </tool>""")
         contents = template.substitute(values)
