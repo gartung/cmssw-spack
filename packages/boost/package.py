@@ -403,9 +403,9 @@ class Boost(Package):
         fname='boost.xml'
         template=Template("""<tool name="boost" version="$VER">
   <info url="http://www.boost.org"/>
-  <lib name="libboost_thread${LIBEXT}"/>
-  <lib name="libboost_signals${LIBEXT}"/>
-  <lib name="libboost_date_time${LIBEXT}"/>
+  <lib name="boost_thread"/>
+  <lib name="boost_signals"/>
+  <lib name="boost_date_time"/>
   <client>
     <environment name="BOOST_BASE" default="$PFX"/>
     <environment name="LIBDIR" default="$$BOOST_BASE/lib"/>

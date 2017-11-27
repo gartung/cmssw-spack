@@ -100,7 +100,7 @@ class Fwlite(Package):
     depends_on('bzip2')
     depends_on('fireworks-data')
     depends_on('llvm@4.0.1~gold~libcxx+python+shared_libs')
-    depends_on('libuuid')
+    depends_on('uuid-cms')
 
     if sys.platform == 'darwin':
         patch('macos.patch')

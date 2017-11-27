@@ -434,6 +434,8 @@ class Root(CMakePackage):
   <use name="root_interface"/>
   <use name="rootcling"/>
 </tool>""")
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents,fname)
 
 
 # roothtml toolfile
