@@ -37,8 +37,9 @@ class Sqlite(AutotoolsPackage):
             url='https://www.sqlite.org/2017/sqlite-autoconf-3200000.tar.gz')
     version('3.18.0', 'a6687a8ae1f66abc8df739aeadecfd0c',
             url='https://www.sqlite.org/2017/sqlite-autoconf-3180000.tar.gz')
-    version('3.16.2', '0259d52be88f085d104c6d2aaa8349ac',
-            url='https://www.sqlite.org/2016/sqlite-autoconf-3150100.tar.gz')
+    version('3.16.02', '0259d52be88f085d104c6d2aaa8349ac',
+            url='https://www.sqlite.org/2016/sqlite-autoconf-3150100.tar.gz',
+            preferred=True)
     version('3.8.10.2', 'a18bfc015cd49a1e7a961b7b77bc3b37',
             url='https://www.sqlite.org/2015/sqlite-autoconf-3081002.tar.gz')
     version('3.8.5', '0544ef6d7afd8ca797935ccc2685a9ed',

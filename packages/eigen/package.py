@@ -58,3 +58,33 @@ class Eigen(CMakePackage):
     depends_on('suite-sparse', when='+suitesparse')
     depends_on('mpfr@2.3.0:', when='+mpfr')
     depends_on('gmp', when='+mpfr')
+
+    def write_scram_toolfile(self,contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+
+        fname='eigen3.xml'
+        template=Template("""
+<tool name="eigen" version="${VER}">
+  <client>
+    <environment name="EIGEN_BASE"   default="${PFX}"/>
+    <environment name="INCLUDE"      default="$$EIGEN_BASE/include/eigen3"/>
+  </client>
+  <flags CPPDEFINES="EIGEN_DONT_PARALLELIZE"/>
+</tool>
+""")
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents,fname)

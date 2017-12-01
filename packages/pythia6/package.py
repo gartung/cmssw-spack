@@ -53,3 +53,66 @@ class Pythia6(Package):
             cmake(*cmake_args)
             make()
             make("install")
+
+    def write_scram_toolfile(self,contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+
+        fname='pythia6_headers.xml'
+        template=Template("""
+<tool name="pythia6_headers" version="${VER}">
+  <client>
+    <environment name="PYTHIA6_HEADERS_BASE" default="${PFX}"/>
+    <environment name="INCLUDE" default="$$PYTHIA6_HEADERS_BASE/include"/>
+  </client>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+</tool>
+""")
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents,fname)
+
+        fname='pythia6.xml'
+        template=Template("""
+<tool name="pythia6" version="${VER}">
+  <lib name="pythia6"/>
+  <lib name="pythia6_dummy"/>
+  <lib name="pythia6_pdfdummy"/>
+  <client>
+    <environment name="PYTHIA6_BASE" default="${PFX}"/>
+    <environment name="LIBDIR" default="$$PYTHIA6_BASE/lib"/>
+  </client>
+  <use name="pythia6_headers"/>
+  <use name="f77compiler"/>
+</tool>
+""")
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents,fname)
+
+        fname='pydata.xml'
+        template=Template("""
+<tool name="pydata" version="${VER}">
+  <client>
+    <environment name="PYDATA_BASE" default="${PFX}"/>
+  </client>
+  <architecture name="slc.*|fc.*|linux*">
+    <flags LDFLAGS="$$(PYDATA_BASE)/lib/pydata.o"/>
+  </architecture>
+  <flags NO_RECURSIVE_EXPORT="1"/>
+</tool>
+""")
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents,fname)

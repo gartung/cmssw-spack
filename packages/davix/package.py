@@ -64,7 +64,7 @@ class Davix(CMakePackage):
         values={}
         values['VER']=self.spec.version
         values['PFX']=self.spec.prefix
-        values['LIB']=self.spec.prefix.lib
+        values['LIB']=self.spec.prefix.lib64
  
         fname='davix.xml'
         template=Template("""<tool name="davix" version="$VER">

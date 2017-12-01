@@ -22,20 +22,55 @@
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
+#
+# This is a template package file for Spack.  We've put "FIXME"
+# next to all the things you'll want to change. Once you've handled
+# them, you can save this file and test your package like this:
+#
+#     spack install mcdb
+#
+# You can edit this file again by typing:
+#
+#     spack edit mcdb
+#
+# See the Spack documentation for more information on packaging.
+# If you submit this package back to Spack as a pull request,
+# please first remove this boilerplate and all FIXME comments.
+#
 from spack import *
 
 
-class Vdt(CMakePackage):
-    """Vectorised math. A collection of fast and inline implementations of
-    mathematical functions."""
+class Mcdb(Package):
+    """FIXME: Put a proper description of your package here."""
 
-    homepage = "https://github.com/dpiparo/vdt"
-    url      = "https://github.com/dpiparo/vdt/archive/v0.3.9.tar.gz"
+    # FIXME: Add a proper url for your package's homepage here.
+    homepage = "http://www.example.com"
+    url      = "http://mcdb.cern.ch/distribution/api/mcdb-api-1.0.3.tar.gz"
 
-    version('0.3.9', '80a2d73a82f7ef8257a8206ca22dd145')
-    version('0.3.8', '25b07c72510aaa95fffc11e33579061c')
-    version('0.3.7', 'd2621d4c489894fd1fe8e056d9a0a67c')
-    version('0.3.6', '6eaff3bbbd5175332ccbd66cd71a741d')
+    version('1.0.3', '587a2699d3240561ccaf479c8edcfdeb')
+    version('1.0.2', 'f8c5cba0b66c7241115bc74e846c7814')
+    version('1.0.1', 'c93bafcfc129a875ce5097c4e5fcf16e')
+
+    # FIXME: Add dependencies if required.
+    depends_on('xerces-c')
+
+    def install(self, spec, prefix):
+        contents="""
+PLATFORM = slc_amd64_gcc
+CC       = gcc
+CXX      = g++
+CFLAGS   = -O2 -pipe -Wall -W -fPIC
+CXXFLAGS = -O2 -pipe -Wall -W -fPIC
+LINK     = g++
+LFLAGS   = -shared -Wl,-soname,libmcdb.so
+XERCESC  = %s
+""" % spec['xerces-c'].prefix
+        with open('config.mk','w') as f:
+            f.write(contents)
+            f.close()
+        make()
+        install_tree('lib',prefix+'/lib')
+        install_tree('interface',prefix+'/interface')
 
     def write_scram_toolfile(self,contents,filename):
         """Write scram tool config file"""
@@ -55,28 +90,19 @@ class Vdt(CMakePackage):
         values['VER']=self.spec.version
         values['PFX']=self.spec.prefix
 
-        fname='vdt_headers.xml'
-        template=Template("""<tool name="vdt_headers" version="$VER">
+        fname='mcdb.xml'
+        template=Template("""
+<tool name="mcdb" version="$VER">
+  <lib name="mcdb"/>
   <client>
-    <environment name="VDT_HEADERS_BASE" default="$PFX"/>
-    <environment name="INCLUDE" default="$$VDT_HEADERS_BASE/include"/>
+    <environment name="MCDB_BASE" default="$PFX"/>
+    <environment name="LIBDIR" default="$$MCDB_BASE/lib"/>
+    <environment name="INCLUDE" default="$$MCDB_BASE/interface"/>
   </client>
   <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
   <use name="root_cxxdefaults"/>
-</tool>""")
+  <use name="xerces-c"/>
+</tool>
+""")
         contents = template.substitute(values)
         self.write_scram_toolfile(contents,fname)
-
-        fname='vdt.xml'
-        template=Template("""<tool name="vdt" version="$VER">
-  <lib name="vdt"/>
-  <use name="vdt_headers"/>
-  <client>
-    <environment name="VDT_BASE" default="$PFX"/>
-    <environment name="LIBDIR" default="$$VDT_BASE/lib"/>
-  </client>
-</tool>""")
-
-        contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-

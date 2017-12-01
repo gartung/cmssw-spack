@@ -35,7 +35,7 @@ class Protobuf(CMakePackage):
 
     version('3.4.0', '1d077a7d4db3d75681f5c333f2de9b1a')
     version('3.3.0', 'f0f712e98de3db0c65c0c417f5e7aca8')
-    version('3.2.0', 'efaa08ae635664fb5e7f31421a41a995')
+    version('3.2.0', 'efaa08ae635664fb5e7f31421a41a995',preferred=True)
     version('3.1.0', '39d6a4fa549c0cce164aa3064b1492dc')
     version('3.0.2', '7349a7f43433d72c6d805c6ca22b7eeb')
     # does not build with CMake:

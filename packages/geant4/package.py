@@ -37,22 +37,27 @@ class Geant4(CMakePackage):
     url = "http://geant4.cern.ch/support/source/geant4.10.01.p03.tar.gz"
 
     version('10.02.p02', '6aae1d0fc743b0edc358c5c8fbe48657')
-    version('10.02.p01', 'b81f7082a15f6a34b720b6f15c6289cfe4ddbbbdcef0dc52719f71fac95f7f1c')
-    version('10.01.p03', '4fb4175cc0dabcd517443fbdccd97439')
 
     variant('qt', default=False, description='Enable Qt support')
     variant('vecgeom', default=False, description='Enable Vecgeom support')
 
     depends_on('cmake@3.5:', type='build')
 
-    depends_on("clhep@2.3.1.1~cxx11+cxx14", when="@10.02.p02")
-    depends_on("clhep@2.3.1.1~cxx11+cxx14", when="@10.02.p01")
-    depends_on("clhep@2.2.0.4~cxx11+cxx14", when="@10.01.p03")
+    depends_on("clhep@2.3.1.1~cxx11+cxx14")
     depends_on("expat")
     depends_on("zlib")
     depends_on("xerces-c")
     depends_on("qt@4.8:", when="+qt")
     depends_on("vecgeom", when="+vecgeom")
+    # G4 data 
+    depends_on("geant4-g4emlow")
+    depends_on("geant4-g4ndl")   
+    depends_on("geant4-g4photonevaporation")
+    depends_on("geant4-g4saiddata")
+    depends_on("geant4-g4abla")
+    depends_on("geant4-g4ensdfstate")
+    depends_on("geant4-g4neutronsxs")
+    depends_on("geant4-g4radioactivedecay")
 
     def cmake_args(self):
         spec = self.spec
@@ -61,7 +66,7 @@ class Geant4(CMakePackage):
             '-DGEANT4_USE_GDML=ON',
             '-DGEANT4_USE_SYSTEM_CLHEP=ON',
             '-DGEANT4_USE_G3TOG4=ON',
-            '-DGEANT4_INSTALL_DATA=ON',
+            '-DGEANT4_INSTALL_DATA=OFF',
             '-DGEANT4_BUILD_TLS_MODEL=global-dynamic',
             '-DGEANT4_BUILD_MULTITHREADED=ON',
             '-DGEANT4_USE_SYSTEM_EXPAT=ON',
@@ -93,3 +98,113 @@ class Geant4(CMakePackage):
     def url_for_version(self, version):
         """Handle Geant4's unusual version string."""
         return ("http://geant4.cern.ch/support/source/geant4.%s.tar.gz" % version)
+
+    def write_scram_toolfile(self,contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['GEANT4_VER']=self.spec.version
+        values['GEANT4_PREFIX']=self.spec.prefix
+
+        fname='geant4.xml'
+        template=Template("""
+<tool name="geant4" version="${GEANT4_VER}">
+  <info url="http://geant4.web.cern.ch/geant4/"/>
+  <use name="geant4core"/>
+  <use name="geant4vis"/>
+  <use name="xerces-c"/>
+</tool>
+""")
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents,fname)
+
+        fname='geant4core.xml'
+        template=Template("""
+<tool name="geant4core" version="${GEANT4_VER}">
+  <info url="http://geant4.web.cern.ch/geant4/"/>
+  <lib name="G4digits_hits"/>
+  <lib name="G4error_propagation"/>
+  <lib name="G4event"/>
+  <lib name="G4geometry"/>
+  <lib name="G4global"/>
+  <lib name="G4graphics_reps"/>
+  <lib name="G4intercoms"/>
+  <lib name="G4interfaces"/>
+  <lib name="G4materials"/>
+  <lib name="G4parmodels"/>
+  <lib name="G4particles"/>
+  <lib name="G4persistency"/>
+  <lib name="G4physicslists"/>
+  <lib name="G4processes"/>
+  <lib name="G4readout"/>
+  <lib name="G4run"/>
+  <lib name="G4tracking"/>
+  <lib name="G4track"/>
+  <lib name="G4analysis"/>
+  <flags CXXFLAGS="-DG4MULTITHREADED -DG4USE_STD11 -ftls-model=global-dynamic -pthread"/>
+  <client>
+    <environment name="GEANT4_BASE" default="${GEANT4_PREFIX}"/>
+    <environment name="LIBDIR" default="$$GEANT4_BASE/lib64"/>
+    <environment name="G4LIB" value="$$LIBDIR"/>
+    <environment name="INCLUDE" default="$$GEANT4_BASE/include/Geant4"/>
+  </client>
+  <runtime name="ROOT_INCLUDE_PATH"  value="$$INCLUDE" type="path"/>
+  <flags cppdefines="GNU_GCC G4V9"/>
+  <use name="clhep"/>
+  <use name="root_cxxdefaults"/>
+  <flags SKIP_TOOL_SYMLINKS="1"/>
+</tool>
+""")
+
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents,fname)
+
+
+        fname='geant4data.xml'
+        template=Template("""
+<tool name="geant4data" version="${GEANT4_VER}">
+  <use name="geant4data_g4abla"/>
+  <use name="geant4data_g4emlow"/>
+  <use name="geant4data_g4ensdfstate"/>
+  <use name="geant4data_g4ndl"/>
+  <use name="geant4data_g4neutronxs"/>
+  <use name="geant4data_g4photonevaporation"/>
+  <use name="geant4data_g4radioactivedecay"/>
+  <use name="geant4data_g4saiddata"/>
+</tool>
+""")
+
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents,fname)
+
+        fname='geant4vis.xml'
+        template=Template("""
+<tool name="geant4vis" version="${GEANT4_VER}">
+  <info url="http://geant4.web.cern.ch/geant4/"/>
+  <lib name="G4FR"/>
+  <lib name="G4modeling"/>
+  <lib name="G4RayTracer"/>
+  <lib name="G4Tree"/>
+  <lib name="G4visHepRep"/>
+  <lib name="G4vis_management"/>
+  <lib name="G4visXXX"/>
+  <lib name="G4VRML"/>
+  <lib name="G4GMocren"/>
+  <lib name="G4zlib"/>
+  <use name="geant4core"/>
+</tool>
+""")
+
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents,fname)

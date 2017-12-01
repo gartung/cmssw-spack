@@ -6,7 +6,7 @@
 # Created by Todd Gamblin, tgamblin@llnl.gov, All rights reserved.
 # LLNL-CODE-647188
 #
-# For details, see https://github.com/llnl/spack
+# For details, see https://github.com/spack/spack
 # Please also see the NOTICE and LICENSE files for our notice and the LGPL.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -23,23 +23,32 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
 from spack import *
+import glob
+import os
+
+class Geant4G4emlow(Package):
+    """FIXME: Put a proper description of your package here."""
+
+    homepage = "http://www.example.com"
+    url      = "http://geant4.web.cern.ch/geant4/support/source/G4EMLOW.6.48.tar.gz"
+
+    version('6.48', '844064faa16a063a6a08406dc7895b68')
+
+    def install(self, spec, prefix):
+        mkdirp(join_path(prefix.share, 'data'))
+        install_path=join_path(prefix.share, 'data',
+                     os.path.basename(self.stage.source_path))
+        install_tree(self.stage.source_path, install_path)
 
 
-class Vdt(CMakePackage):
-    """Vectorised math. A collection of fast and inline implementations of
-    mathematical functions."""
+    def url_for_version(self, version):
+        """Handle version string."""
+        return ("http://geant4.web.cern.ch/geant4/support/source/G4EMLOW.%s.tar.gz" % version)
 
-    homepage = "https://github.com/dpiparo/vdt"
-    url      = "https://github.com/dpiparo/vdt/archive/v0.3.9.tar.gz"
 
-    version('0.3.9', '80a2d73a82f7ef8257a8206ca22dd145')
-    version('0.3.8', '25b07c72510aaa95fffc11e33579061c')
-    version('0.3.7', 'd2621d4c489894fd1fe8e056d9a0a67c')
-    version('0.3.6', '6eaff3bbbd5175332ccbd66cd71a741d')
-
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
 
@@ -53,30 +62,20 @@ class Vdt(CMakePackage):
 
         values={}
         values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values['PREFIX']=self.spec.prefix.share + '/data'
 
-        fname='vdt_headers.xml'
-        template=Template("""<tool name="vdt_headers" version="$VER">
+        fname='geant4_g4emlow.xml'
+        template=Template("""
+<tool name="geant4data_emlow" version="${VER}">
   <client>
-    <environment name="VDT_HEADERS_BASE" default="$PFX"/>
-    <environment name="INCLUDE" default="$$VDT_HEADERS_BASE/include"/>
+    <environment name="GEANT4DATA_G4EMLOW" default="${PREFIX}"/>
   </client>
-  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
-  <use name="root_cxxdefaults"/>
-</tool>""")
+  <runtime name="G4LEDATA" value="${PREFIX}/G4EMLOW${VER}" type="path"/>
+</tool>
+""")
+
         contents = template.substitute(values)
         self.write_scram_toolfile(contents,fname)
 
-        fname='vdt.xml'
-        template=Template("""<tool name="vdt" version="$VER">
-  <lib name="vdt"/>
-  <use name="vdt_headers"/>
-  <client>
-    <environment name="VDT_BASE" default="$PFX"/>
-    <environment name="LIBDIR" default="$$VDT_BASE/lib"/>
-  </client>
-</tool>""")
 
-        contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
 

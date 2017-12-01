@@ -47,3 +47,40 @@ class Pythia8(Package):
         spack_env.set('PYTHIA8_DIR', self.prefix)
         spack_env.set('PYTHIA8_XML', os.path.join(self.prefix, "share", "Pythia8", "xmldoc"))
         spack_env.set('PYTHIA8DATA', os.path.join(self.prefix, "share", "Pythia8", "xmldoc"))
+
+    def write_scram_toolfile(self,contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+
+        fname='pythia8.xml'
+        template=Template("""
+<tool name="pythia8" version="${VER}">
+  <lib name="pythia8"/>
+  <client>
+    <environment name="PYTHIA8_BASE" default="${PFX}"/>
+    <environment name="LIBDIR" default="$$PYTHIA8_BASE/lib"/>
+    <environment name="INCLUDE" default="$$PYTHIA8_BASE/include"/>
+  </client>
+  <runtime name="PYTHIA8DATA" value="$$PYTHIA8_BASE/share/Pythia8/xmldoc"/>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+  <use name="cxxcompiler"/>
+  <use name="hepmc"/>
+  <use name="lhapdf"/>
+</tool>
+""")
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents,fname)
