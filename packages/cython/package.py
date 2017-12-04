@@ -23,32 +23,30 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
 from spack import *
-import glob
-import os
 
-class Geant4G4emlow(Package):
+
+class Cython(Package):
     """FIXME: Put a proper description of your package here."""
 
+    # FIXME: Add a proper url for your package's homepage here.
     homepage = "http://www.example.com"
-    url      = "http://geant4.web.cern.ch/geant4/support/source/G4EMLOW.6.48.tar.gz"
+    url      = "http://cern.ch/service-spi/external/MCGenerators/distribution/cython/cython-0.22-src.tgz"
 
-    version('6.48', '844064faa16a063a6a08406dc7895b68')
+    version('0.22', 'f7653aaae762593e13a66f94dadf1835')
+
+    depends_on('python', type=('build', 'run'))
+
+    extends('python')
 
     def install(self, spec, prefix):
-        mkdirp(join_path(prefix.share, 'data'))
-        install_path=join_path(prefix.share, 'data',
-                     os.path.basename(self.stage.source_path))
-        install_tree(self.stage.source_path, install_path)
+        with working_dir(str(spec.version)):
+            python = which('python')
+            python('setup.py', 'build')
+            python('setup.py', 'install', '--prefix=%s' % prefix) 
 
-
-    def url_for_version(self, version):
-        """Handle version string."""
-        return ("http://geant4.web.cern.ch/geant4/support/source/G4EMLOW.%s.tar.gz" % version)
-
-
-    def write_scram_toolfile(self, contents, filename):
+    def write_scram_toolfile(self,contents,filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
             f.write(contents)
             f.close()
 
@@ -62,20 +60,18 @@ class Geant4G4emlow(Package):
 
         values={}
         values['VER']=self.spec.version
-        values['PREFIX']=self.spec.prefix.share + '/data'
+        values['PFX']=self.spec.prefix
 
-        fname='geant4_g4emlow.xml'
+        fname='cython.xml'
         template=Template("""
-<tool name="geant4data_g4emlow" version="${VER}">
+<tool name="cython" version="${VER}">
   <client>
-    <environment name="GEANT4DATA_G4EMLOW" default="${PREFIX}"/>
+    <environment name="CYTHON_BASE" default="${PFX}"/>
   </client>
-  <runtime name="G4LEDATA" value="${PREFIX}/G4EMLOW${VER}" type="path"/>
+  <runtime name="PYTHONPATH" value="${PFX}/lib/python2.7/site-packages" type="path"/>
+  <use name="python"/>
 </tool>
 """)
-
         contents = template.substitute(values)
         self.write_scram_toolfile(contents,fname)
-
-
-
+   

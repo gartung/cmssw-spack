@@ -23,32 +23,34 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
 from spack import *
-import glob
-import os
-
-class Geant4G4emlow(Package):
-    """FIXME: Put a proper description of your package here."""
-
-    homepage = "http://www.example.com"
-    url      = "http://geant4.web.cern.ch/geant4/support/source/G4EMLOW.6.48.tar.gz"
-
-    version('6.48', '844064faa16a063a6a08406dc7895b68')
-
-    def install(self, spec, prefix):
-        mkdirp(join_path(prefix.share, 'data'))
-        install_path=join_path(prefix.share, 'data',
-                     os.path.basename(self.stage.source_path))
-        install_tree(self.stage.source_path, install_path)
 
 
-    def url_for_version(self, version):
-        """Handle version string."""
-        return ("http://geant4.web.cern.ch/geant4/support/source/G4EMLOW.%s.tar.gz" % version)
+class YamlCpp(CMakePackage):
+    """A YAML parser and emitter in C++"""
 
+    homepage = "https://github.com/jbeder/yaml-cpp"
+    url      = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/yaml-cpp/0.5.1-oenich2/yaml-cpp-0.5.1.tar.gz"
 
-    def write_scram_toolfile(self, contents, filename):
+    version('0.5.1', '76c47d4a961797092650806dfdfc6cd9', preferred=True)
+
+    depends_on('boost@1.63.0')
+
+    def cmake_args(self):
+        spec = self.spec
+        options = [
+                   '-DCMAKE_INSTALL_PREFIX:PATH=%s' % prefix,
+                   '-DBUILD_SHARED_LIBS=YES',
+                   '-DBoost_NO_SYSTEM_PATHS:BOOL=TRUE',
+                   '-DBoost_NO_BOOST_CMAKE:BOOL=TRUE' ,
+                   '-DBoost_ADDITIONAL_VERSIONS=1.57.0',
+                   '-DBOOST_ROOT:PATH=%s' % spec['boost'],
+                   '-DCMAKE_SKIP_RPATH=YES',
+                   '-DSKIP_INSTALL_FILES=1']
+        return options
+
+    def write_scram_toolfile(self,contents,filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
             f.write(contents)
             f.close()
 
@@ -62,20 +64,21 @@ class Geant4G4emlow(Package):
 
         values={}
         values['VER']=self.spec.version
-        values['PREFIX']=self.spec.prefix.share + '/data'
+        values['PFX']=self.spec.prefix
 
-        fname='geant4_g4emlow.xml'
+        fname='yamlcpp.xml'
         template=Template("""
-<tool name="geant4data_g4emlow" version="${VER}">
+<tool name="yaml-cpp" version="${VER}">
+  <info url="http://code.google.com/p/yaml-cpp/"/>
+  <lib name="yaml-cpp"/>
   <client>
-    <environment name="GEANT4DATA_G4EMLOW" default="${PREFIX}"/>
+    <environment name="YAML_CPP_BASE" default="${PFX}"/>
+    <environment name="LIBDIR" default="$$YAML_CPP_BASE/lib"/>
+    <environment name="INCLUDE" default="$$YAML_CPP_BASE/include"/>
   </client>
-  <runtime name="G4LEDATA" value="${PREFIX}/G4EMLOW${VER}" type="path"/>
+  <use name="boost"/>
 </tool>
 """)
-
         contents = template.substitute(values)
         self.write_scram_toolfile(contents,fname)
-
-
 

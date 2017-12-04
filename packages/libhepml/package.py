@@ -22,28 +22,12 @@
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
-#
-# This is a template package file for Spack.  We've put "FIXME"
-# next to all the things you'll want to change. Once you've handled
-# them, you can save this file and test your package like this:
-#
-#     spack install libhepml
-#
-# You can edit this file again by typing:
-#
-#     spack edit libhepml
-#
-# See the Spack documentation for more information on packaging.
-# If you submit this package back to Spack as a pull request,
-# please first remove this boilerplate and all FIXME comments.
-#
 from spack import *
-
+import glob
 
 class Libhepml(Package):
     """FIXME: Put a proper description of your package here."""
 
-    # FIXME: Add a proper url for your package's homepage here.
     homepage = "http://www.example.com"
     url      = "http://mcdb.cern.ch/distribution/api/libhepml-0.2.1.tar.gz"
 
@@ -54,7 +38,48 @@ class Libhepml(Package):
     version('0.2.2',    '76f3d5458252e67476dd661685e9983d')
     version('0.2.1',    '646964f8478fe0d64888514a8a1d8d19',preferred=True)
 
-    # depends_on('foo')
+    patch('libhepml-0.2.1-gcc43.patch', level=2)
 
     def install(self, spec, prefix):
-        make()
+        mkdirp(prefix.lib)
+        with working_dir('src'):
+            make()
+            for f in glob.glob('*.so'):
+                install(f,join_path(prefix.lib,f))
+        install_tree('interface',join_path(prefix,'interface'))
+            
+
+    def write_scram_toolfile(self,contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+
+        fname='libhepml.xml'
+        template=Template("""
+<tool name="libhepml" version="${VER}">
+  <lib name="hepml"/>
+  <client>
+    <environment name="LIBHEPML_BASE" default="${PFX}"/>
+    <environment name="LIBDIR" default="$$LIBHEPML_BASE/lib"/>
+    <environment name="INCLUDE" default="$$LIBHEPML_BASE/interface"/>
+  </client>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+</tool>
+""")
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents,fname)
+

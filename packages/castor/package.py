@@ -22,21 +22,6 @@
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
-#
-# This is a template package file for Spack.  We've put "FIXME"
-# next to all the things you'll want to change. Once you've handled
-# them, you can save this file and test your package like this:
-#
-#     spack install castor
-#
-# You can edit this file again by typing:
-#
-#     spack edit castor
-#
-# See the Spack documentation for more information on packaging.
-# If you submit this package back to Spack as a pull request,
-# please first remove this boilerplate and all FIXME comments.
-#
 from spack import *
 import glob
 
@@ -48,9 +33,6 @@ class Castor(Package):
     url      = "http://castorold.web.cern.ch/castorold/DIST/CERN/savannah/CASTOR.pkg/2.1.16-*/2.1.16-13/castor-2.1.16-13.tar.gz"
 
     version('2.1.16-13', '5a2cf6992ac4c1a2dcf7eb90e14233e5')
-
-    # FIXME: Add dependencies if required.
-    # depends_on('foo')
 
     def install(self, spec, prefix):
         source_directory = self.stage.source_path

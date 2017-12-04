@@ -26,29 +26,33 @@ from spack import *
 import glob
 import os
 
-class Geant4G4emlow(Package):
+class Photos(Package):
     """FIXME: Put a proper description of your package here."""
 
     homepage = "http://www.example.com"
-    url      = "http://geant4.web.cern.ch/geant4/support/source/G4EMLOW.6.48.tar.gz"
+    url      = "http://cern.ch/service-spi/external/MCGenerators/distribution/photos/photos-215.5-src.tgz"
 
-    version('6.48', '844064faa16a063a6a08406dc7895b68')
+    version('215.5', '87bc3383562e2583edb16dab8b2b5e30')
+
+    patch('photos-215.5-update-configure.patch')
+
 
     def install(self, spec, prefix):
-        mkdirp(join_path(prefix.share, 'data'))
-        install_path=join_path(prefix.share, 'data',
-                     os.path.basename(self.stage.source_path))
-        install_tree(self.stage.source_path, install_path)
-
-
-    def url_for_version(self, version):
-        """Handle version string."""
-        return ("http://geant4.web.cern.ch/geant4/support/source/G4EMLOW.%s.tar.gz" % version)
+        args = ['--enable-static',
+                '--disable-shared',
+                '--lcgplatform=slc_amd64_gcc']
+        with working_dir(str(spec.version)):
+            configure(*args)
+            make()
+            install_tree('include',prefix.include)
+            mkdirp(prefix.lib)
+            for f in glob.glob('lib/archive/*'):
+                install(f,join_path(prefix.lib,os.path.basename(f)))
 
 
     def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
             f.write(contents)
             f.close()
 
@@ -62,20 +66,34 @@ class Geant4G4emlow(Package):
 
         values={}
         values['VER']=self.spec.version
-        values['PREFIX']=self.spec.prefix.share + '/data'
+        values['PFX']=self.spec.prefix
 
-        fname='geant4_g4emlow.xml'
+        fname='photos.xml'
         template=Template("""
-<tool name="geant4data_g4emlow" version="${VER}">
+<tool name="photos" version="${VER}">
+  <lib name="photos"/>
   <client>
-    <environment name="GEANT4DATA_G4EMLOW" default="${PREFIX}"/>
+    <environment name="PHOTOS_BASE" default="${PFX}"/>
+    <environment name="LIBDIR" default="$$PHOTOS_BASE/lib"/>
   </client>
-  <runtime name="G4LEDATA" value="${PREFIX}/G4EMLOW${VER}" type="path"/>
+  <use name="photos_headers"/>
+  <use name="f77compiler"/>
 </tool>
 """)
-
         contents = template.substitute(values)
         self.write_scram_toolfile(contents,fname)
 
-
+        fname='photos_headers.xml'
+        template=Template("""
+<tool name="photos_headers" version="${VER}">
+  <client>
+    <environment name="PHOTOS_HEADERS_BASE" default="${PFX}"/>
+    <environment name="INCLUDE" default="$$PHOTOS_HEADERS_BASE/include"/>
+  </client>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+</tool>
+""")
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents,fname)
 

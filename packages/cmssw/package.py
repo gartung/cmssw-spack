@@ -78,7 +78,7 @@ class Cmssw(Package):
     depends_on('md5')
     depends_on('python+shared')
     depends_on('vdt')
-    depends_on('boost@1.63.0+python+shared^python+shared')
+    depends_on('boost@1.63.0+python+shared~atomic~graph~locale~log~math~mpi~random~wave^python+shared')
     depends_on('libsigcpp')
     depends_on('xrootd')
     depends_on('cppunit')
@@ -129,6 +129,8 @@ class Cmssw(Package):
     depends_on("geant4-g4ensdfstate")
     depends_on("geant4-g4neutronsxs")
     depends_on("geant4-g4radioactivedecay")
+    depends_on("libhepml")
+    depends_on("castor")
 
     if sys.platform == 'darwin':
         patch('macos.patch')

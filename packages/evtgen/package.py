@@ -62,3 +62,43 @@ class Evtgen(AutotoolsPackage):
                 '--photosdir=%s' % self.spec['photospp'].prefix
                ]
         return args
+
+    def write_scram_toolfile(self,contents,filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+
+        fname='evtgen.xml'
+        template=Template("""
+<tool name="evtgen" version="${EVTGEN_VER}">
+  <lib name="EvtGen"/>
+  <lib name="EvtGenExternal"/>
+  <client>
+    <environment name="EVTGEN_BASE" default="${EVTGEN_PREFIX}"/>
+    <environment name="LIBDIR" default="$$EVTGEN_BASE/lib"/>
+    <environment name="INCLUDE" default="$$EVTGEN_BASE/include"/>
+  </client>
+  <runtime name="EVTGENDATA" value="$$EVTGEN_BASE/share"/>
+  <use name="hepmc"/>
+  <use name="pythia8"/>
+  <use name="tauolapp"/>
+  <use name="photospp"/>
+  <flags SKIP_TOOL_SYMLINKS="1"/>
+</tool>
+""")
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents,fname)
+
