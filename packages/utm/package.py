@@ -6,7 +6,7 @@
 # Created by Todd Gamblin, tgamblin@llnl.gov, All rights reserved.
 # LLNL-CODE-647188
 #
-# For details, see https://github.com/llnl/spack
+# For details, see https://github.com/spack/spack
 # Please also see the NOTICE and LICENSE files for our notice and the LGPL.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -25,32 +25,36 @@
 from spack import *
 
 
-class Tauolapp(AutotoolsPackage):
+class Utm(Package):
     """FIXME: Put a proper description of your package here."""
 
     homepage = "http://www.example.com"
-    url      = "http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/tauola++/tauola++-1.1.5-src.tgz"
+    url      = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/utm/utm_0.6.5-fmblme/utm-utm_0.6.5.tgz"
 
-    version('1.1.5', '2d9a3bc7536ddc5d937bbe711ddbadbe')
+    version('0.6.5', '7f118057dd56776af1fcec29bc352186')
 
-    depends_on('hepmc')
-    depends_on('pythia8')
-    depends_on('lhapdf')
+    depends_on('gmake')
+    depends_on('xerces-c')
     depends_on('boost')
 
-    def configure_args(self):
-        args=['--with-hepmc=%s' % self.spec['hepmc'].prefix,
-              '--with-pythia8=%s' % self.spec['pythia8'].prefix,
-              '--with-lhapdf=%s' % self.spec['lhapdf'].prefix,
-              'CPPFLAGS=-I%s' % self.spec['boost'].prefix.include]
-        return args
+    def setup_environment(self, spack_env, run_env):
+        spack_env.set('XERCES_C_BASE', '%s' % self.spec['xerces-c'].prefix)
+        spack_env.set('BOOST_BASE', '%s' % self.spec['boost'].prefix)
+
+    def install(self, spec, prefix):
+        make('-f', 'Makefile.standalone', 'all')
+        make('-f', 'Makefile.standalone', 'install')
+        install_tree('include', prefix.include)
+        install_tree('lib', prefix.lib)
+        install_tree('xsd-type', prefix+'/xds-type')
+        install('menu.xsd', prefix+'/menu.xsd')
 
     def write_scram_toolfile(self,contents,filename):
         """Write scram tool config file"""
         with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
             f.write(contents)
             f.close()
-
+        
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -63,23 +67,22 @@ class Tauolapp(AutotoolsPackage):
         values['VER']=self.spec.version
         values['PFX']=self.spec.prefix
 
-        fname='tauolapp.xml'
+        fname='utm.xml'
         template=Template("""
-<tool name="tauolapp" version="${VER}">
-  <lib name="TauolaCxxInterface"/>
-  <lib name="TauolaFortran"/>
-  <lib name="TauolaTauSpinner"/>
+<tool name="utm" version="${VER}">
+  <lib name="tmeventsetup"/>
+  <lib name="tmtable"/>
+  <lib name="tmxsd"/>
+  <lib name="tmgrammar"/>
+  <lib name="tmutil"/>
   <client>
-    <environment name="TAUOLAPP_BASE" default="${PFX}"/>
-    <environment name="LIBDIR" default="$$TAUOLAPP_BASE/lib"/>
-    <environment name="INCLUDE" default="$$TAUOLAPP_BASE/include"/>
+    <environment name="UTM_BASE" default="${PFX}"/>
+    <environment name="LIBDIR" default="$$UTM_BASE/lib"/>
+    <environment name="INCLUDE" default="$$UTM_BASE/include"/>
   </client>
   <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+  <runtime name="UTM_XSD_DIR" value="$$UTM_BASE"/>
   <use name="root_cxxdefaults"/>
-  <use name="hepmc"/>
-  <use name="f77compiler"/>
-  <use name="pythia8"/>
-  <use name="lhapdf"/>
 </tool>
 """)
         contents = template.substitute(values)

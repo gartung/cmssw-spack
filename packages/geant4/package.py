@@ -178,7 +178,7 @@ class Geant4(CMakePackage):
   <use name="geant4data_g4emlow"/>
   <use name="geant4data_g4ensdfstate"/>
   <use name="geant4data_g4ndl"/>
-  <use name="geant4data_g4neutronxs"/>
+  <use name="geant4data_g4neutronsxs"/>
   <use name="geant4data_g4photonevaporation"/>
   <use name="geant4data_g4radioactivedecay"/>
   <use name="geant4data_g4saiddata"/>

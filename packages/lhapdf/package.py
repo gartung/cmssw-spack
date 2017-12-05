@@ -31,7 +31,7 @@ class Lhapdf(Package):
 
     # FIXME: Add a proper url for your package's homepage here.
     homepage = "http://www.example.com"
-    url      = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/lhapdf/6.2.1-fmblme/LHAPDF-6.2.1.tar.gz"
+    url      = "http://www.hepforge.org/archive/lhapdf/LHAPDF-6.2.1.tar.gz"
 
     version('6.2.1', '9e05567d538fdb4862d4781cd076d7db')
 
@@ -48,15 +48,15 @@ class Lhapdf(Package):
                  "lhapdf_pdfsetsindex")
 
     # FIXME: Add dependencies if required.
+    depends_on('gmake', type='build')
     depends_on('boost@1.63.0')
-    depends_on('cython')
+    depends_on('cython', type='build')
     depends_on('python')
-    depends_on('yaml-cpp@0.5.1')
+#    depends_on('yaml-cpp@0.5.1')
 
     def install(self, spec, prefix):
         configure('--prefix=%s' % prefix,
                   '--with-boost=%s' % spec['boost'].prefix,
-                  '--with-yaml-cpp=%s' % spec['yaml-cpp'].prefix,
                   'PYTHON=%s/bin/python' % spec['python'].prefix,
                   'CYTHON=%s/bin/cython' % spec['cython'].prefix,
                   'PYTHONPATH=%s/lib/python2.7/site-packages' %
@@ -94,12 +94,12 @@ class Lhapdf(Package):
   <lib name="LHAPDF"/>
   <client>
     <environment name="LHAPDF_BASE" default="${PFX}"/>
-    <environment name="LIBDIR" default="$LHAPDF_BASE/lib"/>
-    <environment name="INCLUDE" default="$LHAPDF_BASE/include"/>
+    <environment name="LIBDIR" default="$$LHAPDF_BASE/lib"/>
+    <environment name="INCLUDE" default="$$LHAPDF_BASE/include"/>
   </client>
-  <runtime name="LHAPDF_DATA_PATH" value="$LHAPDF_BASE/share/LHAPDF"/>
+  <runtime name="LHAPDF_DATA_PATH" value="$$LHAPDF_BASE/share/LHAPDF"/>
   <use name="yaml-cpp"/>
-  <runtime name="ROOT_INCLUDE_PATH" value="$INCLUDE" type="path"/>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
   <use name="root_cxxdefaults"/>
 </tool>
 """)
