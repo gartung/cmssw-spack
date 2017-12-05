@@ -30,16 +30,15 @@ class Giflib(AutotoolsPackage):
     been pulling images out of GIFs since 1989."""
 
     homepage = "http://giflib.sourceforge.net/"
-    url      = "https://downloads.sourceforge.net/project/giflib/giflib-5.1.4.tar.bz2"
+    url = "https://downloads.sourceforge.net/project/giflib/giflib-5.1.4.tar.bz2"
 
     version('5.1.4', '2c171ced93c0e83bb09e6ccad8e3ba2b')
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -48,12 +47,12 @@ class Giflib(AutotoolsPackage):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='giflib.xml'
-        template=Template("""<tool name="giflib" version="$VER">
+        fname = 'giflib.xml'
+        template = Template("""<tool name="giflib" version="$VER">
     <info url="http://giflib.sourceforge.net"/>
     <lib name="gif"/>
     <client>
@@ -67,5 +66,4 @@ class Giflib(AutotoolsPackage):
   </tool>""")
 
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
+        self.write_scram_toolfile(contents, fname)

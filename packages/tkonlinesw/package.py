@@ -26,54 +26,63 @@ from spack import *
 import shutil
 import os
 
+
 class Tkonlinesw(Package):
     """FIXME: Put a proper description of your package here."""
 
     # FIXME: Add a proper url for your package's homepage here.
     homepage = "http://www.example.com"
-    url      = "http://cms-trackerdaq-service.web.cern.ch/cms-trackerdaq-service/download/sources/trackerDAQ-4.1.0-1.tgz"
+    url = "http://cms-trackerdaq-service.web.cern.ch/cms-trackerdaq-service/download/sources/trackerDAQ-4.1.0-1.tgz"
 
     version('4.1.0-1', 'aa8c780611f0292d5ff534d992617b46')
-
 
     depends_on('oracle')
     depends_on('xerces-c')
     depends_on('gmake')
     depends_on('root')
 
-
     def setup_environment(self, spack_env, run_env):
-        projectname='trackerDAQ'
-        releasename=str(self.stage.path)+'/'+projectname+'-4.1-tkonline'
-        spack_env.set('ENV_TRACKER_DAQ',releasename+'/opt/trackerDAQ')
-        spack_env.set('XDAQ_ROOT',releasename+'/FecSoftwareV3_0/generic')
-        spack_env.set('XDAQ_RPMBUILD','yes')
-        spack_env.set('USBFEC','no')
-        spack_env.set('PCIFEC','yes')
+        projectname = 'trackerDAQ'
+        releasename = str(self.stage.path) + '/' + \
+            projectname + '-4.1-tkonline'
+        spack_env.set('ENV_TRACKER_DAQ', releasename + '/opt/trackerDAQ')
+        spack_env.set('XDAQ_ROOT', releasename + '/FecSoftwareV3_0/generic')
+        spack_env.set('XDAQ_RPMBUILD', 'yes')
+        spack_env.set('USBFEC', 'no')
+        spack_env.set('PCIFEC', 'yes')
         spack_env.set('ENV_CMS_TK_BASE', releasename)
-        spack_env.set('ENV_CMS_TK_DIAG_ROOT', releasename+'/DiagSystem')
-        spack_env.set('ENV_CMS_TK_ONLINE_ROOT', releasename+'/TrackerOnline/')
-        spack_env.set('ENV_CMS_TK_COMMON', releasename+'/TrackerOnline/2005/TrackerCommon/')
-        spack_env.set('ENV_CMS_TK_XDAQ', releasename+'/TrackerOnline/2005/TrackerXdaq/')
-        spack_env.set('ENV_CMS_TK_APVE_ROOT', releasename+'/TrackerOnline/APVe')
-        spack_env.set('ENV_CMS_TK_FEC_ROOT', releasename+'/FecSoftwareV3_0')
-        spack_env.set('ENV_CMS_TK_FED9U_ROOT', releasename+'/TrackerOnline/Fed9U/Fed9USoftware')
-        spack_env.set('ENV_CMS_TK_ICUTILS', releasename+'/TrackerOnline/2005/TrackerCommon//ICUtils')
-        spack_env.set('ENV_CMS_TK_LASTGBOARD', releasename+'/LAS')
-        spack_env.set('ENV_CMS_TK_HAL_ROOT', '%s/dummy/Linux' % self.spec.prefix)
-        spack_env.set('ENV_CMS_TK_CAEN_ROOT','%s/dummy/Linux' % self.spec.prefix)
-        spack_env.set('ENV_CMS_TK_SBS_ROOT', '%s/dummy/Linux' % self.spec.prefix)
-        spack_env.set('ENV_CMS_TK_TTC_ROOT', '%s/dummy/Linux' % self.spec.prefix)
+        spack_env.set('ENV_CMS_TK_DIAG_ROOT', releasename + '/DiagSystem')
+        spack_env.set('ENV_CMS_TK_ONLINE_ROOT',
+                      releasename + '/TrackerOnline/')
+        spack_env.set('ENV_CMS_TK_COMMON', releasename +
+                      '/TrackerOnline/2005/TrackerCommon/')
+        spack_env.set('ENV_CMS_TK_XDAQ', releasename +
+                      '/TrackerOnline/2005/TrackerXdaq/')
+        spack_env.set('ENV_CMS_TK_APVE_ROOT',
+                      releasename + '/TrackerOnline/APVe')
+        spack_env.set('ENV_CMS_TK_FEC_ROOT', releasename + '/FecSoftwareV3_0')
+        spack_env.set('ENV_CMS_TK_FED9U_ROOT', releasename +
+                      '/TrackerOnline/Fed9U/Fed9USoftware')
+        spack_env.set('ENV_CMS_TK_ICUTILS', releasename +
+                      '/TrackerOnline/2005/TrackerCommon//ICUtils')
+        spack_env.set('ENV_CMS_TK_LASTGBOARD', releasename + '/LAS')
+        spack_env.set('ENV_CMS_TK_HAL_ROOT', '%s/dummy/Linux' %
+                      self.spec.prefix)
+        spack_env.set('ENV_CMS_TK_CAEN_ROOT', '%s/dummy/Linux' %
+                      self.spec.prefix)
+        spack_env.set('ENV_CMS_TK_SBS_ROOT', '%s/dummy/Linux' %
+                      self.spec.prefix)
+        spack_env.set('ENV_CMS_TK_TTC_ROOT', '%s/dummy/Linux' %
+                      self.spec.prefix)
         spack_env.set('XDAQ_OS', 'linux')
         spack_env.set('XDAQ_PLATFORM', 'x86_slc4')
         spack_env.set('CPPFLAGS', '-fPIC')
         spack_env.set('CFLAGS', '-O2 -fPIC')
-        spack_env.set('CXXFLAGS','-O2 -fPIC')
-
+        spack_env.set('CXXFLAGS', '-O2 -fPIC')
 
     def install(self, spec, prefix):
-        filter_file('-Werror','','FecSoftwareV3_0/generic/Makefile')
-        mkdirp(join_path(prefix,'dummy/Linux/lib'))
+        filter_file('-Werror', '', 'FecSoftwareV3_0/generic/Makefile')
+        mkdirp(join_path(prefix, 'dummy/Linux/lib'))
         configure('--with-xdaq-platform=x86_64',
                   '--with-oracle-path=%s' % spec['oracle'].prefix,
                   '--with-xerces-path=%s' % spec['xerces-c'].prefix)
@@ -88,18 +97,18 @@ class Tkonlinesw(Package):
         make('cmssw')
         make('cmsswinstall')
 
-        projectname='trackerDAQ'
-        releasename=str(self.stage.path)+'/'+projectname+'-4.1-tkonline'
-        project_path=join_path(releasename, 'opt', projectname)
-        install_tree(join_path(project_path,'include'), prefix.include)
+        projectname = 'trackerDAQ'
+        releasename = str(self.stage.path) + '/' + \
+            projectname + '-4.1-tkonline'
+        project_path = join_path(releasename, 'opt', projectname)
+        install_tree(join_path(project_path, 'include'), prefix.include)
         install_tree(join_path(project_path, 'lib'), prefix.lib)
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -108,12 +117,12 @@ class Tkonlinesw(Package):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='tkonlinesw.xml'
-        template=Template("""
+        fname = 'tkonlinesw.xml'
+        template = Template("""
 <tool name="TkOnlineSw" version="${VER}">
   <info url="http://www.cern.ch/"/>
   <lib name="ICUtils"/>
@@ -130,10 +139,10 @@ class Tkonlinesw(Package):
 </tool>
 """)
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)
 
-        fname='tkonlineswdb.xml'
-        template=Template("""
+        fname = 'tkonlineswdb.xml'
+        template = Template("""
 <tool name="TkOnlineSwDB" version="${VER}">
   <info url="http://www.cern.ch/"/>
   <lib name="DeviceDescriptions"/>
@@ -144,5 +153,4 @@ class Tkonlinesw(Package):
 </tool>
 """)
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
+        self.write_scram_toolfile(contents, fname)

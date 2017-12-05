@@ -26,11 +26,12 @@
 from spack import *
 import os
 
+
 class Pythia8(Package):
     """Event generator pythia"""
 
     homepage = "http://home.thep.lu.se/~torbjorn/Pythia.html"
-    url      = "http://home.thep.lu.se/~torbjorn/pythia8/pythia8219.tgz"
+    url = "http://home.thep.lu.se/~torbjorn/pythia8/pythia8219.tgz"
 
     version('8219', '3459b52b5da1deae52cbddefa6196feb')
     version('8215', 'b4653133e6ab1782a5a4aa66eda6a54b')
@@ -45,12 +46,14 @@ class Pythia8(Package):
 
     def setup_dependent_environment(self, spack_env, run_env, dspec):
         spack_env.set('PYTHIA8_DIR', self.prefix)
-        spack_env.set('PYTHIA8_XML', os.path.join(self.prefix, "share", "Pythia8", "xmldoc"))
-        spack_env.set('PYTHIA8DATA', os.path.join(self.prefix, "share", "Pythia8", "xmldoc"))
+        spack_env.set('PYTHIA8_XML', os.path.join(
+            self.prefix, "share", "Pythia8", "xmldoc"))
+        spack_env.set('PYTHIA8DATA', os.path.join(
+            self.prefix, "share", "Pythia8", "xmldoc"))
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
 
@@ -61,12 +64,12 @@ class Pythia8(Package):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='pythia8.xml'
-        template=Template("""
+        fname = 'pythia8.xml'
+        template = Template("""
 <tool name="pythia8" version="${VER}">
   <lib name="pythia8"/>
   <client>
@@ -83,4 +86,4 @@ class Pythia8(Package):
 </tool>
 """)
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)

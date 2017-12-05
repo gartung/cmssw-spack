@@ -33,19 +33,18 @@ class XercesC(AutotoolsPackage):
     APIs."""
 
     homepage = "https://xerces.apache.org/xerces-c"
-    url      = "https://archive.apache.org/dist/xerces/c/3/sources/xerces-c-3.1.4.tar.bz2"
+    url = "https://archive.apache.org/dist/xerces/c/3/sources/xerces-c-3.1.4.tar.bz2"
 
     version('3.1.4', 'd04ae9d8b2dee2157c6db95fa908abfd')
 
     def configure_args(self):
         return ['--disable-network']
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -54,12 +53,12 @@ class XercesC(AutotoolsPackage):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='xerces-c.xml'
-        template=Template("""<tool name="xerces-c" version="$VER">
+        fname = 'xerces-c.xml'
+        template = Template("""<tool name="xerces-c" version="$VER">
   <info url="http://xml.apache.org/xerces-c/"/>
   <lib name="xerces-c"/>
   <client>
@@ -72,5 +71,4 @@ class XercesC(AutotoolsPackage):
 </tool>""")
 
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
+        self.write_scram_toolfile(contents, fname)

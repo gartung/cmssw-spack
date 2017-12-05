@@ -44,7 +44,7 @@ class Classlib(AutotoolsPackage):
     """FIXME: Put a proper description of your package here."""
 
     homepage = "http://www.example.com"
-    url      = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/classlib/3.1.3/classlib-3.1.3.tar.bz2"
+    url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/classlib/3.1.3/classlib-3.1.3.tar.bz2"
 
     version('3.1.3', '9114995676f4378e56ebacdd21220598')
 
@@ -79,19 +79,18 @@ class Classlib(AutotoolsPackage):
     def patch_makefile(self):
         perl = which('perl')
         perl('-p', '-i', '-e',
-             's{-llzo2}{}g;!/^\S+: / ' + 
+             's{-llzo2}{}g;!/^\S+: / ' +
              '&& s{\S+LZO((C|Dec)ompressor|Constants|Error)\S+}{}g',
              'Makefile')
 
-    def build(self,spec,prefix):
+    def build(self, spec, prefix):
         make('CXXFLAGS=-Wno-error -ansi -pedantic -W -Wall -Wno-long-long ')
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -100,13 +99,13 @@ class Classlib(AutotoolsPackage):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='classlib.xml'
+        fname = 'classlib.xml'
 
-        template=Template("""<tool name="classlib" version="$VER">
+        template = Template("""<tool name="classlib" version="$VER">
     <info url="http://cmsmac01.cern.ch/~lat/exports/"/>
     <client>
       <environment name="CLASSLIB_BASE" default="$PFX"/>
@@ -122,8 +121,7 @@ class Classlib(AutotoolsPackage):
     </client>
     <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
     <use name="root_cxxdefaults"/>
-  </tool>""") 
+  </tool>""")
 
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
+        self.write_scram_toolfile(contents, fname)

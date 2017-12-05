@@ -29,17 +29,16 @@ class FastjetContrib(AutotoolsPackage):
     """."""
 
     homepage = "http://www.example.com"
-    url      = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/fastjet-contrib/1.026/fastjet-contrib-1.026.tgz"
+    url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/fastjet-contrib/1.026/fastjet-contrib-1.026.tgz"
 
     version('1.026', '2b38f78d1126bf5185626f2923b4577b')
-
 
     depends_on('fastjet')
 
     def configure_args(self):
         args = ['--fastjet-config=%s/fastjet-config' %
                 self.spec['fastjet'].prefix.bin,
-                'CXXFLAGS=-I%s' % self.spec['fastjet'].prefix.include ]
+                'CXXFLAGS=-I%s' % self.spec['fastjet'].prefix.include]
         return args
 
     def install(self, spec, prefix):
@@ -49,12 +48,11 @@ class FastjetContrib(AutotoolsPackage):
         make('fragile-shared')
         make('fragile-shared-install')
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -63,12 +61,12 @@ class FastjetContrib(AutotoolsPackage):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='fastjet-contrib.xml'
-        template=Template("""
+        fname = 'fastjet-contrib.xml'
+        template = Template("""
   <tool name="fastjet-contrib" version="${VER}">
     <info url="http://fastjet.hepforge.org/contrib/"/>
     <lib name="fastjetcontribfragile"/>
@@ -80,5 +78,4 @@ class FastjetContrib(AutotoolsPackage):
   </tool>
 """)
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
+        self.write_scram_toolfile(contents, fname)

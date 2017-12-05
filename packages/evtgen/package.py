@@ -45,7 +45,7 @@ class Evtgen(AutotoolsPackage):
 
     # FIXME: Add a proper url for your package's homepage here.
     homepage = "http://www.example.com"
-    url      = "http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/evtgen/evtgen-1.6.0-src.tgz"
+    url = "http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/evtgen/evtgen-1.6.0-src.tgz"
 
     version('1.6.0', '6f81a213c03ed41f9a7f2e6225e42330')
     version('1.5.0', 'e979afdf58858a3f2f760594304cd9f3')
@@ -57,18 +57,17 @@ class Evtgen(AutotoolsPackage):
 
     def configures_args(self):
         args = ['--hepmcdir=%s' % self.spec['hepmc'].prefix,
-                '--pythiadir=%s' % self.spec['pythia8'].prefix, 
+                '--pythiadir=%s' % self.spec['pythia8'].prefix,
                 '--tauoladir=%s' % self.spec['tauolapp'].prefix,
                 '--photosdir=%s' % self.spec['photospp'].prefix
-               ]
+                ]
         return args
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -77,12 +76,12 @@ class Evtgen(AutotoolsPackage):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='evtgen.xml'
-        template=Template("""
+        fname = 'evtgen.xml'
+        template = Template("""
 <tool name="evtgen" version="${EVTGEN_VER}">
   <lib name="EvtGen"/>
   <lib name="EvtGenExternal"/>
@@ -100,5 +99,4 @@ class Evtgen(AutotoolsPackage):
 </tool>
 """)
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
+        self.write_scram_toolfile(contents, fname)

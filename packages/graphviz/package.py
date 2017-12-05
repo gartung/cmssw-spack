@@ -30,7 +30,7 @@ import shutil
 class Graphviz(AutotoolsPackage):
     """Graph Visualization Software"""
     homepage = 'http://www.graphviz.org'
-    url      = 'http://www.graphviz.org/pub/graphviz/stable/SOURCES/graphviz-2.38.0.tar.gz'
+    url = 'http://www.graphviz.org/pub/graphviz/stable/SOURCES/graphviz-2.38.0.tar.gz'
 
     version('2.38.0', '5b6a829b2ac94efcd5fa3c223ed6d3ae')
 
@@ -109,7 +109,8 @@ class Graphviz(AutotoolsPackage):
 
     def patch(self):
         # Fix a few variable names, gs after 9.18 renamed them
-        # See http://lists.linuxfromscratch.org/pipermail/blfs-book/2015-October/056960.html
+        # See
+        # http://lists.linuxfromscratch.org/pipermail/blfs-book/2015-October/056960.html
         if self.spec.satisfies('^ghostscript@9.18:'):
             kwargs = {'ignore_absent': False, 'backup': True, 'string': True}
             filter_file(' e_', ' gs_error_', 'plugin/gs/gvloadimage_gs.c',
@@ -164,12 +165,11 @@ class Graphviz(AutotoolsPackage):
 
         return options
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -178,12 +178,12 @@ class Graphviz(AutotoolsPackage):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='graphviz.xml'
-        template=Template("""<tool name="graphviz" version="$VER">
+        fname = 'graphviz.xml'
+        template = Template("""<tool name="graphviz" version="$VER">
   <info url="http://www.research.att.com/sw/tools/graphviz/"/>
   <client>
     <environment name="GRAPHVIZ_BASE" default="$PFX"/>
@@ -196,5 +196,4 @@ class Graphviz(AutotoolsPackage):
 </tool>""")
 
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
+        self.write_scram_toolfile(contents, fname)

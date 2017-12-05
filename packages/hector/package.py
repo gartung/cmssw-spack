@@ -41,12 +41,13 @@ from spack import *
 import glob
 import os
 
+
 class Hector(Package):
     """FIXME: Put a proper description of your package here."""
 
     # FIXME: Add a proper url for your package's homepage here.
     homepage = "http://www.example.com"
-    url      = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/hector/1.3.4_patch1-fmblme3/hector-1.3.4_patch1.tgz"
+    url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/hector/1.3.4_patch1-fmblme3/hector-1.3.4_patch1.tgz"
     depends_on('root')
 
     version('1.3.4_patch1', '419ec3ce8dfbcff972ea6d5b09e8c6f1')
@@ -59,12 +60,11 @@ class Hector(Package):
         for f in glob.glob('*'):
             cp('-r', f, prefix)
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -73,12 +73,12 @@ class Hector(Package):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='hector.xml'
-        template=Template("""
+        fname = 'hector.xml'
+        template = Template("""
 <tool name="Hector" version="${VER}">
   <info url="http://www.fynu.ucl.ac.be/themes/he/ggamma/hector/"/>
   <lib name="Hector"/>
@@ -92,5 +92,4 @@ class Hector(Package):
 </tool>
 """)
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
+        self.write_scram_toolfile(contents, fname)

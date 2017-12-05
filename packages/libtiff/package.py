@@ -28,7 +28,7 @@ from spack import *
 class Libtiff(AutotoolsPackage):
     """libtiff graphics format library"""
     homepage = "http://www.simplesystems.org/libtiff/"
-    url      = "http://download.osgeo.org/libtiff/tiff-4.0.8.tar.gz"
+    url = "http://download.osgeo.org/libtiff/tiff-4.0.8.tar.gz"
 
     version('4.0.8', '2a7d1c1318416ddf36d5f6fa4600069b')
     version('4.0.7', '77ae928d2c6b7fb46a21c3a29325157b')
@@ -39,12 +39,11 @@ class Libtiff(AutotoolsPackage):
     depends_on('zlib')
     depends_on('xz')
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -53,12 +52,12 @@ class Libtiff(AutotoolsPackage):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='libtiff.xml'
-        template=Template("""<tool name="libtiff" version="$VER">
+        fname = 'libtiff.xml'
+        template = Template("""<tool name="libtiff" version="$VER">
   <info url="http://www.libtiff.org/"/>
   <lib name="tiff"/>
   <client>
@@ -73,5 +72,4 @@ class Libtiff(AutotoolsPackage):
 </tool>""")
 
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
+        self.write_scram_toolfile(contents, fname)

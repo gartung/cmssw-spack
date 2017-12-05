@@ -1,10 +1,11 @@
 from spack import *
 
+
 class Libsigcpp(Package):
     """Description"""
 
     homepage = "http://www.example.com"
-    url      = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/sigcpp/2.6.2/libsigc++-2.6.2.tar.xz"
+    url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/sigcpp/2.6.2/libsigc++-2.6.2.tar.xz"
 
     version('2.6.2', 'd2f33ca0b4b012ef60669e3b3cebe956')
 
@@ -12,15 +13,15 @@ class Libsigcpp(Package):
         configure("--prefix=%s" % prefix)
         make()
         make("install")
-        cp=which('cp')
-        cp(prefix+'/lib/sigc++-2.0/include/sigc++config.h', prefix+'/include/sigc++-2.0/')
+        cp = which('cp')
+        cp(prefix + '/lib/sigc++-2.0/include/sigc++config.h',
+           prefix + '/include/sigc++-2.0/')
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -29,12 +30,12 @@ class Libsigcpp(Package):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='sigcpp.xml'
-        template=Template("""<tool name="sigcpp" version="$VER">
+        fname = 'sigcpp.xml'
+        template = Template("""<tool name="sigcpp" version="$VER">
   <lib name="sigc-2.0"/>
   <client>
     <environment name="SIGCPP_BASE" default="$PFX"/>
@@ -46,5 +47,4 @@ class Libsigcpp(Package):
 </tool>""")
 
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
+        self.write_scram_toolfile(contents, fname)

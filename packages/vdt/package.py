@@ -30,19 +30,18 @@ class Vdt(CMakePackage):
     mathematical functions."""
 
     homepage = "https://github.com/dpiparo/vdt"
-    url      = "https://github.com/dpiparo/vdt/archive/v0.3.9.tar.gz"
+    url = "https://github.com/dpiparo/vdt/archive/v0.3.9.tar.gz"
 
     version('0.3.9', '80a2d73a82f7ef8257a8206ca22dd145')
     version('0.3.8', '25b07c72510aaa95fffc11e33579061c')
     version('0.3.7', 'd2621d4c489894fd1fe8e056d9a0a67c')
     version('0.3.6', '6eaff3bbbd5175332ccbd66cd71a741d')
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -51,12 +50,12 @@ class Vdt(CMakePackage):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='vdt_headers.xml'
-        template=Template("""<tool name="vdt_headers" version="$VER">
+        fname = 'vdt_headers.xml'
+        template = Template("""<tool name="vdt_headers" version="$VER">
   <client>
     <environment name="VDT_HEADERS_BASE" default="$PFX"/>
     <environment name="INCLUDE" default="$$VDT_HEADERS_BASE/include"/>
@@ -65,10 +64,10 @@ class Vdt(CMakePackage):
   <use name="root_cxxdefaults"/>
 </tool>""")
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)
 
-        fname='vdt.xml'
-        template=Template("""<tool name="vdt" version="$VER">
+        fname = 'vdt.xml'
+        template = Template("""<tool name="vdt" version="$VER">
   <lib name="vdt"/>
   <use name="vdt_headers"/>
   <client>
@@ -78,5 +77,4 @@ class Vdt(CMakePackage):
 </tool>""")
 
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
+        self.write_scram_toolfile(contents, fname)

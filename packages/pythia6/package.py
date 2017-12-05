@@ -30,7 +30,7 @@ class Pythia6(Package):
     particles such as e+, e-, p and pbar in various combinations."""
 
     homepage = "https://pythia6.hepforge.org/"
-    url      = "http://lcgpackages.web.cern.ch/lcgpackages/tarFiles/spackmirror/pythia6/pythia-6.4.28.tar.gz"
+    url = "http://lcgpackages.web.cern.ch/lcgpackages/tarFiles/spackmirror/pythia6/pythia-6.4.28.tar.gz"
 
     version('6.4.28', '3cf2b78d08bc6319749e524b3b7b38e3')
 
@@ -54,9 +54,9 @@ class Pythia6(Package):
             make()
             make("install")
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
 
@@ -67,12 +67,12 @@ class Pythia6(Package):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='pythia6_headers.xml'
-        template=Template("""
+        fname = 'pythia6_headers.xml'
+        template = Template("""
 <tool name="pythia6_headers" version="${VER}">
   <client>
     <environment name="PYTHIA6_HEADERS_BASE" default="${PFX}"/>
@@ -83,10 +83,10 @@ class Pythia6(Package):
 </tool>
 """)
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)
 
-        fname='pythia6.xml'
-        template=Template("""
+        fname = 'pythia6.xml'
+        template = Template("""
 <tool name="pythia6" version="${VER}">
   <lib name="pythia6"/>
   <lib name="pythia6_dummy"/>
@@ -100,10 +100,10 @@ class Pythia6(Package):
 </tool>
 """)
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)
 
-        fname='pydata.xml'
-        template=Template("""
+        fname = 'pydata.xml'
+        template = Template("""
 <tool name="pydata" version="${VER}">
   <client>
     <environment name="PYDATA_BASE" default="${PFX}"/>
@@ -115,4 +115,4 @@ class Pythia6(Package):
 </tool>
 """)
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)

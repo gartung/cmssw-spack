@@ -29,7 +29,7 @@ class Libpng(AutotoolsPackage):
     """libpng is the official PNG reference library."""
 
     homepage = "http://www.libpng.org/pub/png/libpng.html"
-    url      = "http://download.sourceforge.net/libpng/libpng-1.6.29.tar.gz"
+    url = "http://download.sourceforge.net/libpng/libpng-1.6.29.tar.gz"
     list_url = "https://sourceforge.net/projects/libpng/files/"
     list_depth = 2
 
@@ -62,13 +62,11 @@ class Libpng(AutotoolsPackage):
         ]
         return args
 
-
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -77,12 +75,12 @@ class Libpng(AutotoolsPackage):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='libpng.xml'
-        template=Template("""<tool name="libpng" version="$VER">
+        fname = 'libpng.xml'
+        template = Template("""<tool name="libpng" version="$VER">
   <info url="http://www.libpng.org/"/>
   <lib name="png"/>
   <client>
@@ -96,5 +94,4 @@ class Libpng(AutotoolsPackage):
 </tool>""")
 
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
+        self.write_scram_toolfile(contents, fname)

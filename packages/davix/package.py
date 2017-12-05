@@ -29,30 +29,28 @@ class Davix(CMakePackage):
     """FIXME: Put a proper description of your package here."""
 
     homepage = "http://www.example.com"
-    url      = "https://github.com/cern-it-sdc-id/davix/archive/R_0_6_5.tar.gz"
+    url = "https://github.com/cern-it-sdc-id/davix/archive/R_0_6_5.tar.gz"
 
     version('0_6_5', 'a7f09dfa0bd0daaa46aafc8e0f4b1a25')
 
     depends_on('libxml2+python')
     depends_on('boost+python')
-    depends_on('cmake',type='build')
+    depends_on('cmake', type='build')
 
     def cmake_args(self):
         args = ['-DLIBXML2_INCLUDE_DIR=%s/include/libxml2' % self.spec['libxml2'].prefix,
-                '-DLIBXML2_LIBRARIES=%s/lib/libxml2.%s' % 
+                '-DLIBXML2_LIBRARIES=%s/lib/libxml2.%s' %
                 (self.spec['libxml2'].prefix, dso_suffix),
                 '-DBoost_NO_SYSTEM_PATHS:BOOL=TRUE',
                 '-DBOOST_ROOT:PATH=%s' % self.spec['boost'].prefix,
-                '-DOPENSSL_ROOT_DIR=%s' % self.spec['openssl'].prefix ]
+                '-DOPENSSL_ROOT_DIR=%s' % self.spec['openssl'].prefix]
         return args
 
-
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-        
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -61,13 +59,13 @@ class Davix(CMakePackage):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
-        values['LIB']=self.spec.prefix.lib64
- 
-        fname='davix.xml'
-        template=Template("""<tool name="davix" version="$VER">
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
+        values['LIB'] = self.spec.prefix.lib64
+
+        fname = 'davix.xml'
+        template = Template("""<tool name="davix" version="$VER">
     <info url="https://dmc.web.cern.ch/projects/davix/home"/>
     <lib name="davix"/>
     <client>
@@ -81,5 +79,4 @@ class Davix(CMakePackage):
     <use name="libxml2"/>
   </tool>""")
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
+        self.write_scram_toolfile(contents, fname)

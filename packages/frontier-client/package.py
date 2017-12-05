@@ -29,7 +29,7 @@ class FrontierClient(MakefilePackage):
     """FIXME: Put a proper description of your package here."""
 
     homepage = "http://www.example.com"
-    url      = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/frontier_client/2.8.20/frontier_client__2.8.20__src.tar.gz"
+    url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/frontier_client/2.8.20/frontier_client__2.8.20__src.tar.gz"
 
     version('2.8.20', 'e2ea893b02eab539a0cf6a3812f4937c')
 
@@ -47,14 +47,14 @@ class FrontierClient(MakefilePackage):
              'COMPILER_TAG=gcc_%s' % spec.compiler.version,
              'ZLIB_DIR=%s' % spec['zlib'].prefix,
              'OPENSSL_DIR=%s' % spec['openssl'].prefix,
-             'CXXFLAGS=-ldl','CFLAGS=-I%s' % spec['openssl'].prefix.include,
+             'CXXFLAGS=-ldl', 'CFLAGS=-I%s' % spec['openssl'].prefix.include,
              'all'
              )
 
     def install(self, spec, prefix):
         mkdirp(prefix.lib)
         mkdirp(prefix.include)
-        make('-j1','EXPAT_DIR=%s' % spec['expat'].prefix,
+        make('-j1', 'EXPAT_DIR=%s' % spec['expat'].prefix,
              'PACPARSER_DIR=%s' % spec['pacparser'].prefix,
              'COMPILER_TAG=gcc_%s' % spec.compiler.version,
              'ZLIB_DIR=%s' % spec['zlib'].prefix,
@@ -63,18 +63,17 @@ class FrontierClient(MakefilePackage):
              'distdir=%s' % prefix,
              'dist'
              )
-        install_tree('python',prefix+'/python')
+        install_tree('python', prefix + '/python')
 
     def url_for_version(self, version):
         """Handle version string."""
-        return "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/frontier_client/%s/frontier_client__%s__src.tar.gz" % (version,version)
+        return "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/frontier_client/%s/frontier_client__%s__src.tar.gz" % (version, version)
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -83,12 +82,12 @@ class FrontierClient(MakefilePackage):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='frontier_client.xml'
-        template=Template("""<tool name="frontier_client" version="$VER">
+        fname = 'frontier_client.xml'
+        template = Template("""<tool name="frontier_client" version="$VER">
   <lib name="frontier_client"/>
   <client>
     <environment name="FRONTIER_CLIENT_BASE" default="$PFX"/>
@@ -105,5 +104,4 @@ class FrontierClient(MakefilePackage):
   <use name="python"/>
 </tool>""")
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
+        self.write_scram_toolfile(contents, fname)

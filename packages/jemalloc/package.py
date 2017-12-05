@@ -45,7 +45,7 @@ class Jemalloc(Package):
 
     # FIXME: Add a proper url for your package's homepage here.
     homepage = "http://www.example.com"
-    url      = "http://www.canonware.com/download/jemalloc/jemalloc-4.2.0.tar.bz2"
+    url = "http://www.canonware.com/download/jemalloc/jemalloc-4.2.0.tar.bz2"
 
     version('4.2.1', '094b0a7b8c77c464d0dc8f0643fd3901')
     version('4.2.0', 'e6b5d5a1ea93a04207528d274efdd144')
@@ -53,11 +53,9 @@ class Jemalloc(Package):
     version('4.1.0', 'c4e53c947905a533d5899e5cc3da1f94')
     version('4.0.4', '687c5cc53b9a7ab711ccd680351ff988')
 
-
-
     def install(self, spec, prefix):
         filter_file(r"'-no-cpp-precomp'", "", 'configure',
-            string=True)
+                    string=True)
         # FIXME: Modify the configure line to suit your build system here.
         configure('--prefix={0}'.format(prefix), '--disable-stats')
 
@@ -65,12 +63,11 @@ class Jemalloc(Package):
         make()
         make('install')
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -79,12 +76,12 @@ class Jemalloc(Package):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='jemalloc.xml'
-        template=Template("""
+        fname = 'jemalloc.xml'
+        template = Template("""
 <tool name="jemalloc" version="${VER}">
   <architecture name="slc.*|fc.*|linux*">
     <lib name="jemalloc"/>
@@ -101,7 +98,4 @@ class Jemalloc(Package):
 </tool>
 """)
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
-
-
+        self.write_scram_toolfile(contents, fname)

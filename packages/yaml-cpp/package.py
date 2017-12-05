@@ -29,7 +29,7 @@ class YamlCpp(CMakePackage):
     """A YAML parser and emitter in C++"""
 
     homepage = "https://github.com/jbeder/yaml-cpp"
-    url      = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/yaml-cpp/0.5.1-oenich2/yaml-cpp-0.5.1.tar.gz"
+    url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/yaml-cpp/0.5.1-oenich2/yaml-cpp-0.5.1.tar.gz"
 
     version('0.5.1', '76c47d4a961797092650806dfdfc6cd9', preferred=True)
 
@@ -38,22 +38,21 @@ class YamlCpp(CMakePackage):
     def cmake_args(self):
         spec = self.spec
         options = [
-                   '-DCMAKE_INSTALL_PREFIX:PATH=%s' % prefix,
-                   '-DBUILD_SHARED_LIBS=YES',
-                   '-DBoost_NO_SYSTEM_PATHS:BOOL=TRUE',
-                   '-DBoost_NO_BOOST_CMAKE:BOOL=TRUE' ,
-                   '-DBoost_ADDITIONAL_VERSIONS=1.57.0',
-                   '-DBOOST_ROOT:PATH=%s' % spec['boost'],
-                   '-DCMAKE_SKIP_RPATH=YES',
-                   '-DSKIP_INSTALL_FILES=1']
+            '-DCMAKE_INSTALL_PREFIX:PATH=%s' % prefix,
+            '-DBUILD_SHARED_LIBS=YES',
+            '-DBoost_NO_SYSTEM_PATHS:BOOL=TRUE',
+            '-DBoost_NO_BOOST_CMAKE:BOOL=TRUE',
+            '-DBoost_ADDITIONAL_VERSIONS=1.57.0',
+            '-DBOOST_ROOT:PATH=%s' % spec['boost'],
+            '-DCMAKE_SKIP_RPATH=YES',
+            '-DSKIP_INSTALL_FILES=1']
         return options
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -62,12 +61,12 @@ class YamlCpp(CMakePackage):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='yamlcpp.xml'
-        template=Template("""
+        fname = 'yamlcpp.xml'
+        template = Template("""
 <tool name="yaml-cpp" version="${VER}">
   <info url="http://code.google.com/p/yaml-cpp/"/>
   <lib name="yaml-cpp"/>
@@ -80,5 +79,4 @@ class YamlCpp(CMakePackage):
 </tool>
 """)
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
+        self.write_scram_toolfile(contents, fname)

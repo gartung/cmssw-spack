@@ -29,20 +29,19 @@ class Pacparser(Package):
     """FIXME: Put a proper description of your package here."""
 
     homepage = "http://www.example.com"
-    url      = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/pacparser/1.3.5/pacparser-1.3.5.tar.gz"
+    url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/pacparser/1.3.5/pacparser-1.3.5.tar.gz"
 
     version('1.3.5', '9db90bd4d88dfd8d31fa707466259566')
 
     def install(self, spec, prefix):
-        make('-C','src','PREFIX=%s'%prefix)
-        make('-C','src','install','PREFIX=%s'%prefix)
+        make('-C', 'src', 'PREFIX=%s' % prefix)
+        make('-C', 'src', 'install', 'PREFIX=%s' % prefix)
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -51,12 +50,12 @@ class Pacparser(Package):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='pacparser.xml'
-        template=Template("""<tool name="pacparser" version="$VER">
+        fname = 'pacparser.xml'
+        template = Template("""<tool name="pacparser" version="$VER">
   <info url="http://code.google.com/p/pacparser/"/>
   <lib name="pacparser"/>
   <client>
@@ -70,5 +69,4 @@ class Pacparser(Package):
 </tool>""")
 
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
+        self.write_scram_toolfile(contents, fname)

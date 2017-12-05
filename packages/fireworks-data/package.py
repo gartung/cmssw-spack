@@ -46,7 +46,7 @@ class FireworksData(Package):
 
     # FIXME: Add a proper url for your package's homepage here.
     homepage = "http://www.example.com"
-    url      = "https://github.com/cms-data/Fireworks-Geometry/archive/V07-05-01.tar.gz"
+    url = "https://github.com/cms-data/Fireworks-Geometry/archive/V07-05-01.tar.gz"
 
     version('07.05.01', '9f40fdf89286392d1d39d5ed52981051')
     version('07.05.02', '0277dd37c0ff7664ea733445445efb6a')
@@ -56,17 +56,18 @@ class FireworksData(Package):
     # depends_on('foo')
 
     def install(self, spec, prefix):
-        matches=[]
-        cp=which('cp')
-        md=which('mkdir')
-        instpath=prefix+'/data-Fireworks-Geometry/'+str(self.version)+'/Fireworks/Geometry/data/'
-        md('-p',instpath)
+        matches = []
+        cp = which('cp')
+        md = which('mkdir')
+        instpath = prefix + '/data-Fireworks-Geometry/' + \
+            str(self.version) + '/Fireworks/Geometry/data/'
+        md('-p', instpath)
         for f in glob('*.root'):
             matches.append(f)
         for m in matches:
-            cp('-v',m,instpath,output=str)
+            cp('-v', m, instpath, output=str)
 
     def url_for_version(self, version):
         """Handle CMSSW's version string."""
-        version_underscore=str(self.version).replace('.','-')
+        version_underscore = str(self.version).replace('.', '-')
         return "https://github.com/cms-data/Fireworks-Geometry/archive/V%s.tar.gz" % version_underscore

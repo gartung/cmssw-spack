@@ -31,7 +31,7 @@ class Pcre(AutotoolsPackage):
     pattern matching using the same syntax and semantics as Perl 5."""
 
     homepage = "http://www.pcre.org"
-    url      = "https://ftp.pcre.org/pub/pcre/pcre-8.40.tar.bz2"
+    url = "https://ftp.pcre.org/pub/pcre/pcre-8.40.tar.bz2"
 
     version('8.40', '41a842bf7dcecd6634219336e2167d1d')
     version('8.39', 'e3fca7650a0556a2647821679d81f585')
@@ -58,12 +58,11 @@ class Pcre(AutotoolsPackage):
 
         return args
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -72,12 +71,12 @@ class Pcre(AutotoolsPackage):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='pcre.xml'
-        template=Template("""<tool name="pcre" version="$VER">
+        fname = 'pcre.xml'
+        template = Template("""<tool name="pcre" version="$VER">
   <info url="http://www.pcre.org"/>
   <lib name="pcre"/>
   <client>
@@ -92,5 +91,4 @@ class Pcre(AutotoolsPackage):
 </tool>""")
 
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
+        self.write_scram_toolfile(contents, fname)

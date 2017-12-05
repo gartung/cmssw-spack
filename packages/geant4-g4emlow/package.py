@@ -26,32 +26,30 @@ from spack import *
 import glob
 import os
 
+
 class Geant4G4emlow(Package):
     """FIXME: Put a proper description of your package here."""
 
     homepage = "http://www.example.com"
-    url      = "http://geant4.web.cern.ch/geant4/support/source/G4EMLOW.6.48.tar.gz"
+    url = "http://geant4.web.cern.ch/geant4/support/source/G4EMLOW.6.48.tar.gz"
 
     version('6.48', '844064faa16a063a6a08406dc7895b68')
 
     def install(self, spec, prefix):
         mkdirp(join_path(prefix.share, 'data'))
-        install_path=join_path(prefix.share, 'data',
-                     os.path.basename(self.stage.source_path))
+        install_path = join_path(prefix.share, 'data',
+                                 os.path.basename(self.stage.source_path))
         install_tree(self.stage.source_path, install_path)
-
 
     def url_for_version(self, version):
         """Handle version string."""
         return ("http://geant4.web.cern.ch/geant4/support/source/G4EMLOW.%s.tar.gz" % version)
-
 
     def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
         with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -60,12 +58,12 @@ class Geant4G4emlow(Package):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PREFIX']=self.spec.prefix.share + '/data'
+        values = {}
+        values['VER'] = self.spec.version
+        values['PREFIX'] = self.spec.prefix.share + '/data'
 
-        fname='geant4_g4emlow.xml'
-        template=Template("""
+        fname = 'geant4_g4emlow.xml'
+        template = Template("""
 <tool name="geant4data_g4emlow" version="${VER}">
   <client>
     <environment name="GEANT4DATA_G4EMLOW" default="${PREFIX}"/>
@@ -75,7 +73,4 @@ class Geant4G4emlow(Package):
 """)
 
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
-
-
+        self.write_scram_toolfile(contents, fname)

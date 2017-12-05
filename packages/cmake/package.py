@@ -29,12 +29,12 @@ class Cmake(Package):
     """A cross-platform, open-source build system. CMake is a family of
        tools designed to build, test and package software."""
     homepage = 'https://www.cmake.org'
-    url      = 'https://cmake.org/files/v3.4/cmake-3.4.3.tar.gz'
+    url = 'https://cmake.org/files/v3.4/cmake-3.4.3.tar.gz'
     list_url = 'https://cmake.org/files/'
     list_depth = 1
 
     version('3.10.0',   'f3f8e70ca3055f3cd288f89ff233057e')
-    version('3.9.4',    '33769e001bdcd788f565bf378692e5ae',preferred=True)
+    version('3.9.4',    '33769e001bdcd788f565bf378692e5ae', preferred=True)
     version('3.9.0',    '180e23b4c9b55915d271b315297f6951')
     version('3.8.2',    'b5dff61f6a7f1305271ab3f6ae261419')
     version('3.8.1',    'e8ef820ddf7a650845252bca846696e7')
@@ -53,11 +53,16 @@ class Cmake(Package):
     version('3.0.2',    'db4c687a31444a929d2fdc36c4dfb95f')
     version('2.8.10.2', '097278785da7182ec0aea8769d06860c')
 
-    variant('ownlibs', default=True,  description='Use CMake-provided third-party libraries')
-    variant('qt',      default=False, description='Enables the build of cmake-gui')
-    variant('doc',     default=False, description='Enables the generation of html and man page documentation')
-    variant('openssl', default=True,  description="Enables CMake's OpenSSL features")
-    variant('ncurses', default=True,  description='Enables the build of the ncurses gui')
+    variant('ownlibs', default=True,
+            description='Use CMake-provided third-party libraries')
+    variant('qt',      default=False,
+            description='Enables the build of cmake-gui')
+    variant('doc',     default=False,
+            description='Enables the generation of html and man page documentation')
+    variant('openssl', default=True,
+            description="Enables CMake's OpenSSL features")
+    variant('ncurses', default=True,
+            description='Enables the build of the ncurses gui')
 
     depends_on('curl',           when='~ownlibs')
     depends_on('expat',          when='~ownlibs')

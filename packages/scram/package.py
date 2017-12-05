@@ -31,42 +31,42 @@ import fnmatch
 import sys
 import shutil
 
+
 class Scram(Package):
     """SCRAM as used by CMS"""
 
     homepage = "https://github.com/cms-sw/SCRAM"
-    url      = "https://github.com/cms-sw/SCRAM/archive/V2_2_6.tar.gz"
+    url = "https://github.com/cms-sw/SCRAM/archive/V2_2_6.tar.gz"
 
     version('2_2_7_pre3', 'b451f27fff6a74f44544d90bd3140ca6')
 
     depends_on('gmake')
 
-    scram_arch='slc_amd64_gcc'
+    scram_arch = 'slc_amd64_gcc'
     if sys.platform == 'darwin':
-        scram_arch='osx10_amd64_clang'
+        scram_arch = 'osx10_amd64_clang'
 
     def install(self, spec, prefix):
-        gmake=which('gmake')
-        args=['install']
+        gmake = which('gmake')
+        args = ['install']
         args.append('INSTALL_BASE=%s' % prefix)
         args.append('VERSION=V%s' % self.version)
-        args.append('PREFIX=%s' % prefix )
+        args.append('PREFIX=%s' % prefix)
         args.append('VERBOSE=1')
         gmake(*args)
 
-        with working_dir(prefix.etc+'/scram.d',create=True):
-            gcc=which(spack_f77)
-            gcc_prefix=re.sub('/bin/.*$','',self.compiler.f77)
-            gcc_machine=gcc('-dumpmachine',output=str)
-            gcc_ver=gcc('-dumpversion',output=str)
+        with working_dir(prefix.etc + '/scram.d', create=True):
+            gcc = which(spack_f77)
+            gcc_prefix = re.sub('/bin/.*$', '', self.compiler.f77)
+            gcc_machine = gcc('-dumpmachine', output=str)
+            gcc_ver = gcc('-dumpversion', output=str)
 
             values = {}
-            values['GCC_VER']=gcc_ver.rstrip()
-            values['GCC_PREFIX']=gcc_prefix
-            values['GCC_MACHINE']=gcc_machine.rstrip()
- 
-        
-            template=Template("""
+            values['GCC_VER'] = gcc_ver.rstrip()
+            values['GCC_PREFIX'] = gcc_prefix
+            values['GCC_MACHINE'] = gcc_machine.rstrip()
+
+            template = Template("""
   <tool name="gcc-ccompiler" version="${GCC_VER}" type="compiler">
     <client>
       <environment name="GCC_CCOMPILER_BASE" default="${GCC_PREFIX}"/>
@@ -75,11 +75,11 @@ class Scram(Package):
     <flags CFLAGS="-O2 -pthread   "/>
   </tool>
 """)
-            with open('gcc-ccompiler.xml','w') as f:
+            with open('gcc-ccompiler.xml', 'w') as f:
                 f.write(template.substitute(values))
                 f.close()
 
-            template=Template("""
+            template = Template("""
   <tool name="gcc-cxxcompiler" version="${GCC_VER}" type="compiler">
     <client>
       <environment name="GCC_CXXCOMPILER_BASE" default="${GCC_PREFIX}"/>
@@ -109,10 +109,10 @@ class Scram(Package):
     <runtime name="PATH" value="$$GCC_CXXCOMPILER_BASE/bin" type="path"/>
   </tool>
 """)
-            with open('gcc-cxxcompiler.xml','w') as f:
+            with open('gcc-cxxcompiler.xml', 'w') as f:
                 f.write(template.substitute(values))
                 f.close()
-            template=Template("""
+            template = Template("""
   <tool name="gcc-f77compiler" version="${GCC_VER}" type="compiler">
     <lib name="gfortran"/>
     <lib name="m"/>
@@ -126,11 +126,11 @@ class Scram(Package):
     <flags FSHAREDOBJECTFLAGS="-fPIC   "/>
   </tool>
 """)
-            with open('gcc-f77compiler.xml','w') as f:
+            with open('gcc-f77compiler.xml', 'w') as f:
                 f.write(template.substitute(values))
                 f.close()
 
-            template=Template("""
+            template = Template("""
 <tool name="root_cxxdefaults" version="6">
   <runtime name="ROOT_GCC_TOOLCHAIN" value="${GCC_PREFIX}" type="path"/>
   <runtime name="ROOT_INCLUDE_PATH" value="${GCC_PREFIX}/include/c++/${GCC_VER}" type="path"/>
@@ -140,12 +140,11 @@ class Scram(Package):
   <runtime name="ROOT_INCLUDE_PATH" value="/usr/include" type="path"/>
 </tool>
 """)
-            with open('root_cxxdefaults.xml','w') as f:
+            with open('root_cxxdefaults.xml', 'w') as f:
                 f.write(template.substitute(values))
                 f.close()
 
-
-            contents="""
+            contents = """
   <tool name="sockets" version="1.0">
     <lib name="nsl"/>
     <lib name="crypt"/>
@@ -154,15 +153,15 @@ class Scram(Package):
   </tool>
 """
             if sys.platform == 'darwin':
-                contents="""
+                contents = """
   <tool name="sockets" version="1.0">
     <lib name="dl"/>
   </tool>
 """
-            with open('sockets.xml','w') as f:
+            with open('sockets.xml', 'w') as f:
                 f.write(contents)
                 f.close()
-            contents="""
+            contents = """
   <tool name="opengl" version="XFree4.2">
     <lib name="GL"/>
     <lib name="GLU"/>
@@ -170,27 +169,26 @@ class Scram(Package):
     <environment name="ORACLE_ADMINDIR" default="/etc"/>
 """
             if sys.platform == 'darwin':
-                contents+="""
+                contents += """
     <client>
       <environment name="OPENGL_BASE" default="/System/Library/Frameworks/OpenGL.framework/Versions/A"/>
       <environment name="INCLUDE"     default="$OPENGL_BASE/Headers"/>
       <environment name="LIBDIR"      default="$OPENGL_BASE/Libraries"/>
     </client>
 """
-            contents+="""</tool>"""
-            with open('opengl.xml','w') as f:
+            contents += """</tool>"""
+            with open('opengl.xml', 'w') as f:
                 f.write(contents)
                 f.close()
 
-            contents="""
+            contents = """
   <tool name="x11" version="R6">
     <use name="sockets"/>
   </tool>
 """
-            with open('x11.xml','w') as f:
+            with open('x11.xml', 'w') as f:
                 f.write(contents)
                 f.close()
-
 
     def setup_dependent_environment(self, spack_env, run_env, dspec):
         spack_env.set('SCRAM_ARCH', self.scram_arch)

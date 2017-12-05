@@ -32,7 +32,7 @@ class Freetype(AutotoolsPackage):
     of most vector and bitmap font formats."""
 
     homepage = "https://www.freetype.org/index.html"
-    url      = "http://download.savannah.gnu.org/releases/freetype/freetype-2.7.1.tar.gz"
+    url = "http://download.savannah.gnu.org/releases/freetype/freetype-2.7.1.tar.gz"
 
     version('2.7.1', '78701bee8d249578d83bb9a2f3aa3616')
     version('2.7',   '337139e5c7c5bd645fe130608e0fa8b5')
@@ -45,12 +45,11 @@ class Freetype(AutotoolsPackage):
     def configure_args(self):
         return ['--with-harfbuzz=no']
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -59,12 +58,12 @@ class Freetype(AutotoolsPackage):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='freetype.xml'
-        template=Template("""
+        fname = 'freetype.xml'
+        template = Template("""
 <tool name="freetype" version="${VER}">
   <lib name="freetype-cms"/>
   <client>
@@ -79,5 +78,4 @@ class Freetype(AutotoolsPackage):
 """)
 
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
+        self.write_scram_toolfile(contents, fname)

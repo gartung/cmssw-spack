@@ -49,9 +49,9 @@ class Geant4(CMakePackage):
     depends_on("xerces-c")
     depends_on("qt@4.8:", when="+qt")
     depends_on("vecgeom", when="+vecgeom")
-    # G4 data 
+    # G4 data
     depends_on("geant4-g4emlow")
-    depends_on("geant4-g4ndl")   
+    depends_on("geant4-g4ndl")
     depends_on("geant4-g4photonevaporation")
     depends_on("geant4-g4saiddata")
     depends_on("geant4-g4abla")
@@ -73,11 +73,11 @@ class Geant4(CMakePackage):
             '-DGEANT4_USE_SYSTEM_ZLIB=ON',
             '-DXERCESC_ROOT_DIR:STRING=%s' %
             spec['xerces-c'].prefix]
-        
+
         if '+vecgeom' in spec:
             options.append('-DGEANT4_USE_USOLIDS=ON')
             options.append('-DUSolids_DIR=%s' %
-            join_path(spec['vecgeom'].prefix, 'lib/CMake/USolids'))
+                           join_path(spec['vecgeom'].prefix, 'lib/CMake/USolids'))
 
         arch = platform.system().lower()
         if arch is not 'darwin':
@@ -99,12 +99,11 @@ class Geant4(CMakePackage):
         """Handle Geant4's unusual version string."""
         return ("http://geant4.cern.ch/support/source/geant4.%s.tar.gz" % version)
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -113,12 +112,12 @@ class Geant4(CMakePackage):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['GEANT4_VER']=self.spec.version
-        values['GEANT4_PREFIX']=self.spec.prefix
+        values = {}
+        values['GEANT4_VER'] = self.spec.version
+        values['GEANT4_PREFIX'] = self.spec.prefix
 
-        fname='geant4.xml'
-        template=Template("""
+        fname = 'geant4.xml'
+        template = Template("""
 <tool name="geant4" version="${GEANT4_VER}">
   <info url="http://geant4.web.cern.ch/geant4/"/>
   <use name="geant4core"/>
@@ -127,10 +126,10 @@ class Geant4(CMakePackage):
 </tool>
 """)
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)
 
-        fname='geant4core.xml'
-        template=Template("""
+        fname = 'geant4core.xml'
+        template = Template("""
 <tool name="geant4core" version="${GEANT4_VER}">
   <info url="http://geant4.web.cern.ch/geant4/"/>
   <lib name="G4digits_hits"/>
@@ -168,11 +167,10 @@ class Geant4(CMakePackage):
 """)
 
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)
 
-
-        fname='geant4data.xml'
-        template=Template("""
+        fname = 'geant4data.xml'
+        template = Template("""
 <tool name="geant4data" version="${GEANT4_VER}">
   <use name="geant4data_g4abla"/>
   <use name="geant4data_g4emlow"/>
@@ -186,10 +184,10 @@ class Geant4(CMakePackage):
 """)
 
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)
 
-        fname='geant4vis.xml'
-        template=Template("""
+        fname = 'geant4vis.xml'
+        template = Template("""
 <tool name="geant4vis" version="${GEANT4_VER}">
   <info url="http://geant4.web.cern.ch/geant4/"/>
   <lib name="G4FR"/>
@@ -207,4 +205,4 @@ class Geant4(CMakePackage):
 """)
 
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)

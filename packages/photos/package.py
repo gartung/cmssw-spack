@@ -26,16 +26,16 @@ from spack import *
 import glob
 import os
 
+
 class Photos(Package):
     """FIXME: Put a proper description of your package here."""
 
     homepage = "http://www.example.com"
-    url      = "http://cern.ch/service-spi/external/MCGenerators/distribution/photos/photos-215.5-src.tgz"
+    url = "http://cern.ch/service-spi/external/MCGenerators/distribution/photos/photos-215.5-src.tgz"
 
     version('215.5', '87bc3383562e2583edb16dab8b2b5e30')
 
     patch('photos-215.5-update-configure.patch')
-
 
     def install(self, spec, prefix):
         args = ['--enable-static',
@@ -44,18 +44,16 @@ class Photos(Package):
         with working_dir(str(spec.version)):
             configure(*args)
             make()
-            install_tree('include',prefix.include)
+            install_tree('include', prefix.include)
             mkdirp(prefix.lib)
             for f in glob.glob('lib/archive/*'):
-                install(f,join_path(prefix.lib,os.path.basename(f)))
-
+                install(f, join_path(prefix.lib, os.path.basename(f)))
 
     def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -64,12 +62,12 @@ class Photos(Package):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='photos.xml'
-        template=Template("""
+        fname = 'photos.xml'
+        template = Template("""
 <tool name="photos" version="${VER}">
   <lib name="photos"/>
   <client>
@@ -81,10 +79,10 @@ class Photos(Package):
 </tool>
 """)
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)
 
-        fname='photos_headers.xml'
-        template=Template("""
+        fname = 'photos_headers.xml'
+        template = Template("""
 <tool name="photos_headers" version="${VER}">
   <client>
     <environment name="PHOTOS_HEADERS_BASE" default="${PFX}"/>
@@ -95,5 +93,4 @@ class Photos(Package):
 </tool>
 """)
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
+        self.write_scram_toolfile(contents, fname)

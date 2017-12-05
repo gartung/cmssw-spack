@@ -66,9 +66,9 @@ class Sqlite(AutotoolsPackage):
 
         return args
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
 
@@ -79,12 +79,12 @@ class Sqlite(AutotoolsPackage):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='sqlite.xml'
-        template=Template("""<tool name="sqlite" version="$VER">
+        fname = 'sqlite.xml'
+        template = Template("""<tool name="sqlite" version="$VER">
   <lib name="sqlite3"/>
   <client>
     <environment name="SQLITE_BASE" default="$PFX"/>
@@ -97,4 +97,4 @@ class Sqlite(AutotoolsPackage):
   <use name="root_cxxdefaults"/>
 </tool>""")
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)

@@ -30,7 +30,7 @@ class Photospp(Package):
 
     # FIXME: Add a proper url for your package's homepage here.
     homepage = "http://www.example.com"
-    url      = "http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/photos++/photos++-3.61-src.tgz"
+    url = "http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/photos++/photos++-3.61-src.tgz"
 
     version('3.61', 'b5519bb2b22a51710f67014704f6795a')
 
@@ -44,12 +44,11 @@ class Photospp(Package):
             make()
             make('install')
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -58,12 +57,12 @@ class Photospp(Package):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='photospp.xml'
-        template=Template("""
+        fname = 'photospp.xml'
+        template = Template("""
 <tool name="photospp" version="${VER}">
   <lib name="Photospp"/>
   <lib name="PhotosppHepMC"/>
@@ -77,4 +76,4 @@ class Photospp(Package):
 </tool>
 """)
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)

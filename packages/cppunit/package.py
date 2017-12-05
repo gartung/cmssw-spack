@@ -33,12 +33,11 @@ class Cppunit(AutotoolsPackage):
 
     version('1.13.2', '0eaf8bb1dcf4d16b12bec30d0732370390d35e6f')
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -46,13 +45,13 @@ class Cppunit(AutotoolsPackage):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='cppunit.xml'
+        fname = 'cppunit.xml'
 
-        template=Template("""<tool name="cppunit" version="$VER">
+        template = Template("""<tool name="cppunit" version="$VER">
   <lib name="cppunit"/>
   <client>
     <environment name="CPPUNIT_BASE" default="$PFX"/>
@@ -64,4 +63,4 @@ class Cppunit(AutotoolsPackage):
   <use name="sockets"/>
 </tool>""")
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)

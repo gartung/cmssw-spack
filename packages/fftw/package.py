@@ -34,7 +34,7 @@ class Fftw(AutotoolsPackage):
        library of choice for most applications."""
 
     homepage = "http://www.fftw.org"
-    url      = "http://www.fftw.org/fftw-3.3.4.tar.gz"
+    url = "http://www.fftw.org/fftw-3.3.4.tar.gz"
     list_url = "http://www.fftw.org/download.html"
 
     version('3.3.6-pl2', '927e481edbb32575397eb3d62535a856')
@@ -174,12 +174,11 @@ class Fftw(AutotoolsPackage):
             with working_dir('quad'):
                 make("install")
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -188,12 +187,12 @@ class Fftw(AutotoolsPackage):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='fftw3.xml'
-        template=Template("""
+        fname = 'fftw3.xml'
+        template = Template("""
 <tool name="fftw3" version="${VER}">
   <lib name="fftw3"/>
   <client>
@@ -207,6 +206,4 @@ class Fftw(AutotoolsPackage):
 """)
 
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
-
+        self.write_scram_toolfile(contents, fname)

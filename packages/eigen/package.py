@@ -31,7 +31,7 @@ class Eigen(CMakePackage):
     """
 
     homepage = 'http://eigen.tuxfamily.org/'
-    url      = 'https://bitbucket.org/eigen/eigen/get/3.3.3.tar.bz2'
+    url = 'https://bitbucket.org/eigen/eigen/get/3.3.3.tar.bz2'
 
     version('3.3.3', 'b2ddade41040d9cf73b39b4b51e8775b')
     version('3.3.1', 'edb6799ef413b0868aace20d2403864c')
@@ -59,9 +59,9 @@ class Eigen(CMakePackage):
     depends_on('mpfr@2.3.0:', when='+mpfr')
     depends_on('gmp', when='+mpfr')
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
 
@@ -72,12 +72,12 @@ class Eigen(CMakePackage):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='eigen3.xml'
-        template=Template("""
+        fname = 'eigen3.xml'
+        template = Template("""
 <tool name="eigen" version="${VER}">
   <client>
     <environment name="EIGEN_BASE"   default="${PFX}"/>
@@ -87,4 +87,4 @@ class Eigen(CMakePackage):
 </tool>
 """)
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)

@@ -30,12 +30,13 @@ class Gmake(AutotoolsPackage):
     other non-source files of a program from the program's source files."""
 
     homepage = "https://www.gnu.org/software/make/"
-    url      = "https://ftp.gnu.org/gnu/make/make-4.2.1.tar.gz"
+    url = "https://ftp.gnu.org/gnu/make/make-4.2.1.tar.gz"
 
     version('4.2.1', '7d0dcb6c474b258aab4d54098f2cf5a7')
     version('4.0',   'b5e558f981326d9ca1bfdb841640721a')
 
-    variant('guile', default=False, description='Support GNU Guile for embedded scripting')
+    variant('guile', default=False,
+            description='Support GNU Guile for embedded scripting')
 
     depends_on('guile', when='+guile')
 
@@ -56,13 +57,11 @@ class Gmake(AutotoolsPackage):
         with working_dir(self.prefix.bin):
             symlink('make', 'gmake')
 
-
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -71,12 +70,12 @@ class Gmake(AutotoolsPackage):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='gmake.xml'
-        template=Template("""<tool name="gmake" version="$VER">
+        fname = 'gmake.xml'
+        template = Template("""<tool name="gmake" version="$VER">
   <client>
     <environment name="MAKE_BASE" default="$PFX"/>
   </client>
@@ -84,4 +83,4 @@ class Gmake(AutotoolsPackage):
 </tool>""")
 
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)

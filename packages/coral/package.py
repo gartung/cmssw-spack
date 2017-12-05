@@ -31,109 +31,107 @@ import fnmatch
 import sys
 import shutil
 
+
 def relrelink(top):
-    for root, dirs, files in os.walk(top,topdown=False):
-       for x in files:
-           p = os.path.join(root,x)
-           f = os.path.abspath(p)
-           if os.path.islink(f):
-               linkto=os.path.realpath(f)
-               if not os.path.commonprefix((f,linkto)) == '/':
-                   rel=os.path.relpath(linkto,start=os.path.dirname(f))
-                   os.remove(p)
-                   os.symlink(rel, p)
-       for y in dirs:
-           p = os.path.join(root,y)
-           f = os.path.abspath(p)
-           if os.path.islink(f):
-               linkto=os.path.realpath(f)
-               if not os.path.commonprefix((f,linkto)) == '/':
-                   rel=os.path.relpath(linkto,start=os.path.dirname(f))
-                   os.remove(p)
-                   os.symlink(rel, p)
+    for root, dirs, files in os.walk(top, topdown=False):
+        for x in files:
+            p = os.path.join(root, x)
+            f = os.path.abspath(p)
+            if os.path.islink(f):
+                linkto = os.path.realpath(f)
+                if not os.path.commonprefix((f, linkto)) == '/':
+                    rel = os.path.relpath(linkto, start=os.path.dirname(f))
+                    os.remove(p)
+                    os.symlink(rel, p)
+        for y in dirs:
+            p = os.path.join(root, y)
+            f = os.path.abspath(p)
+            if os.path.islink(f):
+                linkto = os.path.realpath(f)
+                if not os.path.commonprefix((f, linkto)) == '/':
+                    rel = os.path.relpath(linkto, start=os.path.dirname(f))
+                    os.remove(p)
+                    os.symlink(rel, p)
+
 
 class Coral(Package):
     """CORAL built as a scram project"""
 
     homepage = "http://cms-sw.github.io"
-    url      = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/cms/coral/CORAL_2_3_21-oenich2/src.tar.gz"
+    url = "https://github.com/cms-externals/coral"
 
-    version('2.3.21','cad0b744fd18efc3a4aa045dc266fdb3')
-    
-    config_tag='V05-05-22'
+    version('2.3.21', git='https://github.com/cms-externals/coral',
+            branch='cms/CORAL_2_3_21')
+
+    config_tag = 'V05-05-22'
     resource(name='scram-config',
-             url='http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/cms/coral/CORAL_2_3_21-oenich2/%s.tar.gz'%config_tag,
+             url='http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/cms/coral/CORAL_2_3_21-oenich2/%s.tar.gz' % config_tag,
              md5='785f25f05c5b446728172ef89ddfab9b',
              destination='.',
              placement='scram-config'
-    )
+             )
 
-    patch('coral-CORAL_2_3_20-hide-strict-aliasing.patch')
-    patch('coral-CORAL_2_3_20-boost150-fix.patch')
- 
-
-    scram_arch='linux_amd64_gcc'
+    scram_arch = 'linux_amd64_gcc'
     if sys.platform == 'darwin':
-        scram_arch='osx10_amd64_clang'
- 
+        scram_arch = 'osx10_amd64_clang'
+
     depends_on('scram')
     depends_on('gmake')
-    depends_on('python+shared')
-    depends_on('boost@1.63.0+python+shared^python+shared')
-    depends_on('cppunit')
-    depends_on('xerces-c')
+    depends_on('python@2.7.11')
+    depends_on('boost@1.63.0+python+shared+atomic+chrono~clanglibcpp+date_time~debug+filesystem~graph~icu+iostreams+locale+log+math~mpi+multithreaded+program_options+random+regex+serialization+signals~singlethreaded+system~taggedlayout+test+thread+timer~versionedlayout+wave^python@2.7.11')
+    depends_on('cppunit@1.12.1')
+    depends_on('xerces-c@3.1.3')
     depends_on('expat')
     depends_on('sqlite@3.16.02')
-    depends_on('bzip2')
-    depends_on('openssl')
-    depends_on('pcre')
-    depends_on('zlib')
+    depends_on('bzip2@1.0.6')
+    depends_on('openssl@1.0.2d')
+    depends_on('pcre@8.37')
+    depends_on('zlib@1.2.11')
     depends_on('uuid-cms')
-    depends_on('oracle')
-    depends_on('frontier-client')
+    depends_on('oracle@12.1.0.2.0')
+    depends_on('frontier-client@2.8.20')
 
     def install(self, spec, prefix):
-        scram=which('scram')
+        scram = which('scram')
         build_directory = join_path(self.stage.path, 'spack-build')
         source_directory = self.stage.source_path
-        scram_version='V'+str(spec['scram'].version)
-        project_dir=join_path(prefix,'CORAL_%s' % self.version.underscored)
+        scram_version = 'V' + str(spec['scram'].version)
+        project_dir = join_path(prefix, 'CORAL_%s' % self.version.underscored)
 
         with working_dir(build_directory, create=True):
-            rsync=which('rsync')
+            rsync = which('rsync')
             mkdirp('src')
             rsync('-a', '--exclude', '.git', '--exclude', 'scram-config',
                   '--exclude', 'spack-build.*',
-                  source_directory+'/','src/')
+                  source_directory + '/', 'src/')
             mkdirp('config')
-            rsync('-a', '--exclude', '.git', 
-                  source_directory+'/scram-config/','config/')
-            with open('config/config_tag','w') as f:
+            rsync('-a', '--exclude', '.git',
+                  source_directory + '/scram-config/', 'config/')
+            with open('config/config_tag', 'w') as f:
                 f.write(self.config_tag)
                 f.close()
             mkdirp('tools/selected')
             mkdirp('tools/available')
-            for dep in spec.dependencies():      
-                xmlfiles = glob(join_path(dep.prefix.etc,'scram.d','*.xml'))
+            for dep in spec.dependencies():
+                xmlfiles = glob(join_path(dep.prefix.etc, 'scram.d', '*.xml'))
                 for xmlfile in xmlfiles:
-                    install(xmlfile,'tools/selected')
+                    install(xmlfile, 'tools/selected')
 
-            with open('config/config_tag','w') as f:
+            with open('config/config_tag', 'w') as f:
                 f.write(self.config_tag)
-                f.close() 
-            perl=which('perl')
+                f.close()
+            perl = which('perl')
             perl('config/updateConfig.pl',
-                 '-p', 'CORAL', 
+                 '-p', 'CORAL',
                  '-v', 'CORAL_%s' % self.version.underscored,
                  '-s', scram_version,
                  '-t', build_directory,
-                 '--keys', 'SCRAM_COMPILER=gcc', 
+                 '--keys', 'SCRAM_COMPILER=gcc',
                  '--keys', 'PROJECT_GIT_HASH=CORAL_%s' % self.version.underscored,
                  '--arch', '%s' % self.scram_arch)
-            scram('project','-d', '%s' % prefix, '-b', 'config/bootsrc.xml')
+            scram('project', '-d', '%s' % prefix, '-b', 'config/bootsrc.xml')
 
-
-        with working_dir(project_dir,create=False):
+        with working_dir(project_dir, create=False):
             matches = []
 
             for f in glob('src/*/*/test/BuildFile*'):
@@ -144,30 +142,27 @@ class Coral(Package):
 
             scram.add_default_env('LOCALTOP', project_dir)
             scram.add_default_env('CORAL_BASE', project_dir)
-            scram.add_default_env('LD_LIBRARY_PATH', '%s/lib/%s'%(project_dir,self.scram_arch))
+            scram.add_default_env('LD_LIBRARY_PATH', '%s/lib/%s' %
+                                  (project_dir, self.scram_arch))
             scram('build', '-v', '-j8')
             relrelink('external')
             shutil.rmtree('tmp')
-           
-
 
     def setup_dependent_environment(self, spack_env, run_env, dspec):
         spack_env.set('CORAL_RELEASE_BASE', self.prefix)
-        spack_env.append_path('LD_LIBRARY_PATH', '%s/CORAL_%s/lib/%s'% (self.prefix,self.version.underscored,self.scram_arch))
-
+        spack_env.append_path('LD_LIBRARY_PATH', '%s/CORAL_%s/lib/%s' %
+                              (self.prefix, self.version.underscored, self.scram_arch))
 
     def setup_environment(self, spack_env, run_env):
-        spack_env.set('LOCALTOP', self.prefix+'/'+self.version.underscored.string)
+        spack_env.set('LOCALTOP', self.prefix + '/' +
+                      self.version.underscored.string)
         spack_env.set('CORAL_BASE', self.prefix)
-        spack_env.append_path('LD_LIBRARY_PATH', '%s/CORAL_%s/lib/%s' % (self.prefix,self.version.underscored,self.scram_arch))
+        spack_env.append_path('LD_LIBRARY_PATH', '%s/CORAL_%s/lib/%s' %
+                              (self.prefix, self.version.underscored, self.scram_arch))
 
-    def url_for_version(self, version):
-        """Handle CORAL's version string."""
-        return "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/cms/coral/V%s-oenich2/src.tar.gz" % version.underscored
-
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
 
@@ -178,13 +173,13 @@ class Coral(Package):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
-        values['UVER']='CORAL_%s' % self.version.underscored
-                 
-        fname='coral.xml'
-        template=Template("""
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
+        values['UVER'] = 'CORAL_%s' % self.version.underscored
+
+        fname = 'coral.xml'
+        template = Template("""
 <tool name="coral" version="${VER}" type="scram">
   <client>
     <environment name="CORAL_BASE" default="${PFX}/${UVER}"/>
@@ -198,6 +193,4 @@ class Coral(Package):
 </tool>
 """)
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
-
+        self.write_scram_toolfile(contents, fname)

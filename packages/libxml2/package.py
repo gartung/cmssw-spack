@@ -30,7 +30,7 @@ class Libxml2(AutotoolsPackage):
        project (but usable outside of the Gnome platform), it is free
        software available under the MIT License."""
     homepage = "http://xmlsoft.org"
-    url      = "http://xmlsoft.org/sources/libxml2-2.9.2.tar.gz"
+    url = "http://xmlsoft.org/sources/libxml2-2.9.2.tar.gz"
 
     version('2.9.4', 'ae249165c173b1ff386ee8ad676815f5')
     version('2.9.2', '9e6a9aca9d155737868b3dc5fd82f788')
@@ -59,12 +59,11 @@ class Libxml2(AutotoolsPackage):
 
         return args
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -73,12 +72,12 @@ class Libxml2(AutotoolsPackage):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='libxml2.xml'
-        template="""<tool name="libxml2" version="$VER">
+        fname = 'libxml2.xml'
+        template = """<tool name="libxml2" version="$VER">
   <info url="http://xmlsoft.org/"/>
   <lib name="xml2"/>
   <client>
@@ -92,4 +91,4 @@ class Libxml2(AutotoolsPackage):
 </tool>
 """
         contents = Template(template).substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)

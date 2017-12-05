@@ -45,23 +45,24 @@ class CfeBindings(Package):
 
     # FIXME: Add a proper url for your package's homepage here.
     homepage = "http://www.example.com"
-    url      = "http://releases.llvm.org/5.0.0/cfe-5.0.0.src.tar.xz"
+    url = "http://releases.llvm.org/5.0.0/cfe-5.0.0.src.tar.xz"
 
     version('5.0.0', '699c448c6d6d0edb693c87beb1cc8c6e')
     version('4.0.1', 'a6c7b3e953f8b93e252af5917df7db97')
 
     extends('python')
 
-    
-    depends_on('llvm@5.0.0~gold+python+shared_libs', type='build', when='@5.0.0')
-    depends_on('llvm@4.0.1~gold+python+shared_libs', type='build', when='@4.0.1')
+    depends_on('llvm@5.0.0~gold+python+shared_libs',
+               type='build', when='@5.0.0')
+    depends_on('llvm@4.0.1~gold+python+shared_libs',
+               type='build', when='@4.0.1')
 
     def install(self, spec, prefix):
         install_tree('%s/bindings/python/clang/' %
-                      self.stage.source_path,
-                      self.prefix.lib+'/python2.7/site-packages/clang')
+                     self.stage.source_path,
+                     self.prefix.lib + '/python2.7/site-packages/clang')
         install('%s/libclang.so' % self.spec['llvm'].prefix.lib,
-                     '%s/libclang.so' % self.prefix.lib)
+                '%s/libclang.so' % self.prefix.lib)
+
     def setup_dependent_environment(self, spack_env, run_env, dspec):
         spack_env.set('LLVM_BASE', self.prefix)
-

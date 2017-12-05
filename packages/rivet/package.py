@@ -45,7 +45,7 @@ class Rivet(AutotoolsPackage):
 
     # FIXME: Add a proper url for your package's homepage here.
     homepage = "http://www.example.com"
-    url      = "http://lcgpackages.web.cern.ch/lcgpackages/tarFiles/sources/MCGeneratorsTarFiles/Rivet-2.5.4.tar.bz2"
+    url = "http://lcgpackages.web.cern.ch/lcgpackages/tarFiles/sources/MCGeneratorsTarFiles/Rivet-2.5.4.tar.bz2"
 
     version('3.0.0alpha1', '7fb24d0e6ac8e9fe549d61194cb863d0')
     version('2.5.4',       '709a5c744135639f8f8195a1241ae81d', preferred=True)
@@ -60,15 +60,15 @@ class Rivet(AutotoolsPackage):
     def configure_args(self):
         # FIXME: Add arguments other than --prefix
         # FIXME: If not needed delete this function
-        args = [ '--disable-silent-rules', 
-                 '--with-hepmc=%s' % self.spec['hepmc'].prefix,
-                 '--with-fastjet=%s' % self.spec['fastjet'].prefix,
-                 '--with-gsl=%s' % self.spec['gsl'].prefix,
-                 '--with-yoda=%s' % self.spec['yoda'].prefix,
-                 '--disable-doxygen', 
-                 '--disable-pdfmanual',
-                 '--with-pic',
-                 'PYTHONPATH=%s/lib/python2.7/site-packages' % self.spec['cython'],
-                 'CPPFLAGS=%s' % self.spec['boost'].prefix.include
+        args = ['--disable-silent-rules',
+                '--with-hepmc=%s' % self.spec['hepmc'].prefix,
+                '--with-fastjet=%s' % self.spec['fastjet'].prefix,
+                '--with-gsl=%s' % self.spec['gsl'].prefix,
+                '--with-yoda=%s' % self.spec['yoda'].prefix,
+                '--disable-doxygen',
+                '--disable-pdfmanual',
+                '--with-pic',
+                'PYTHONPATH=%s/lib/python2.7/site-packages' % self.spec['cython'],
+                'CPPFLAGS=%s' % self.spec['boost'].prefix.include
                 ]
         return args

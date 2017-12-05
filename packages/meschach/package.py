@@ -25,15 +25,16 @@
 from spack import *
 import glob
 
+
 class Meschach(Package):
     """FIXME: Put a proper description of your package here."""
 
     homepage = "http://www.example.com"
-    url      = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/meschach/1.2.pCMS1/mesch12b.tar.gz"
+    url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/meschach/1.2.pCMS1/mesch12b.tar.gz"
 
     version('12b', '4ccd520f30934ebc34796d80dab29e5c')
 
-    patch('meschach-1.2b-fPIC.patch',level=0)
+    patch('meschach-1.2b-fPIC.patch', level=0)
     patch('meschach-1.2-slc4.patch')
 
     def install(self, spec, prefix):
@@ -42,15 +43,14 @@ class Meschach(Package):
         mkdirp(prefix.include)
         cp = which('cp')
         for f in glob.glob('*.h'):
-            cp(f,prefix.include)
-        cp('meschach.a',prefix.lib+'/libmeschach.a')
+            cp(f, prefix.include)
+        cp('meschach.a', prefix.lib + '/libmeschach.a')
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -59,12 +59,12 @@ class Meschach(Package):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='meschach.xml'
-        template=Template("""<tool name="meschach" version="$VER">
+        fname = 'meschach.xml'
+        template = Template("""<tool name="meschach" version="$VER">
   <info url="http://www.meschach.com"/>
   <lib name="meschach"/>
   <client>
@@ -77,4 +77,4 @@ class Meschach(Package):
 </tool>""")
 
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)

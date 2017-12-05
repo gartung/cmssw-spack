@@ -30,7 +30,7 @@ class Cython(Package):
 
     # FIXME: Add a proper url for your package's homepage here.
     homepage = "http://www.example.com"
-    url      = "http://cern.ch/service-spi/external/MCGenerators/distribution/cython/cython-0.22-src.tgz"
+    url = "http://cern.ch/service-spi/external/MCGenerators/distribution/cython/cython-0.22-src.tgz"
 
     version('0.22', 'f7653aaae762593e13a66f94dadf1835')
 
@@ -42,14 +42,13 @@ class Cython(Package):
         with working_dir(str(spec.version)):
             python = which('python')
             python('setup.py', 'build')
-            python('setup.py', 'install', '--prefix=%s' % prefix) 
+            python('setup.py', 'install', '--prefix=%s' % prefix)
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -58,12 +57,12 @@ class Cython(Package):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='cython.xml'
-        template=Template("""
+        fname = 'cython.xml'
+        template = Template("""
 <tool name="cython" version="${VER}">
   <client>
     <environment name="CYTHON_BASE" default="${PFX}"/>
@@ -73,5 +72,4 @@ class Cython(Package):
 </tool>
 """)
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-   
+        self.write_scram_toolfile(contents, fname)

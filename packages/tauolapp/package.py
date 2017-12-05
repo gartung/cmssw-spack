@@ -29,7 +29,7 @@ class Tauolapp(AutotoolsPackage):
     """FIXME: Put a proper description of your package here."""
 
     homepage = "http://www.example.com"
-    url      = "http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/tauola++/tauola++-1.1.5-src.tgz"
+    url = "http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/tauola++/tauola++-1.1.5-src.tgz"
 
     version('1.1.5', '2d9a3bc7536ddc5d937bbe711ddbadbe')
 
@@ -39,18 +39,17 @@ class Tauolapp(AutotoolsPackage):
     depends_on('boost')
 
     def configure_args(self):
-        args=['--with-hepmc=%s' % self.spec['hepmc'].prefix,
-              '--with-pythia8=%s' % self.spec['pythia8'].prefix,
-              '--with-lhapdf=%s' % self.spec['lhapdf'].prefix,
-              'CPPFLAGS=-I%s' % self.spec['boost'].prefix.include]
+        args = ['--with-hepmc=%s' % self.spec['hepmc'].prefix,
+                '--with-pythia8=%s' % self.spec['pythia8'].prefix,
+                '--with-lhapdf=%s' % self.spec['lhapdf'].prefix,
+                'CPPFLAGS=-I%s' % self.spec['boost'].prefix.include]
         return args
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -59,12 +58,12 @@ class Tauolapp(AutotoolsPackage):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='tauolapp.xml'
-        template=Template("""
+        fname = 'tauolapp.xml'
+        template = Template("""
 <tool name="tauolapp" version="${VER}">
   <lib name="TauolaCxxInterface"/>
   <lib name="TauolaFortran"/>
@@ -83,5 +82,4 @@ class Tauolapp(AutotoolsPackage):
 </tool>
 """)
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
+        self.write_scram_toolfile(contents, fname)

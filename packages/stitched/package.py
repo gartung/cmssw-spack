@@ -46,12 +46,12 @@ class Stitched(CMakePackage):
 
     # FIXME: Add a proper url for your package's homepage here.
     homepage = "http://www.example.com"
-    url      = "http://www.example.com/example-1.2.3.tar.gz"
+    url = "http://www.example.com/example-1.2.3.tar.gz"
 
     # FIXME: Add proper versions and checksums here.
     # version('1.2.3', '0123456789abcdef0123456789abcdef')
-    version('8.0.X',git='https://github.com/gartung/stitched.git',commit='8ce0c76',submodules='True')
-
+    version('8.0.X', git='https://github.com/gartung/stitched.git',
+            commit='8ce0c76', submodules='True')
 
     # FIXME: Add dependencies if required.
     depends_on('boost+python')
@@ -69,11 +69,12 @@ class Stitched(CMakePackage):
         # FIXME: CMAKE_INSTALL_PREFIX and CMAKE_BUILD_TYPE
         # FIXME: If not needed delete this function
         args = ['-DCMakeTools_DIR=%s/cmaketools' % self.stage.source_path]
-        args.append('-DCLHEP_ROOT_DIR=%s' % self.spec['clhep'].prefix) 
-        args.append('-DCASTOR_INCLUDE_DIR=%s/include' % self.spec['castor'].prefix) 
-        args.append('-DBOOST_ROOT=%s' % self.spec['boost'].prefix) 
-        args.append('-DTBB_ROOT_DIR=%s' % self.spec['tbb'].prefix) 
-        args.append('-DTINYXMLROOT=%s' % self.spec['tinyxml'].prefix) 
-        args.append('-DMD5ROOT=%s' % self.spec['md5'].prefix) 
-        args.append('-DCPPUNITROOT=%s' % self.spec['cppunit'].prefix) 
+        args.append('-DCLHEP_ROOT_DIR=%s' % self.spec['clhep'].prefix)
+        args.append('-DCASTOR_INCLUDE_DIR=%s/include' %
+                    self.spec['castor'].prefix)
+        args.append('-DBOOST_ROOT=%s' % self.spec['boost'].prefix)
+        args.append('-DTBB_ROOT_DIR=%s' % self.spec['tbb'].prefix)
+        args.append('-DTINYXMLROOT=%s' % self.spec['tinyxml'].prefix)
+        args.append('-DMD5ROOT=%s' % self.spec['md5'].prefix)
+        args.append('-DCPPUNITROOT=%s' % self.spec['cppunit'].prefix)
         return args

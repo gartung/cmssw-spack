@@ -30,7 +30,7 @@ class Yoda(Package):
 
     # FIXME: Add a proper url for your package's homepage here.
     homepage = "http://www.example.com"
-    url      = "http://cern.ch/service-spi/external/MCGenerators/distribution/yoda/yoda-1.6.5-src.tgz"
+    url = "http://cern.ch/service-spi/external/MCGenerators/distribution/yoda/yoda-1.6.5-src.tgz"
 
     version('1.6.5', '634fa27412730e511ca3d4c67f6086e7')
 
@@ -39,18 +39,17 @@ class Yoda(Package):
     depends_on('python')
     depends_on('py-cython', type='build')
 
-
     def install(self, spec, prefix):
-        with working_dir(str(self.spec.version),create=False):
+        with working_dir(str(self.spec.version), create=False):
             configure('--enable-root', '--prefix=%s' % self.prefix)
             make('all')
             make('install')
-    def write_scram_toolfile(self,contents,filename):
+
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -59,12 +58,12 @@ class Yoda(Package):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='yoda.xml'
-        template=Template("""
+        fname = 'yoda.xml'
+        template = Template("""
 <tool name="yoda" version="${VER}">
   <lib name="YODA"/>
   <client>
@@ -79,5 +78,4 @@ class Yoda(Package):
 """)
 
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
+        self.write_scram_toolfile(contents, fname)

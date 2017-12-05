@@ -31,19 +31,18 @@ class Xz(AutotoolsPackage):
        systems, but also work on some not-so-POSIX systems. XZ Utils are
        the successor to LZMA Utils."""
     homepage = "http://tukaani.org/xz/"
-    url      = "http://tukaani.org/xz/xz-5.2.0.tar.bz2"
+    url = "http://tukaani.org/xz/xz-5.2.0.tar.bz2"
     list_url = "http://tukaani.org/xz/old.html"
 
     version('5.2.3', '1592e7ca3eece099b03b35f4d9179e7c')
     version('5.2.2', 'f90c9a0c8b259aee2234c4e0d7fd70af')
     version('5.2.0', '867cc8611760240ebf3440bd6e170bb9')
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -52,12 +51,12 @@ class Xz(AutotoolsPackage):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='xz.xml'
-        template=Template("""<tool name="xz" version="$VER">
+        fname = 'xz.xml'
+        template = Template("""<tool name="xz" version="$VER">
     <info url="http://tukaani.org/xz/"/>
     <lib name="lzma"/>
     <client>
@@ -71,5 +70,4 @@ class Xz(AutotoolsPackage):
   </tool>""")
 
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
+        self.write_scram_toolfile(contents, fname)

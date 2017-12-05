@@ -34,7 +34,7 @@ class Gsl(AutotoolsPackage):
     over 1000 functions in total with an extensive test suite."""
 
     homepage = "http://www.gnu.org/software/gsl"
-    url      = "http://mirror.switch.ch/ftp/mirror/gnu/gsl/gsl-2.3.tar.gz"
+    url = "http://mirror.switch.ch/ftp/mirror/gnu/gsl/gsl-2.3.tar.gz"
 
     version('2.4',   'dba736f15404807834dc1c7b93e83b92')
     version('2.3',   '905fcbbb97bc552d1037e34d200931a0')
@@ -43,12 +43,11 @@ class Gsl(AutotoolsPackage):
     version('2.0',   'ae44cdfed78ece40e73411b63a78c375')
     version('1.16',  'e49a664db13d81c968415cd53f62bc8b')
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -57,12 +56,12 @@ class Gsl(AutotoolsPackage):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='gsl.xml'
-        template=Template("""<tool name="gsl" version="$VER">
+        fname = 'gsl.xml'
+        template = Template("""<tool name="gsl" version="$VER">
   <info url="http://www.gnu.org/software/gsl/gsl.html"/>
   <lib name="gsl"/>
   <lib name="gslcblas"/>
@@ -76,5 +75,4 @@ class Gsl(AutotoolsPackage):
 </tool>""")
 
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
+        self.write_scram_toolfile(contents, fname)

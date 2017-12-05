@@ -45,7 +45,7 @@ class Mcdb(Package):
 
     # FIXME: Add a proper url for your package's homepage here.
     homepage = "http://www.example.com"
-    url      = "http://mcdb.cern.ch/distribution/api/mcdb-api-1.0.3.tar.gz"
+    url = "http://mcdb.cern.ch/distribution/api/mcdb-api-1.0.3.tar.gz"
 
     version('1.0.3', '587a2699d3240561ccaf479c8edcfdeb')
     version('1.0.2', 'f8c5cba0b66c7241115bc74e846c7814')
@@ -55,7 +55,7 @@ class Mcdb(Package):
     depends_on('xerces-c')
 
     def install(self, spec, prefix):
-        contents="""
+        contents = """
 PLATFORM = slc_amd64_gcc
 CC       = gcc
 CXX      = g++
@@ -65,19 +65,18 @@ LINK     = g++
 LFLAGS   = -shared -Wl,-soname,libmcdb.so
 XERCESC  = %s
 """ % spec['xerces-c'].prefix
-        with open('config.mk','w') as f:
+        with open('config.mk', 'w') as f:
             f.write(contents)
             f.close()
         make()
-        install_tree('lib',prefix+'/lib')
-        install_tree('interface',prefix+'/interface')
+        install_tree('lib', prefix + '/lib')
+        install_tree('interface', prefix + '/interface')
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -86,12 +85,12 @@ XERCESC  = %s
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='mcdb.xml'
-        template=Template("""
+        fname = 'mcdb.xml'
+        template = Template("""
 <tool name="mcdb" version="$VER">
   <lib name="mcdb"/>
   <client>
@@ -105,4 +104,4 @@ XERCESC  = %s
 </tool>
 """)
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)

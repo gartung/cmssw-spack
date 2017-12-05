@@ -32,7 +32,7 @@ class LibjpegTurbo(AutotoolsPackage):
        transcoding."""
 
     homepage = "http://libjpeg-turbo.virtualgl.org"
-    url      = "http://downloads.sourceforge.net/libjpeg-turbo/libjpeg-turbo-1.3.1.tar.gz"
+    url = "http://downloads.sourceforge.net/libjpeg-turbo/libjpeg-turbo-1.3.1.tar.gz"
 
     version('1.5.0', '3fc5d9b6a8bce96161659ae7a9939257')
     version('1.3.1', '2c3a68129dac443a72815ff5bb374b05')
@@ -46,12 +46,11 @@ class LibjpegTurbo(AutotoolsPackage):
     # depends_on("yasm", type='build')
     depends_on("nasm", type='build')
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -60,12 +59,12 @@ class LibjpegTurbo(AutotoolsPackage):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='libjpg.xml'
-        template=Template("""<tool name="libjpeg-turbo" version="$VER">
+        fname = 'libjpg.xml'
+        template = Template("""<tool name="libjpeg-turbo" version="$VER">
   <info url="http://libjpeg-turbo.virtualgl.org"/>
   <lib name="jpeg"/>
   <lib name="turbojpeg"/>
@@ -80,4 +79,4 @@ class LibjpegTurbo(AutotoolsPackage):
 </tool>""")
 
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)

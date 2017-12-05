@@ -32,7 +32,7 @@ class Heppdt(AutotoolsPackage):
     numbering scheme. We realize that the generators adhere closely
     to the standard, but there are occasional differences."""
     homepage = "http://lcgapp.cern.ch/project/simu/HepPDT/"
-    url      = "http://lcgapp.cern.ch/project/simu/HepPDT/download/HepPDT-2.06.01.tar.gz"
+    url = "http://lcgapp.cern.ch/project/simu/HepPDT/download/HepPDT-2.06.01.tar.gz"
 
     version('3.04.01', 'a8e93c7603d844266b62d6f189f0ac7e')
     version('3.04.00', '2d2cd7552d3e9539148febacc6287db2')
@@ -44,9 +44,9 @@ class Heppdt(AutotoolsPackage):
     def setup_dependent_environment(self, spack_env, run_env, dspec):
         spack_env.prepend_path('LD_LIBRARY_PATH', self.prefix.lib)
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
 
@@ -57,12 +57,12 @@ class Heppdt(AutotoolsPackage):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='heppdt.xml'
-        template=Template("""
+        fname = 'heppdt.xml'
+        template = Template("""
 <tool name="heppdt" version="${VER}">
   <lib name="HepPDT"/>
   <lib name="HepPID"/>
@@ -78,4 +78,4 @@ class Heppdt(AutotoolsPackage):
 </tool>
 """)
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)

@@ -29,31 +29,30 @@ class Fastjet(AutotoolsPackage):
     """."""
 
     homepage = "http://www.example.com"
-    url      = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/fastjet/3.1.0/fastjet-3.1.0.tgz"
+    url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/fastjet/3.1.0/fastjet-3.1.0.tgz"
 
     version('3.1.0', 'ca865ac0dfab9910dccd0ac4bd1ae7ea')
 
-
     def configure_args(self):
         args = [
-                '--enable-shared',
-                '--enable-atlascone',
-                '--enable-cmsiterativecone',
-                '--enable-siscone',
-                '--enable-allcxxplugins'
-               ]
+            '--enable-shared',
+            '--enable-atlascone',
+            '--enable-cmsiterativecone',
+            '--enable-siscone',
+            '--enable-allcxxplugins'
+        ]
         if 'CXXFLAGS' in env and env['CXXFLAGS']:
-            env['CXXFLAGS'] += ' '+ '-O3 -Wall -ffast-math -ftree-vectorize -msse3'
+            env['CXXFLAGS'] += ' ' + \
+                '-O3 -Wall -ffast-math -ftree-vectorize -msse3'
         else:
             env['CXXFLAGS'] = '-O3 -Wall -ffast-math -ftree-vectorize -msse3'
         return args
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -62,12 +61,12 @@ class Fastjet(AutotoolsPackage):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='fastjet.xml'
-        template=Template("""<tool name="fastjet" version="$VER">
+        fname = 'fastjet.xml'
+        template = Template("""<tool name="fastjet" version="$VER">
     <info url="http://www.lpthe.jussieu.fr/~salam/fastjet/"/>
     <lib name="fastjetplugins"/>
     <lib name="fastjettools"/>
@@ -83,5 +82,4 @@ class Fastjet(AutotoolsPackage):
     <use name="root_cxxdefaults"/>
   </tool>""")
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
+        self.write_scram_toolfile(contents, fname)

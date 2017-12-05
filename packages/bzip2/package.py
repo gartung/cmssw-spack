@@ -33,12 +33,13 @@ class Bzip2(Package):
     and six times faster at decompression."""
 
     homepage = "http://www.bzip.org"
-    url      = "http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz"
+    url = "http://www.bzip.org/1.0.6/bzip2-1.0.6.tar.gz"
     list_url = "http://www.bzip.org/downloads.html"
 
     version('1.0.6', '00b516f4704d4a7cb50a1d97e6e8e15b')
 
-    variant('shared', default=True, description='Enables the build of shared libraries.')
+    variant('shared', default=True,
+            description='Enables the build of shared libraries.')
 
     # override default implementation
     @property
@@ -117,9 +118,9 @@ class Bzip2(Package):
             symlink('bzip2', 'bunzip2')
             symlink('bzip2', 'bzcat')
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
 
@@ -130,12 +131,12 @@ class Bzip2(Package):
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='bz2lib.xml'
-        template=Template("""<tool name="bz2lib" version="$VER">
+        fname = 'bz2lib.xml'
+        template = Template("""<tool name="bz2lib" version="$VER">
   <lib name="bz2"/>
   <client>
     <environment name="BZ2LIB_BASE" default="$PFX"/>
@@ -147,5 +148,4 @@ class Bzip2(Package):
 </tool>""")
 
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
+        self.write_scram_toolfile(contents, fname)

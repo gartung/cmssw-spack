@@ -449,10 +449,9 @@ class Llvm(CMakePackage):
         with working_dir(self.build_directory):
             install_tree('bin', join_path(self.prefix, 'libexec', 'llvm'))
 
-
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
 
@@ -460,29 +459,30 @@ class Llvm(CMakePackage):
     def write_scram_toolfiles(self):
         """Create contents of scram tool config files for this package."""
         from string import Template
-        import sys,re
+        import sys
+        import re
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        gcc=which(spack_f77)
-        gcc_prefix=re.sub('/bin/.*$','',self.compiler.f77)
-        gcc_machine=gcc('-dumpmachine',output=str)
-        gcc_ver=gcc('-dumpversion',output=str)
-        pyvers=str(self.spec['python'].version).split('.')
-        pyver=pyvers[0]+'.'+pyvers[1]
- 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
-        values['LIB']=self.spec.prefix.lib
-        values['BIN']=self.spec.prefix.bin
-        values['GCC_VER']=gcc_ver.rstrip()
-        values['GCC_PREFIX']=gcc_prefix
-        values['GCC_MACHINE']=gcc_machine.rstrip()
-        values['PYVER']=pyver
-        values['LDPATH_NAME']='LD_LIBRARY_PATH'
+        gcc = which(spack_f77)
+        gcc_prefix = re.sub('/bin/.*$', '', self.compiler.f77)
+        gcc_machine = gcc('-dumpmachine', output=str)
+        gcc_ver = gcc('-dumpversion', output=str)
+        pyvers = str(self.spec['python'].version).split('.')
+        pyver = pyvers[0] + '.' + pyvers[1]
+
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
+        values['LIB'] = self.spec.prefix.lib
+        values['BIN'] = self.spec.prefix.bin
+        values['GCC_VER'] = gcc_ver.rstrip()
+        values['GCC_PREFIX'] = gcc_prefix
+        values['GCC_MACHINE'] = gcc_machine.rstrip()
+        values['PYVER'] = pyver
+        values['LDPATH_NAME'] = 'LD_LIBRARY_PATH'
         if sys.platform == 'darwin':
-            values['LDPATH_NAME']='DYLD_LIBRARY_PATH'
+            values['LDPATH_NAME'] = 'DYLD_LIBRARY_PATH'
 
 #        fname='llvm-cxxcompiler.xml'
 #        template=Template("""<tool name="llvm-cxxcompiler" version="${VER}" type="compiler">
@@ -546,7 +546,7 @@ class Llvm(CMakePackage):
 #
 #        fname='llvm-f77compiler.xml'
 #        template=Template("""  <tool name="llvm-f77compiler" version="${VER}" type="compiler">
-#    <use name="gcc-f77compiler"/>    
+#    <use name="gcc-f77compiler"/>
 #    <client>
 #      <environment name="FC" default="gfortran"/>
 #    </client>
@@ -555,7 +555,7 @@ class Llvm(CMakePackage):
 #        self.write_scram_toolfile(contents,fname)
 #
 #
-##Clang analyzer compilers
+# Clang analyzer compilers
 #        fname='llvm-analyzer-cxxcompiler.xml'
 #        template=Template("""  <tool name="llvm-analyzer-cxxcompiler" version="${VER}" type="compiler">
 #    <use name="llvm-cxxcompiler"/>
@@ -582,8 +582,8 @@ class Llvm(CMakePackage):
 #
 
 # This is a toolfile to use llvm / clang as a library, not as a compiler.
-        fname='llvm.xml'
-        template=Template("""  <tool name="llvm" version="${VER}">
+        fname = 'llvm.xml'
+        template = Template("""  <tool name="llvm" version="${VER}">
     <lib name="clang"/>
     <client>
       <environment name="LLVM_BASE" default="${PFX}"/>
@@ -597,11 +597,10 @@ class Llvm(CMakePackage):
     <flags CXXFLAGS="-Wno-strict-aliasing -fno-rtti"/>
   </tool>""")
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)
 
-
-        fname='pyclang.xml'
-        template=Template("""<tool name="pyclang" version="${VER}">
+        fname = 'pyclang.xml'
+        template = Template("""<tool name="pyclang" version="${VER}">
   <client>
     <environment name="PYCLANG_BASE" default="${PFX}"/>
   </client>
@@ -609,5 +608,4 @@ class Llvm(CMakePackage):
   <use name="python"/>
 </tool>""")
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
-
+        self.write_scram_toolfile(contents, fname)

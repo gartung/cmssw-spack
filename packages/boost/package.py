@@ -37,7 +37,7 @@ class Boost(Package):
        encourages both commercial and non-commercial use.
     """
     homepage = "http://www.boost.org"
-    url      = "http://downloads.sourceforge.net/project/boost/boost/1.55.0/boost_1_55_0.tar.bz2"
+    url = "http://downloads.sourceforge.net/project/boost/boost/1.55.0/boost_1_55_0.tar.bz2"
     list_url = "http://sourceforge.net/projects/boost/files/boost/"
     list_depth = 1
 
@@ -380,13 +380,11 @@ class Boost(Package):
         if (sys.platform == 'darwin') and ('+shared' in spec):
             fix_darwin_install_name(prefix.lib)
 
-
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -395,12 +393,12 @@ class Boost(Package):
         import sys
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='boost.xml'
-        template=Template("""<tool name="boost" version="$VER">
+        fname = 'boost.xml'
+        template = Template("""<tool name="boost" version="$VER">
   <info url="http://www.boost.org"/>
   <lib name="boost_thread"/>
   <lib name="boost_signals"/>
@@ -418,58 +416,58 @@ class Boost(Package):
   <use name="sockets"/>
 </tool>""")
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)
 
 
 # boost_chrono toolfile
-        fname='boost_chrono.xml'
-        template=Template("""<tool name="boost_chrono" version="$VER">
+        fname = 'boost_chrono.xml'
+        template = Template("""<tool name="boost_chrono" version="$VER">
   <info url="http://www.boost.org"/>
   <lib name="boost_chrono"/>
   <use name="boost_system"/>
   <use name="boost"/>
 </tool>""")
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)
 
 
 # boost_filesystem toolfile
-        fname='boost_filesystem.xml'
-        template=Template("""<tool name="boost_filesystem" version="$VER">
+        fname = 'boost_filesystem.xml'
+        template = Template("""<tool name="boost_filesystem" version="$VER">
   <info url="http://www.boost.org"/>
   <lib name="boost_filesystem"/>
   <use name="boost_system"/>
   <use name="boost"/>
 </tool>""")
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)
 
 
 # boost_system toolfile
-        fname='boost_system.xml'
-        template=Template("""<tool name="boost_system" version="$VER">
+        fname = 'boost_system.xml'
+        template = Template("""<tool name="boost_system" version="$VER">
   <info url="http://www.boost.org"/>
   <lib name="boost_system"/>
   <use name="boost"/>
 </tool>""")
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)
 
 
 # boost_program_options toolfile
-        fname='boost_program_options.xml'
-        template=Template("""<tool name="boost_program_options" version="$VER">
+        fname = 'boost_program_options.xml'
+        template = Template("""<tool name="boost_program_options" version="$VER">
   <info url="http://www.boost.org"/>
   <lib name="boost_program_options"/>
   <use name="boost"/>
 </tool>""")
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)
 
 
 # boost_python toolfile
-        fname='boost_python.xml'
-        template="""
+        fname = 'boost_python.xml'
+        template = """
 <tool name="boost_python" version="$VER">
   <info url="http://www.boost.org"/>
   <lib name="boost_python"/>
@@ -483,64 +481,61 @@ class Boost(Package):
   <use name="python"/>
 </tool>"""
         contents = Template(template).substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)
 
 
 # boost_regex toolfile
-        fname='boost_regex.xml'
-        template=Template("""<tool name="boost_regex" version="$VER">
+        fname = 'boost_regex.xml'
+        template = Template("""<tool name="boost_regex" version="$VER">
   <info url="http://www.boost.org"/>
   <lib name="boost_regex"/>
   <use name="boost"/>
 </tool>""")
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)
 
 
 # boost_signals toolfile
-        fname='boost_signals.xml'
-        template=Template("""<tool name="boost_signals" version="$VER">
+        fname = 'boost_signals.xml'
+        template = Template("""<tool name="boost_signals" version="$VER">
   <info url="http://www.boost.org"/>
   <lib name="boost_signals"/>
   <use name="boost"/>
 </tool>""")
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)
 
-
-        fname='boost_serialization.xml'
-        template=Template("""<tool name="boost_serialization" version="$VER">
+        fname = 'boost_serialization.xml'
+        template = Template("""<tool name="boost_serialization" version="$VER">
   <info url="http://www.boost.org"/>
   <lib name="boost_serialization"/>
   <use name="boost"/>
 </tool>""")
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)
 
-
-        fname='boost_test.xml'
-        template=Template("""<tool name="boost_test" version="$VER">
+        fname = 'boost_test.xml'
+        template = Template("""<tool name="boost_test" version="$VER">
   <info url="http://www.boost.org"/>
   <lib name="boost_unit_test_framework"/>
   <use name="boost"/>
 </tool>""")
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)
 
-
-        fname='boost_iostreams.xml'
-        template=Template("""<tool name="boost_iostreams" version="$VER">
+        fname = 'boost_iostreams.xml'
+        template = Template("""<tool name="boost_iostreams" version="$VER">
   <info url="http://www.boost.org"/>
   <lib name="boost_iostreams"/>
   <use name="boost"/>
 </tool>""")
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)
 
 
 # boost_header toolfile
-        fname='boost_header.xml'
-        template=Template("""<tool name="boost_header" version="$VER">
+        fname = 'boost_header.xml'
+        template = Template("""<tool name="boost_header" version="$VER">
   <info url="http://www.boost.org"/>
   <client>
     <environment name="BOOSTHEADER_BASE" default="$PFX"/>
@@ -550,4 +545,4 @@ class Boost(Package):
   <use name="root_cxxdefaults"/>
 </tool>""")
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)

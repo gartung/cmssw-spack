@@ -1,0 +1,21 @@
+# -*- conf -*-
+# flake8 settings for Spack core files.
+#
+# These exceptions ar for Spack core files. We're slightly more lenient
+# with packages.  See .flake8_packages for that.
+#
+# Let people line things up nicely:
+# - E129: visually indented line with same indent as next logical line
+# - E221: multiple spaces before operator
+# - E241: multiple spaces after ','
+# - E272: multiple spaces before keyword
+#
+# Let people use terse Python features:
+# - E731: lambda expressions
+#
+# These are required to get the package.py files to test clean:
+# - F999: syntax error in doctest
+#
+[flake8]
+ignore = E129,E221,E241,E272,E731,F999
+max-line-length = 79

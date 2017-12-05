@@ -25,12 +25,13 @@
 from spack import *
 import glob
 
+
 class Castor(Package):
     """FIXME: Put a proper description of your package here."""
 
     # FIXME: Add a proper url for your package's homepage here.
     homepage = "http://www.example.com"
-    url      = "http://castorold.web.cern.ch/castorold/DIST/CERN/savannah/CASTOR.pkg/2.1.16-*/2.1.16-13/castor-2.1.16-13.tar.gz"
+    url = "http://castorold.web.cern.ch/castorold/DIST/CERN/savannah/CASTOR.pkg/2.1.16-*/2.1.16-13/castor-2.1.16-13.tar.gz"
 
     version('2.1.16-13', '5a2cf6992ac4c1a2dcf7eb90e14233e5')
 
@@ -41,17 +42,16 @@ class Castor(Package):
         mkdirp(prefix.lib)
         mkdirp(prefix.bin)
 
-        install('%s/h/shift.h' % source_directory,prefix.include)
-        for file in glob.glob('%s/h/*' % source_directory): 
-           f = join_path(source_directory,'h',file)
-           install(f, '%s/shift' % prefix.include)
+        install('%s/h/shift.h' % source_directory, prefix.include)
+        for file in glob.glob('%s/h/*' % source_directory):
+            f = join_path(source_directory, 'h', file)
+            install(f, '%s/shift' % prefix.include)
 
-    def write_scram_toolfile(self,contents,filename):
+    def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -60,12 +60,12 @@ class Castor(Package):
         import sys
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
-        values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
-        fname='castor_header.xml'
-        template=Template("""
+        fname = 'castor_header.xml'
+        template = Template("""
 <tool name="castor_header" version="${VER}">
   <client>
     <environment name="CASTOR_HEADER_BASE" default="${PFX}"/>
@@ -78,10 +78,10 @@ class Castor(Package):
 </tool>
 """)
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)
 
-        fname='castor.xml'
-        template=Template("""
+        fname = 'castor.xml'
+        template = Template("""
 <tool name="castor" version="${VER}">
   <lib name="shift"/>
   <lib name="castorrfio"/>
@@ -97,4 +97,4 @@ class Castor(Package):
 </tool>
 """)
         contents = template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        self.write_scram_toolfile(contents, fname)
