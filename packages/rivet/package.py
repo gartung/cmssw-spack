@@ -22,21 +22,6 @@
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
-#
-# This is a template package file for Spack.  We've put "FIXME"
-# next to all the things you'll want to change. Once you've handled
-# them, you can save this file and test your package like this:
-#
-#     spack install rivet
-#
-# You can edit this file again by typing:
-#
-#     spack edit rivet
-#
-# See the Spack documentation for more information on packaging.
-# If you submit this package back to Spack as a pull request,
-# please first remove this boilerplate and all FIXME comments.
-#
 from spack import *
 
 
@@ -72,3 +57,45 @@ class Rivet(AutotoolsPackage):
                 'CPPFLAGS=%s' % self.spec['boost'].prefix.include
                 ]
         return args
+
+
+    def write_scram_toolfile(self, contents,filename):
+        """Write scram tool config file"""
+        mkdirp(self.spec.prefix.etc+'/scram.d')
+        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
+            f.write(contents)
+            f.close()
+
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        from string import Template
+        pyvers=str(self.spec['python'].version).split('.')
+        pyver=pyvers[0]+'.'+pyvers[1]
+        values={}
+        values['VER']=self.spec.version
+        values['PFX']=self.spec.prefix
+        values['PYVER']=pyver
+        fname='rivet.xml'
+        template=Template("""
+<tool name="rivet" version="${VER}">
+<lib name="Rivet"/>
+<client>
+<environment name="RIVET_BASE" default="${PFX}"/>
+<environment name="LIBDIR" default="$$RIVET_BASE/lib"/>
+<environment name="INCLUDE" default="$$RIVET_BASE/include"/>
+</client>
+<runtime name="PATH" value="$$RIVET_BASE/bin" type="path"/>
+<runtime name="PYTHONPATH" value="$$RIVET_BASE/lib/python${PYVER}/site-packages" type="path"/>
+<runtime name="RIVET_ANALYSIS_PATH" value="$$RIVET_BASE/lib" type="path"/>
+<runtime name="PDFPATH" default="$$RIVET_BASE/share" type="path"/>
+<runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+<runtime name="TEXMFHOME" value="$$RIVET_BASE/share/Rivet/texmf" type="path"/>
+<use name="hepmc"/>
+<use name="fastjet"/>
+<use name="gsl"/>
+<use name="yoda"/>
+</tool>
+""")
+        contents=template.substitute(values)
+        self.write_scram_toolfile(contents,fname)

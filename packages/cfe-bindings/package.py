@@ -22,21 +22,6 @@
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
-#
-# This is a template package file for Spack.  We've put "FIXME"
-# next to all the things you'll want to change. Once you've handled
-# them, you can save this file and test your package like this:
-#
-#     spack install cfe-bindings
-#
-# You can edit this file again by typing:
-#
-#     spack edit cfe-bindings
-#
-# See the Spack documentation for more information on packaging.
-# If you submit this package back to Spack as a pull request,
-# please first remove this boilerplate and all FIXME comments.
-#
 from spack import *
 
 
@@ -66,3 +51,31 @@ class CfeBindings(Package):
 
     def setup_dependent_environment(self, spack_env, run_env, dspec):
         spack_env.set('LLVM_BASE', self.prefix)
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+        import sys
+        import re
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+        pyvers = str(self.spec['python'].version).split('.')
+        pyver = pyvers[0] + '.' + pyvers[1]
+
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
+        values['LIB'] = self.spec.prefix.lib
+        values['PYVER'] = pyver
+
+        fname = 'pyclang.xml'
+        template = Template("""<tool name="pyclang" version="${VER}">
+  <client>
+    <environment name="PYCLANG_BASE" default="${PFX}"/>
+  </client>
+  <runtime name="PYTHONPATH" value="${LIB}/python${PYVER}/site-packages" type="path"/>
+  <use name="python"/>
+</tool>""")
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents, fname)

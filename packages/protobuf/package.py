@@ -64,3 +64,27 @@ class Protobuf(CMakePackage):
             '-DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON'
         ]
         return args
+
+
+    def write_scram_toolfile(self, contents, filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
+            f.write(contents)
+            f.close()
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
+
+        fname = 'protobuf.xml'
+        template = Template("""
+""")
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents, fname)

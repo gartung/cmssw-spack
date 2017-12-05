@@ -72,15 +72,14 @@ class Cmssw(Package):
 
     depends_on('scram')
     depends_on('gmake')
-    depends_on('root@6.10.08^python+shared^fftw~mpi')
+    depends_on('root@6.10.08')
     depends_on('tbb')
-    depends_on('tinyxml^boost+python+shared^python+shared')
+    depends_on('tinyxml')
     depends_on('clhep@2.3.1.1~cxx11+cxx14')
     depends_on('md5')
     depends_on('python+shared')
     depends_on('vdt')
-    depends_on(
-        'boost@1.63.0+python+shared~atomic~graph~locale~log~math~mpi~random~wave^python+shared')
+    depends_on('boost@1.63.0+python+shared')
     depends_on('libsigcpp')
     depends_on('xrootd')
     depends_on('cppunit')
@@ -135,6 +134,8 @@ class Cmssw(Package):
     depends_on('libhepml')
     depends_on('castor')
     depends_on('lhapdf')
+    depends_on('utm')
+    depends_on('tkonlinesw')
 
     if sys.platform == 'darwin':
         patch('macos.patch')

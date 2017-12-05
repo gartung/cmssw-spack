@@ -58,9 +58,9 @@ class Fwlite(Package):
     """CMSSW FWLite built as a scram project"""
 
     homepage = "http://cms-sw.github.io"
-    url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc_amd64_gcc630/cms/fwlite/CMSSW_9_2_12_FWLITE/src.tar.gz"
+    url = "https://github.com/cms-sw/cmssw/archive/CMSSW_9_2_15.tar.gz"
 
-    version('9.2.12', 'b640a7fc68a41805d55c481846add97d')
+    version('9_2_15', 'b587e111bc072dcfc7be679f6783f966')
 
     config_tag = 'V05-05-40'
 
@@ -71,38 +71,39 @@ class Fwlite(Package):
              placement='config'
              )
 
-    depends_on('cmssw.scram')
-    depends_on('cmssw.gmake')
-    depends_on('cmssw.root@6.10.08^python+shared^fftw~mpi')
-    depends_on('cmssw.tbb')
-    depends_on('cmssw.tinyxml^boost+python+shared^python+shared')
-    depends_on('cmssw.clhep@2.3.4.2')
-    depends_on('cmssw.md5')
-    depends_on('cmssw.python+shared')
-    depends_on('cmssw.vdt')
-    depends_on('cmssw.boost@1.63.0+python+shared^python+shared')
-    depends_on('cmssw.libsigcpp')
-    depends_on('cmssw.xrootd')
-    depends_on('cmssw.cppunit')
-    depends_on('cmssw.xerces-c')
-    depends_on('cmssw.expat')
-    depends_on('cmssw.sqlite@3.16.02')
-    depends_on('cmssw.bzip2')
-    depends_on('cmssw.gsl')
-    depends_on('cmssw.hepmc')
-    depends_on('cmssw.libpng')
-    depends_on('cmssw.giflib')
-    depends_on('cmssw.openssl')
-    depends_on('cmssw.pcre')
-    depends_on('cmssw.zlib')
-    depends_on('cmssw.xz')
-    depends_on('cmssw.libtiff')
-    depends_on('cmssw.libjpeg-turbo')
-    depends_on('cmssw.libxml2^python+shared')
-    depends_on('cmssw.bzip2')
-    depends_on('cmssw.fireworks-data')
-    depends_on('cmssw.llvm@4.0.1~gold~libcxx+python+shared_libs')
-    depends_on('cmssw.uuid-cms')
+
+    depends_on('scram')
+    depends_on('gmake')
+    depends_on('root@6.10.08')
+    depends_on('tbb')
+    depends_on('tinyxml')
+    depends_on('clhep')
+    depends_on('md5')
+    depends_on('python+shared')
+    depends_on('vdt')
+    depends_on('boost@1.63.0')
+    depends_on('libsigcpp')
+    depends_on('xrootd')
+    depends_on('cppunit')
+    depends_on('xerces-c')
+    depends_on('expat')
+    depends_on('sqlite@3.16.02')
+    depends_on('bzip2')
+    depends_on('gsl')
+    depends_on('hepmc')
+    depends_on('libpng')
+    depends_on('giflib')
+    depends_on('openssl')
+    depends_on('pcre')
+    depends_on('zlib')
+    depends_on('xz')
+    depends_on('libtiff')
+    depends_on('libjpeg-turbo')
+    depends_on('libxml2')
+    depends_on('bzip2')
+    depends_on('fireworks-geometry')
+    depends_on('llvm@4.0.1~gold~libcxx+python+shared_libs')
+    depends_on('uuid-cms')
 
     if sys.platform == 'darwin':
         patch('macos.patch')
@@ -113,12 +114,11 @@ class Fwlite(Package):
     if sys.platform == 'darwin':
         scram_arch = 'osx10_amd64_clang'
 
+
     def install(self, spec, prefix):
         scram = which('scram')
         build_directory = join_path(self.stage.path, 'spack-build')
         source_directory = self.stage.source_path
-        cmssw_version = 'CMSSW.' + str(self.version)
-        cmssw_u_version = cmssw_version.replace('.', '_')
         scram_version = 'V' + str(spec['scram'].version)
 
         gcc = which(spack_f77)
@@ -127,14 +127,16 @@ class Fwlite(Package):
         gcc_ver = gcc('-dumpversion', output=str)
 
         with working_dir(build_directory, create=True):
-            rsync = which('rsync')
-            mkdirp('src')
-            rsync('-a', '--exclude', '.git', '--exclude', 'config',
-                  '--exclude', 'spack-build.*',
-                  source_directory + '/', 'src/')
-            mkdirp('config')
-            rsync('-a', '--exclude', '.git',
-                  source_directory + '/config/', 'config/')
+            install_tree(source_directory, 'src', 
+                        ignore=shutil.ignore_patterns('spack_build.out',
+                                                      'spack_build.env', 
+                                                       '.git', 'config')) 
+            install_tree(join_path(source_directory, 'config'), 'config', 
+                         ignore=shutil.ignore_patterns('.git')) 
+
+            install(join_path(os.path.dirname(__file__), "fwlite_build_set.file"),
+                "fwlite_build_set.file")
+
             with open('config/config_tag', 'w') as f:
                 f.write(self.config_tag)
                 f.close()
@@ -144,17 +146,15 @@ class Fwlite(Package):
                 xmlfiles = glob(join_path(dep.prefix.etc, 'scram.d', '*.xml'))
                 for xmlfile in xmlfiles:
                     install(xmlfile, 'tools/selected')
-            curl = which('curl')
-            curl('-O', 'https://raw.githubusercontent.com/cms-sw/cmsdist/IB/CMSSW_10_0_X/gcc630/fwlite_build_set.file')
 
             perl = which('perl')
             perl('config/updateConfig.pl',
                  '-p', 'CMSSW',
-                 '-v', cmssw_u_version,
+                 '-v', self.cmssw_u_version,
                  '-s', scram_version,
                  '-t', build_directory,
                  '--keys', 'SCRAM_COMPILER=gcc',
-                 '--keys', 'PROJECT_GIT_HASH=' + cmssw_u_version,
+                 '--keys', 'PROJECT_GIT_HASH=' + self.cmssw_u_version,
                  '--arch', self.scram_arch)
             fin = 'config/bootsrc.xml'
             matchexp = re.compile(
@@ -178,7 +178,7 @@ class Fwlite(Package):
             fout.close()
             scram('project', '-d', prefix, '-b', 'config/bootsrc.xml')
 
-        with working_dir(join_path(prefix, cmssw_u_version), create=False):
+        with working_dir(join_path(prefix, self.cmssw_u_version), create=False):
             matches = []
             matches.append('src/CommonTools/Utils/src/TMVAEvaluator.cc')
             matches.append(
@@ -191,54 +191,32 @@ class Fwlite(Package):
                 if os.path.exists(m):
                     os.remove(m)
 
-            os.environ['LOCALTOP'] = os.getcwd()
-            os.environ['RELEASETOP'] = os.getcwd()
-            os.environ['CMSSW_RELEASE_BASE'] = os.getcwd()
-            os.environ['CMSSW_BASE'] = os.getcwd()
-            if os.environ['LD_LIBRARY_PATH']:
-                os.environ['LD_LIBRARY_PATH'] += os.getcwd() + \
-                    '/lib/' + self.scram_arch
-                os.environ['LD_LIBRARY_PATH'] += self.spec['llvm'].prefix.lib
-            else:
-                os.environ['LD_LIBRARY_PATH'] = os.getcwd() + '/lib/' + \
-                    self.scram_arch
-                os.environ['LD_LIBRARY_PATH'] += self.spec['llvm'].prefix.lib
-            scram.add_default_env('CMSSW_RELEASE_BASE', os.getcwd())
-            scram.add_default_env('CMSSW_BASE', os.getcwd())
             scram('build', '-v', '-k', '-j8')
             relrelink('external')
             shutil.rmtree('tmp')
-#            install_tree('.',prefix)
-#
-#
-#        with working_dir(prefix, create=False):
-#            os.environ[ 'LOCALTOP' ] = os.getcwd()
-#            os.environ[ 'RELEASETOP' ] = os.getcwd()
-#            os.environ[ 'CMSSW_RELEASE_BASE' ] = os.getcwd()
-#            os.environ[ 'CMSSW_BASE' ] = os.getcwd()
-#            scram('build', 'ProjectRename')
 
     def setup_dependent_environment(self, spack_env, run_env, dspec):
-        cmssw_version = 'CMSSW.' + str(self.version)
-        cmssw_u_version = cmssw_version.replace('.', '_')
-        spack_env.set('LOCALTOP', self.prefix + '/' + cmssw_u_version)
-        spack_env.set('RELEASETOP', self.prefix + '/' + cmssw_u_version)
+        spack_env.set('LOCALTOP', join_path(self.prefix,self.cmssw_u_version))
+        spack_env.set('RELEASETOP', join_path(self.prefix,self.cmssw_u_version))
         spack_env.set('CMSSW_RELEASE_BASE', self.prefix)
         spack_env.set('CMSSW_BASE', self.prefix)
-        spack_env.append_path('LD_LIBRARY_PATH', self.prefix +
-                              '/' + cmssw_u_version + '/lib/' + self.scram_arch)
+        spack_env.append_path('LD_LIBRARY_PATH', join_path(self.prefix,
+                              self.cmssw_u_version,'/lib/',self.scram_arch))
 
     def setup_environment(self, spack_env, run_env):
-        cmssw_version = 'CMSSW.' + str(self.version)
-        cmssw_u_version = cmssw_version.replace('.', '_')
-        spack_env.set('LOCALTOP', self.prefix + '/' + cmssw_u_version)
-        spack_env.set('RELEASETOP', self.prefix + '/' + cmssw_u_version)
-        spack_env.set('CMSSW_RELEASE_BASE', self.prefix)
-        spack_env.set('CMSSW_BASE', self.prefix)
-        spack_env.append_path('LD_LIBRARY_PATH', self.prefix +
-                              '/' + cmssw_u_version + '/lib/' + self.scram_arch)
+        spack_env.set('LOCALTOP', join_path(self.prefix, self.cmssw_u_version))
+        spack_env.set('RELEASETOP', join_path(self.prefix, self.cmssw_u_version))
+        spack_env.set('CMSSW_RELEASE_BASE', join_path(self.prefix, self.cmssw_u_version))
+        spack_env.set('CMSSW_BASE', join_path(self.prefix, self.cmssw_u_version))
+        spack_env.append_path('LD_LIBRARY_PATH', join_path(self.prefix,
+                              self.cmssw_u_version, '/lib/', self.scram_arch))
+        spack_env.append_path('LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib)
 
     def url_for_version(self, version):
         """Handle CMSSW's version string."""
-        version_underscore = str(self.version).replace('.', '_')
-        return "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc7_amd64_gcc630/cms/fwlite/CMSSW_%s_FWLITE/src.tar.gz" % version_underscore
+        self.set_version()
+        return "https://github.com/cms-sw/cmssw/archive/%s.tar.gz" % self.cmssw_u_version
+
+    def set_version(self):
+        self.cmssw_version = 'CMSSW.' + str(self.version)
+        self.cmssw_u_version = self.cmssw_version.replace('.', '_')

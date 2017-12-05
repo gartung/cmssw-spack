@@ -31,7 +31,6 @@ class BerkeleyDb(AutotoolsPackage):
     homepage = "http://www.oracle.com/technetwork/database/database-technologies/berkeleydb/overview/index.html"
     url = "http://download.oracle.com/berkeley-db/db-5.3.28.tar.gz"
 
-    version('5.3.28', 'b99454564d5b4479750567031d66fe24')
     version('6.0.35', 'c65a4d3e930a116abaaf69edfc697f25')
     version('6.1.29', '7f4d47302dfec698fe088e5285c9098e')
     version('6.2.32', '33491b4756cb44b91c3318b727e71023')
@@ -47,3 +46,37 @@ class BerkeleyDb(AutotoolsPackage):
         args = ['--disable-static', '--enable-cxx',
                 '--enable-stl', '--disable-java', '--disable-tcl']
         return args
+
+    def write_scram_toolfile(self, contents, filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
+            f.write(contents)
+            f.close()
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+        import sys
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
+
+        fname = 'db6.xml'
+        template = Template("""
+<tool name="db6" version="${VER}">
+  <lib name="db"/>
+  <client>
+    <environment name="DB6_BASE" default="${PFX}"/>
+    <environment name="LIBDIR" default="$$DB6_BASE/lib"/>
+    <environment name="INCLUDE" default="$$DB6_BASE/include"/>
+    <environment name="BINDIR" default="$$DB6_BASE/bin"/>
+  </client>
+  <runtime name="PATH" value="$$BINDIR" type="path"/>
+</tool>
+""")
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents, fname)
+
