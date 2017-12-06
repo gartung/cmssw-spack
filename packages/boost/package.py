@@ -88,15 +88,13 @@ class Boost(Package):
     version('1.34.1', '2d938467e8a448a2c9763e0a9f8ca7e5')
     version('1.34.0', 'ed5b9291ffad776f8757a916e1726ad0')
 
-    default_install_libs = set(['atomic',
+    default_install_libs = set([
                                 'chrono',
                                 'date_time',
                                 'filesystem',
                                 'graph',
                                 'iostreams',
                                 'locale',
-                                'log',
-                                'math',
                                 'program_options',
                                 'python',
                                 'random',
@@ -107,12 +105,18 @@ class Boost(Package):
                                 'test',
                                 'thread',
                                 'timer',
-                                'wave'])
+                                'wave'
+                               ])
 
     # mpi/python are not installed by default because they pull in many
     # dependencies and/or because there is a great deal of customization
     # possible (and it would be difficult to choose sensible defaults)
-    default_noinstall_libs = set(['mpi'])
+    default_noinstall_libs = set([
+                                  'math',
+                                  'log',
+                                  'mpi',
+                                  'atomic'
+                                 ])
 
     all_libs = default_install_libs | default_noinstall_libs
 
