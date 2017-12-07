@@ -25,17 +25,17 @@
 from spack import *
 import inspect
 
-class Sherpa(AutotoolsPackage):
+class Sherpa(Package):
     """FIXME: Put a proper description of your package here."""
 
     # FIXME: Add a proper url for your package's homepage here.
     homepage = "http://www.example.com"
-    url      = "http://www.hepforge.org/archive/sherpa/SHERPA-MC-2.2.4.tar.gz"
+    url = "http://www.hepforge.org/archive/sherpa/SHERPA-MC-2.2.2.tar.gz"
 
     version('2.2.2', git='https://github.com/cms-externals/sherpa', branch='cms/v2.2.2')
 
     depends_on('scons')
-    depends_on('swig', type='build')
+    depends_on('swig@3.0:', type='build')
     depends_on('fastjet')
     depends_on('mcfm', type='build')
     depends_on('hepmc')
@@ -44,15 +44,14 @@ class Sherpa(AutotoolsPackage):
     depends_on('openloops')
     depends_on('sqlite')
     depends_on('qd')
+    depends_on('boost')
     depends_on('m4', type='build')
     depends_on('libtool', type='build')
     depends_on('autoconf', type='build')
     depends_on('automake', type='build')
 
-    force_autoreconf = True
-
-    def setup_environment(self, spack_env, run_env):
-        spec=self.spec
+    def install(self, spec, prefix):
+        autoreconf('-i', '--force')
         self.FASTJET_ROOT=spec['fastjet'].prefix
         self.MCFM_ROOT=spec['mcfm'].prefix
         self.HEPMC_ROOT=spec['hepmc'].prefix
@@ -62,11 +61,7 @@ class Sherpa(AutotoolsPackage):
         self.SQLITE_ROOT=spec['sqlite'].prefix
         self.OPENSSL_ROOT=spec['openssl'].prefix
         self.QD_ROOT=spec['qd'].prefix
-
-
-
-    def configure_args(self):
-        args = [
+        args = ['--prefix=%s' % prefix,
                 '--enable-analysis',
                 '--disable-silent-rules',
                 '--enable-fastjet=%s' % self.FASTJET_ROOT,
@@ -79,12 +74,14 @@ class Sherpa(AutotoolsPackage):
                 '--enable-openloops=%s' % self.OPENLOOPS_ROOT,
                 '--with-sqlite3=%s' % self.SQLITE_ROOT,
                 'CXX=g++', 
-                'CXXFLAGS=-fuse-cxa-atexit -m64 -O2 -std=c++14 -I%s/include -I%s/include -I%s/include' %
+                'CXXFLAGS=-fuse-cxa-atexit -m64 -O2 -std=c++0x -I%s/include -I%s/include -I%s/include' %
                  (self.LHAPDF_ROOT,self.BLACKHAT_ROOT,self.OPENSSL_ROOT),
                 'LDFLAGS=-ldl -L%s/lib/blackhat -L%s/lib -L%s/lib' %
                  (self.BLACKHAT_ROOT,self.QD_ROOT,self.OPENSSL_ROOT)
                ]
-        return args
+        configure(*args)
+        make()
+        make('install')
 
     def url_for_version(self, version):
         url = "http://www.hepforge.org/archive/sherpa/SHERPA-MC-%s.tar.gz" % str(version)

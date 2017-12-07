@@ -22,25 +22,12 @@
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
-#
-# This is a template package file for Spack.  We've put "FIXME"
-# next to all the things you'll want to change. Once you've handled
-# them, you can save this file and test your package like this:
-#
-#     spack install evtgen
-#
-# You can edit this file again by typing:
-#
-#     spack edit evtgen
-#
-# See the Spack documentation for more information on packaging.
-# If you submit this package back to Spack as a pull request,
-# please first remove this boilerplate and all FIXME comments.
-#
 from spack import *
+import glob
+import os
+import shutil
 
-
-class Evtgen(AutotoolsPackage):
+class Evtgen(Package):
     """FIXME: Put a proper description of your package here."""
 
     # FIXME: Add a proper url for your package's homepage here.
@@ -54,14 +41,28 @@ class Evtgen(AutotoolsPackage):
     depends_on('pythia8')
     depends_on('tauolapp')
     depends_on('photospp')
+    depends_on('m4', type='build')
+    depends_on('libtool', type='build')
+    depends_on('autoconf', type='build')
+    depends_on('automake', type='build')
 
-    def configures_args(self):
-        args = ['--hepmcdir=%s' % self.spec['hepmc'].prefix,
-                '--pythiadir=%s' % self.spec['pythia8'].prefix,
-                '--tauoladir=%s' % self.spec['tauolapp'].prefix,
-                '--photosdir=%s' % self.spec['photospp'].prefix
-                ]
-        return args
+    patch('evtgen-1.5.0-configure-gcc6.patch')
+
+
+    def install(self, spec, prefix):
+        with working_dir(str(self.version)):
+            args = ['--prefix=%s' % prefix,
+                    '--hepmcdir=%s' % self.spec['hepmc'].prefix,
+                    '--pythiadir=%s' % self.spec['pythia8'].prefix,
+                    '--tauoladir=%s' % self.spec['tauolapp'].prefix,
+                    '--photosdir=%s' % self.spec['photospp'].prefix
+                    ]
+            configure(*args)
+            make('-j1', 'VERBOSE=1')
+            make('install')
+        for f in glob.glob(prefix.lib+'/archive/*.a'):
+            shutil.move(f, '../'+os.path.basename(f))
+        shutil.rmtree(prefix.lib+'/archive')
 
     def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
@@ -82,11 +83,11 @@ class Evtgen(AutotoolsPackage):
 
         fname = 'evtgen.xml'
         template = Template("""
-<tool name="evtgen" version="${EVTGEN_VER}">
+<tool name="evtgen" version="${VER}">
   <lib name="EvtGen"/>
   <lib name="EvtGenExternal"/>
   <client>
-    <environment name="EVTGEN_BASE" default="${EVTGEN_PREFIX}"/>
+    <environment name="EVTGEN_BASE" default="${PFX}"/>
     <environment name="LIBDIR" default="$$EVTGEN_BASE/lib"/>
     <environment name="INCLUDE" default="$$EVTGEN_BASE/include"/>
   </client>
@@ -95,7 +96,6 @@ class Evtgen(AutotoolsPackage):
   <use name="pythia8"/>
   <use name="tauolapp"/>
   <use name="photospp"/>
-  <flags SKIP_TOOL_SYMLINKS="1"/>
 </tool>
 """)
         contents = template.substitute(values)
