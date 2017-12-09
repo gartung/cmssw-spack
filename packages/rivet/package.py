@@ -53,8 +53,8 @@ class Rivet(AutotoolsPackage):
                 '--disable-doxygen',
                 '--disable-pdfmanual',
                 '--with-pic',
-                'PYTHONPATH=%s/lib/python2.7/site-packages' % self.spec['cython'],
-                'CPPFLAGS=%s' % self.spec['boost'].prefix.include
+                'PYTHONPATH=%s/lib/python2.7/site-packages' % self.spec['py-cython'],
+                'CPPFLAGS=-I%s' % self.spec['boost'].prefix.include
                 ]
         return args
 

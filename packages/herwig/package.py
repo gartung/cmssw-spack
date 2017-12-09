@@ -25,28 +25,22 @@
 from spack import *
 
 
-class YamlCpp(CMakePackage):
-    """A YAML parser and emitter in C++"""
+class Herwig(Package):
+    """FIXME: Put a proper description of your package here."""
 
-    homepage = "https://github.com/jbeder/yaml-cpp"
-    url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/yaml-cpp/0.5.1-oenich2/yaml-cpp-0.5.1.tar.gz"
+    # FIXME: Add a proper url for your package's homepage here.
+    homepage = "http://www.example.com"
+    url      = "http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/herwig/herwig-6.521-x86_64-slc5-gcc47-opt.tgz"
 
-    version('0.5.1', '0fa47a5ed8fedefab766592785c85ee7', preferred=True)
+    version('6.521',   'e52e89020946d2882bf67080c6e2443d', preferred=True)
 
-    depends_on('boost@1.63.0')
+    depends_on('lhapdf')
+    depends_on('photos')
 
-    def cmake_args(self):
-        spec = self.spec
-        options = [
-            '-DCMAKE_INSTALL_PREFIX:PATH=%s' % prefix,
-            '-DBUILD_SHARED_LIBS=YES',
-            '-DBoost_NO_SYSTEM_PATHS:BOOL=TRUE',
-            '-DBoost_NO_BOOST_CMAKE:BOOL=TRUE',
-            '-DBoost_ADDITIONAL_VERSIONS=1.57.0',
-            '-DBOOST_ROOT:PATH=%s' % spec['boost'],
-            '-DCMAKE_SKIP_RPATH=YES',
-            '-DSKIP_INSTALL_FILES=1']
-        return options
+    def install(self, spec, prefix):
+        with working_dir(join_path(self.version,'x86_64-slc5-gcc47-opt')):
+            install_tree('include',prefix.include)
+            install_tree('lib',prefix.lib)
 
     def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
@@ -58,24 +52,28 @@ class YamlCpp(CMakePackage):
     def write_scram_toolfiles(self):
         """Create contents of scram tool config files for this package."""
         from string import Template
-
+        import sys
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
         values = {}
         values['VER'] = self.spec.version
         values['PFX'] = self.spec.prefix
 
-        fname = 'yamlcpp.xml'
+        fname = 'herwig.xml'
         template = Template("""
-<tool name="yaml-cpp" version="${VER}">
-  <info url="http://code.google.com/p/yaml-cpp/"/>
-  <lib name="yaml-cpp"/>
+<tool name="herwig" version="${VER}">
+  <lib name="herwig"/>
+  <lib name="herwig_dummy"/>
   <client>
-    <environment name="YAML_CPP_BASE" default="${PFX}"/>
-    <environment name="LIBDIR" default="$$YAML_CPP_BASE/lib"/>
-    <environment name="INCLUDE" default="$$YAML_CPP_BASE/include"/>
+    <environment name="HERWIG_BASE" default="${PFX}"/>
+    <environment name="LIBDIR" default="$$HERWIG_BASE/lib"/>
+    <environment name="INCLUDE" default="$$HERWIG_BASE/include"/>
   </client>
-  <use name="boost"/>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+  <use name="f77compiler"/>
+  <use name="lhapdf"/>
+  <use name="photos"/>
 </tool>
 """)
         contents = template.substitute(values)

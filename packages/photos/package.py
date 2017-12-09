@@ -38,9 +38,10 @@ class Photos(Package):
     patch('photos-215.5-update-configure.patch')
 
     def install(self, spec, prefix):
-        args = ['--enable-static',
+        args = ['--prefix=%s'%prefix,
+                '--enable-static',
                 '--disable-shared',
-                '--lcgplatform=slc_amd64_gcc']
+                '--lcgplatform=slc7_amd64_gcc630']
         with working_dir(str(spec.version)):
             configure(*args)
             make()

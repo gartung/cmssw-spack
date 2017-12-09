@@ -90,6 +90,13 @@ born_optimisation = -O0
 
         fname = 'openloops.xml'
         template = Template("""
+<tool name="openloops" version="${VER}">
+<client>
+<environment name="OPENLOOPS_BASE" default="${PFX}"/>
+<environment name="LIBDIR" default="$$OPENLOOPS_BASE/lib"/>
+<runtime name="CMS_OPENLOOPS_PREFIX" value="$$OPENLOOPS_BASE" type="path"/>
+</client>
+</tool>
 """)
         contents = template.substitute(values)
         self.write_scram_toolfile(contents, fname)

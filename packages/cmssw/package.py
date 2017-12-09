@@ -102,7 +102,6 @@ class Cmssw(Package):
     depends_on('bzip2')
     depends_on('fireworks-geometry')
     depends_on('llvm@4.0.1~gold~libcxx+python+shared_libs')
-    depends_on('cfe-bindings@4.0.1')
     depends_on('uuid-cms')
     depends_on('valgrind')
     depends_on('geant4~qt')
@@ -142,7 +141,20 @@ class Cmssw(Package):
     depends_on('dcap')
     depends_on('tauolapp')
     depends_on('sherpa')
+    depends_on('lwtnn')
+    depends_on('yoda')
+    depends_on('openloops')
+    depends_on('qd')
+    depends_on('blackhat')
+    depends_on('yaml-cpp')
+    depends_on('jemalloc')
+    depends_on('ktjet')
+    depends_on('herwig')
+    depends_on('photos')
+    depends_on('tauola')
+    depends_on('jimmy')
 
+  
     if sys.platform == 'darwin':
         patch('macos.patch')
     else:

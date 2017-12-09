@@ -129,7 +129,6 @@ class Sherpa(Package):
   <use name="blackhat"/>
   <use name="fastjet"/>
   <use name="sqlite"/>
-  <use name="openmpi"/>
   <use name="openloops"/>
 </tool>
 """)

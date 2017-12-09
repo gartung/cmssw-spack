@@ -18,35 +18,35 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the terms and
 # conditions of the GNU Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public
+# You should have received a copy of th GNU Lesser General Public
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
 from spack import *
+import glob
+import os
+import shutil
+
+class Tauola(Package):
+    """FIXME: Put a proper description of your package here."""
+
+    # FIXME: Add a proper url for your package's homepage here.
+    homepage = "http://www.example.com"
+    url      = "http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/tauola/tauola-27.121.5-slc4_amd64_gcc34.tgz"
+
+    version('27.121.5', '98a2adab15db1c691aea61463c4d0534', preferred=True)
+
+    depends_on('pythia6')
+    depends_on('photos')
 
 
-class YamlCpp(CMakePackage):
-    """A YAML parser and emitter in C++"""
-
-    homepage = "https://github.com/jbeder/yaml-cpp"
-    url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/yaml-cpp/0.5.1-oenich2/yaml-cpp-0.5.1.tar.gz"
-
-    version('0.5.1', '0fa47a5ed8fedefab766592785c85ee7', preferred=True)
-
-    depends_on('boost@1.63.0')
-
-    def cmake_args(self):
-        spec = self.spec
-        options = [
-            '-DCMAKE_INSTALL_PREFIX:PATH=%s' % prefix,
-            '-DBUILD_SHARED_LIBS=YES',
-            '-DBoost_NO_SYSTEM_PATHS:BOOL=TRUE',
-            '-DBoost_NO_BOOST_CMAKE:BOOL=TRUE',
-            '-DBoost_ADDITIONAL_VERSIONS=1.57.0',
-            '-DBOOST_ROOT:PATH=%s' % spec['boost'],
-            '-DCMAKE_SKIP_RPATH=YES',
-            '-DSKIP_INSTALL_FILES=1']
-        return options
+    def install(self, spec, prefix):
+        with working_dir(join_path(self.version,'slc4_amd64_gcc34')):
+            install_tree('include',prefix.include) 
+            for f in glob.glob('lib/archive/*.a'):
+                shutil.move(f,'lib/')
+            shutil.rmtree('lib/archive')
+            install_tree('lib',prefix.lib)
 
     def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
@@ -58,24 +58,38 @@ class YamlCpp(CMakePackage):
     def write_scram_toolfiles(self):
         """Create contents of scram tool config files for this package."""
         from string import Template
-
+        import sys
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
         values = {}
         values['VER'] = self.spec.version
         values['PFX'] = self.spec.prefix
 
-        fname = 'yamlcpp.xml'
+        fname = 'tauola.xml'
         template = Template("""
-<tool name="yaml-cpp" version="${VER}">
-  <info url="http://code.google.com/p/yaml-cpp/"/>
-  <lib name="yaml-cpp"/>
+<tool name="tauola" version="${VER}">
+  <lib name="pretauola"/>
+  <lib name="tauola"/>
   <client>
-    <environment name="YAML_CPP_BASE" default="${PFX}"/>
-    <environment name="LIBDIR" default="$$YAML_CPP_BASE/lib"/>
-    <environment name="INCLUDE" default="$$YAML_CPP_BASE/include"/>
+    <environment name="TAUOLA_BASE" default="${PFX}"/>
+    <environment name="LIBDIR" default="$$TAUOLA_BASE/lib"/>
   </client>
-  <use name="boost"/>
+  <use name="f77compiler"/>
+  <use name="tauola_headers"/>
+</tool>
+""")
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents, fname)
+
+        fname = 'tauola_headers.xml'
+        template = Template("""
+<tool name="tauola_headers" version="${VER}">
+  <client>
+    <environment name="TAUOLA_HEADERS_BASE" default="${PFX}"/>
+    <environment name="INCLUDE" default="$$TAUOLA_HEADERS_BASE/include"/>
+  </client>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
 </tool>
 """)
         contents = template.substitute(values)

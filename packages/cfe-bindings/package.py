@@ -42,6 +42,7 @@ class CfeBindings(Package):
     depends_on('llvm@4.0.1~gold+python+shared_libs',
                type='build', when='@4.0.1')
 
+
     def install(self, spec, prefix):
         install_tree('%s/bindings/python/clang/' %
                      self.stage.source_path,
@@ -49,8 +50,17 @@ class CfeBindings(Package):
         install('%s/libclang.so' % self.spec['llvm'].prefix.lib,
                 '%s/libclang.so' % self.prefix.lib)
 
+
     def setup_dependent_environment(self, spack_env, run_env, dspec):
         spack_env.set('LLVM_BASE', self.prefix)
+
+
+    def write_scram_toolfile(self, contents, filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
+            f.write(contents)
+            f.close()
+
 
     @run_after('install')
     def write_scram_toolfiles(self):

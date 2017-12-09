@@ -25,28 +25,26 @@
 from spack import *
 
 
-class YamlCpp(CMakePackage):
-    """A YAML parser and emitter in C++"""
+class Ktjet(AutotoolsPackage):
+    """FIXME: Put a proper description of your package here."""
 
-    homepage = "https://github.com/jbeder/yaml-cpp"
-    url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/yaml-cpp/0.5.1-oenich2/yaml-cpp-0.5.1.tar.gz"
+    # FIXME: Add a proper url for your package's homepage here.
+    homepage = "http://www.example.com"
+    url      = "http://www.hepforge.org/archive/ktjet/KtJet-1.0.6.tar.gz"
 
-    version('0.5.1', '0fa47a5ed8fedefab766592785c85ee7', preferred=True)
+    version('1.06', '44294e965734da8844395c446a813d7e')
 
-    depends_on('boost@1.63.0')
+    # FIXME: Add dependencies if required.
+    depends_on('clhep')
 
-    def cmake_args(self):
-        spec = self.spec
-        options = [
-            '-DCMAKE_INSTALL_PREFIX:PATH=%s' % prefix,
-            '-DBUILD_SHARED_LIBS=YES',
-            '-DBoost_NO_SYSTEM_PATHS:BOOL=TRUE',
-            '-DBoost_NO_BOOST_CMAKE:BOOL=TRUE',
-            '-DBoost_ADDITIONAL_VERSIONS=1.57.0',
-            '-DBOOST_ROOT:PATH=%s' % spec['boost'],
-            '-DCMAKE_SKIP_RPATH=YES',
-            '-DSKIP_INSTALL_FILES=1']
-        return options
+    patch('ktjet-1.0.6-nobanner.patch')
+
+    def configure_args(self):
+        # FIXME: Add arguments other than --prefix
+        # FIXME: If not needed delete this function
+        args = ['--with-clhep=%s'%self.spec['clhep'].prefix,
+                'CPPFLAGS=-DKTDOUBLEPRECISION -fPIC']
+        return args
 
     def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
@@ -58,25 +56,29 @@ class YamlCpp(CMakePackage):
     def write_scram_toolfiles(self):
         """Create contents of scram tool config files for this package."""
         from string import Template
-
+        import sys
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
         values = {}
         values['VER'] = self.spec.version
         values['PFX'] = self.spec.prefix
 
-        fname = 'yamlcpp.xml'
+        fname = 'ktjet.xml'
         template = Template("""
-<tool name="yaml-cpp" version="${VER}">
-  <info url="http://code.google.com/p/yaml-cpp/"/>
-  <lib name="yaml-cpp"/>
+<tool name="ktjet" version="${VER}">
+  <info url="http://hepforge.cedar.ac.uk/ktjet"/>
+  <lib name="KtEvent"/>
   <client>
-    <environment name="YAML_CPP_BASE" default="${PFX}"/>
-    <environment name="LIBDIR" default="$$YAML_CPP_BASE/lib"/>
-    <environment name="INCLUDE" default="$$YAML_CPP_BASE/include"/>
+    <environment name="KTJET_BASE" default="${PFX}"/>
+    <environment name="LIBDIR" default="$$KTJET_BASE/lib"/>
+    <environment name="INCLUDE" default="$$KTJET_BASE/include"/>
   </client>
-  <use name="boost"/>
+  <flags cppdefines="KTDOUBLEPRECISION"/>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+  <flags SKIP_TOOL_SYMLINKS="1"/>
 </tool>
 """)
         contents = template.substitute(values)
         self.write_scram_toolfile(contents, fname)
+

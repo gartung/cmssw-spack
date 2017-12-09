@@ -25,28 +25,27 @@
 from spack import *
 
 
-class YamlCpp(CMakePackage):
-    """A YAML parser and emitter in C++"""
+class Lwtnn(Package):
+    """FIXME: Put a proper description of your package here."""
 
-    homepage = "https://github.com/jbeder/yaml-cpp"
-    url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/yaml-cpp/0.5.1-oenich2/yaml-cpp-0.5.1.tar.gz"
+    # FIXME: Add a proper url for your package's homepage here.
+    homepage = "http://www.example.com"
+    url      = "https://github.com/lwtnn/lwtnn/archive/v1.0.tar.gz"
 
-    version('0.5.1', '0fa47a5ed8fedefab766592785c85ee7', preferred=True)
+    version('1.0', 'bb62cd8c1f0a97681206894f7f5a8e95')
 
-    depends_on('boost@1.63.0')
+    depends_on('boost')
+    depends_on('eigen')
 
-    def cmake_args(self):
-        spec = self.spec
-        options = [
-            '-DCMAKE_INSTALL_PREFIX:PATH=%s' % prefix,
-            '-DBUILD_SHARED_LIBS=YES',
-            '-DBoost_NO_SYSTEM_PATHS:BOOL=TRUE',
-            '-DBoost_NO_BOOST_CMAKE:BOOL=TRUE',
-            '-DBoost_ADDITIONAL_VERSIONS=1.57.0',
-            '-DBOOST_ROOT:PATH=%s' % spec['boost'],
-            '-DCMAKE_SKIP_RPATH=YES',
-            '-DSKIP_INSTALL_FILES=1']
-        return options
+    def setup_environment(self, spack_env, run_env):
+        spack_env.set('BOOST_ROOT', self.spec['boost'].prefix)
+        spack_env.set('EIGEN_ROOT', self.spec['eigen'].prefix)
+
+    def install(self, spec, prefix):
+        make('all')
+        install_tree('lib', self.prefix.lib)
+        install_tree('bin', self.prefix.bin)
+        install_tree('include', self.prefix.include)
 
     def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
@@ -56,7 +55,7 @@ class YamlCpp(CMakePackage):
 
     @run_after('install')
     def write_scram_toolfiles(self):
-        """Create contents of scram tool config files for this package."""
+
         from string import Template
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
@@ -65,18 +64,24 @@ class YamlCpp(CMakePackage):
         values['VER'] = self.spec.version
         values['PFX'] = self.spec.prefix
 
-        fname = 'yamlcpp.xml'
+        fname = 'lwtnn.xml'
         template = Template("""
-<tool name="yaml-cpp" version="${VER}">
-  <info url="http://code.google.com/p/yaml-cpp/"/>
-  <lib name="yaml-cpp"/>
+<tool name="lwtnn" version="${VER}">
+  <info url="https://github.com/lwtnn/lwtnn"/>
+  <lib name="lwtnn"/>
   <client>
-    <environment name="YAML_CPP_BASE" default="${PFX}"/>
-    <environment name="LIBDIR" default="$$YAML_CPP_BASE/lib"/>
-    <environment name="INCLUDE" default="$$YAML_CPP_BASE/include"/>
+    <environment name="LWTNN_BASE" default="${PFX}"/>
+    <environment name="LIBDIR" default="$$LWTNN_BASE/lib"/>
+    <environment name="INCLUDE" default="$$LWTNN_BASE/include"/>
   </client>
-  <use name="boost"/>
+  <runtime name="PATH" value="$$LWTNN_BASE/bin" type="path"/>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+  <use name="eigen"/>
+  <use name="boost_system"/>  
+  <flags SKIP_TOOL_SYMLINKS="1"/>
 </tool>
 """)
+
         contents = template.substitute(values)
         self.write_scram_toolfile(contents, fname)

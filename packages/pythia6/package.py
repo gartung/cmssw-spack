@@ -30,29 +30,24 @@ class Pythia6(Package):
     particles such as e+, e-, p and pbar in various combinations."""
 
     homepage = "https://pythia6.hepforge.org/"
-    url = "http://lcgpackages.web.cern.ch/lcgpackages/tarFiles/spackmirror/pythia6/pythia-6.4.28.tar.gz"
+    url = "http://cern.ch/service-spi/external/MCGenerators/distribution/pythia6/pythia6-426-src.tgz"
 
-    version('6.4.28', '3cf2b78d08bc6319749e524b3b7b38e3')
-
-    depends_on('cmake')
+    version('426', '3e3e47ea99579bedfafa59897dd86aa1')
 
     def install(self, spec, prefix):
-        build_directory = join_path(self.stage.path, 'spack-build')
-        source_directory = self.stage.source_path
-        cmake_args = [source_directory]
-
-        cmake('-DHEPEVT_SIZE=10000', '-P', 'preparePythia6.cmake')
-
-        cmake_args.extend([
-            '-DCMAKE_INSTALL_PREFIX=%s' % prefix
-        ])
-
-        cmake_args.extend(std_cmake_args)
-
-        with working_dir(build_directory, create=True):
-            cmake(*cmake_args)
+        with working_dir(str(self.version)):
+            configure('--disable-shared', '--enable-static','--with-hepevt=4000', 'F77=gfortran -fPIC')
+            filter_file(r'^CC=.*$','gcc -fPIC','libtool')
             make()
-            make("install")
+            make('install')
+            install_tree('include',prefix.include)
+            install_tree('lib', prefix.lib)
+
+
+    def url_for_version(self,version):
+        url='http://cern.ch/service-spi/external/MCGenerators/distribution/pythia6/pythia6-%s-src.tgz'%self.version
+        return url
+
 
     def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""

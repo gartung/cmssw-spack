@@ -26,7 +26,7 @@ from spack import *
 import spack.util.web
 
 
-class Protobuf(CMakePackage):
+class Protobuf(AutotoolsPackage):
     """Google's data interchange format."""
 
     homepage = "https://developers.google.com/protocol-buffers"
@@ -42,26 +42,21 @@ class Protobuf(CMakePackage):
     # version('2.5.0', '9c21577a03adc1879aba5b52d06e25cf')
 
     depends_on('zlib')
+    depends_on('m4', type='build')
+    depends_on('autoconf', type='build')
+    depends_on('automake', type='build') 
+    depends_on('libtool', type='build')
 
     conflicts('%gcc@:4.6')  # Requires c++11
 
-    # first fixed in 3.4.0: https://github.com/google/protobuf/pull/3406
-    patch('pkgconfig.patch', when='@:3.3.2')
 
-    def fetch_remote_versions(self):
-        """Ignore additional source artifacts uploaded with releases,
-           only keep known versions
-           fix for https://github.com/LLNL/spack/issues/5356"""
-        return dict(map(
-            lambda u: (u, self.url_for_version(u)),
-            spack.util.web.find_versions_of_archive(
-                self.all_urls, self.list_url, self.list_depth)
-        ))
-
-    def cmake_args(self):
+    def configure_args(self):
         args = [
-            '-Dprotobuf_BUILD_TESTS:BOOL=OFF',
-            '-DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON'
+            '--disable-static',
+            '--disable-dependency-tracking',
+            'CXXFLAGS=-I%s' % self.spec['zlib'].prefix.include,
+            'CFLAGS=-I%s' % self.spec['zlib'].prefix.include,
+            'LDFLAGS=-L%s' % self.spec['zlib'].prefix.lib
         ]
         return args
 
@@ -85,6 +80,19 @@ class Protobuf(CMakePackage):
 
         fname = 'protobuf.xml'
         template = Template("""
+<tool name="protobuf" version="${VER}">
+  <lib name="protobuf"/>
+  <client>
+    <environment name="PROTOBUF_BASE" default="${PFX}"/>
+    <environment name="INCLUDE" default="$$PROTOBUF_BASE/include"/>
+    <environment name="LIBDIR" default="$$PROTOBUF_BASE/lib"/>
+    <environment name="BINDIR" default="$$PROTOBUF_BASE/bin"/>
+  </client>
+  <runtime name="PATH" value="$$PROTOBUF_BASE/bin" type="path"/>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+  <flags SKIP_TOOL_SYMLINKS="1"/>
+</tool>
 """)
         contents = template.substitute(values)
         self.write_scram_toolfile(contents, fname)
