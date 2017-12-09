@@ -153,7 +153,7 @@ class Cmssw(Package):
     depends_on('photos')
     depends_on('tauola')
     depends_on('jimmy')
-
+    depends_on('cascade')
   
     if sys.platform == 'darwin':
         patch('macos.patch')

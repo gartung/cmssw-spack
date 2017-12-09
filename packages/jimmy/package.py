@@ -23,26 +23,24 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
 from spack import *
-
+import  distutils.dir_util as du
 
 class Jimmy(Package):
     """FIXME: Put a proper description of your package here."""
 
-    # FIXME: Add a proper url for your package's homepage here.
     homepage = "http://www.example.com"
-    url      = "http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/jimmy/jimmy-4.2-slc4_amd64_gcc34.tgz"
+    url      = "http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/jimmy/jimmy-4.31.3-x86_64-slc6-gcc46-opt.tgz"
 
-    version('4.2', '0a1885b9c3a5191b1e8fad34a0577966')
+    version('4.31.3', 'f5e7acb12ea7d81e5afa5188c6361c8d')
 
     depends_on('herwig')
 
     def install(self, spec, prefix):
-        with working_dir(join_path(self.version,'slc4_amd64_gcc34')):
-            install_tree('include',prefix.include)
-            install_tree('lib',prefix.lib)
+        with working_dir(str(self.version)):
+            du.copy_tree('x86_64-slc6-gcc46-opt',prefix)
 
     def url_for_version(self,version):
-        url='http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/jimmy/jimmy-%s-slc4_amd64_gcc34.tgz'%version
+        url='http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/jimmy/jimmy-%s-x86_64-slc6-gcc46-opt.tgz'%version
         return url
 
     def write_scram_toolfile(self, contents, filename):

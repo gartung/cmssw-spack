@@ -22,7 +22,7 @@
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 from spack import *
-
+import distutils.dir_util as du
 
 class Pythia6(Package):
     """PYTHIA is a program for the generation of high-energy physics events,
@@ -30,22 +30,17 @@ class Pythia6(Package):
     particles such as e+, e-, p and pbar in various combinations."""
 
     homepage = "https://pythia6.hepforge.org/"
-    url = "http://cern.ch/service-spi/external/MCGenerators/distribution/pythia6/pythia6-426-src.tgz"
+    url = "http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/pythia6/pythia6-426-x86_64-slc6-gcc46-opt.tgz"
 
-    version('426', '3e3e47ea99579bedfafa59897dd86aa1')
+    version('426', '30a5c657e4b8d3ff259889772084cbefae34a7012484a8497bd2cb95c9e66b14')
 
     def install(self, spec, prefix):
         with working_dir(str(self.version)):
-            configure('--disable-shared', '--enable-static','--with-hepevt=4000', 'F77=gfortran -fPIC')
-            filter_file(r'^CC=.*$','gcc -fPIC','libtool')
-            make()
-            make('install')
-            install_tree('include',prefix.include)
-            install_tree('lib', prefix.lib)
+            du.copy_tree('x86_64-slc6-gcc46-opt', prefix)
 
 
     def url_for_version(self,version):
-        url='http://cern.ch/service-spi/external/MCGenerators/distribution/pythia6/pythia6-%s-src.tgz'%self.version
+        url='http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/pythia6/pythia6-426-x86_64-slc6-gcc46-opt.tgz'%self.version
         return url
 
 

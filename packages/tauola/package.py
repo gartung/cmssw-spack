@@ -26,27 +26,24 @@ from spack import *
 import glob
 import os
 import shutil
+import distutils.dir_util as du
 
 class Tauola(Package):
     """FIXME: Put a proper description of your package here."""
 
     # FIXME: Add a proper url for your package's homepage here.
     homepage = "http://www.example.com"
-    url      = "http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/tauola/tauola-27.121.5-slc4_amd64_gcc34.tgz"
+    url      = "http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/tauola/tauola-28.121.2-x86_64-slc6-gcc46-opt.tgz"
 
-    version('27.121.5', '98a2adab15db1c691aea61463c4d0534', preferred=True)
+    version('28.121.2', '2f3665b7c332212f0dfe6db5cb9ad94261bb389086fa44b9f03c419f3e6e09b9')
 
     depends_on('pythia6')
     depends_on('photos')
 
 
     def install(self, spec, prefix):
-        with working_dir(join_path(self.version,'slc4_amd64_gcc34')):
-            install_tree('include',prefix.include) 
-            for f in glob.glob('lib/archive/*.a'):
-                shutil.move(f,'lib/')
-            shutil.rmtree('lib/archive')
-            install_tree('lib',prefix.lib)
+        with working_dir(str(self.version)):
+            du.copy_tree('x86_64-slc6-gcc46-opt',prefix)
 
     def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
