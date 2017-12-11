@@ -6,7 +6,7 @@
 # Created by Todd Gamblin, tgamblin@llnl.gov, All rights reserved.
 # LLNL-CODE-647188
 #
-# For details, see https://github.com/llnl/spack
+# For details, see https://github.com/spack/spack
 # Please also see the NOTICE and LICENSE files for our notice and the LGPL.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -23,27 +23,21 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
 from spack import *
-import glob
+import distutils.dir_util as du
 
-
-class Meschach(Package):
+class Csctrackfinderemulation(Package):
     """FIXME: Put a proper description of your package here."""
 
     homepage = "http://www.example.com"
-    url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/meschach/1.2.pCMS1/mesch12b.tar.gz"
+    url      = "http://www.example.com/example-1.2.3.tar.gz"
 
-    version('12b', '4ccd520f30934ebc34796d80dab29e5c')
+    version('1.2', git='https://github.com/cms-externals/CSCTrackFinderEmulation', branch='cms/CMSSW_8_1_X')
 
-    patch('meschach-1.2b-fPIC.patch', level=0)
-    patch('meschach-1.2-slc4.patch')
 
     def install(self, spec, prefix):
         make()
-        mkdirp(prefix.lib)
-        mkdirp(prefix.include)
-        for f in glob.glob('*.h'):
-            install(f, prefix.include + '/' + f)
-        install('meschach.a', prefix.lib + '/libmeschach.a')
+        make('install')
+        du.copy_tree('installDir',prefix)
 
     def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
@@ -53,7 +47,7 @@ class Meschach(Package):
 
     @run_after('install')
     def write_scram_toolfiles(self):
-        """Create contents of scram tool config files for this package."""
+
         from string import Template
 
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
@@ -62,18 +56,19 @@ class Meschach(Package):
         values['VER'] = self.spec.version
         values['PFX'] = self.spec.prefix
 
-        fname = 'meschach.xml'
-        template = Template("""<tool name="meschach" version="$VER">
-  <info url="http://www.meschach.com"/>
-  <lib name="meschach"/>
+        fname = 'csctrackfinderemulation.xml'
+        template = Template("""
+<tool name="CSCTrackFinderEmulation" version="${VER}">
+  <lib name="CSCTrackFinderEmulation"/>
   <client>
-    <environment name="MESCHACH_BASE" default="$PFX"/>
-    <environment name="LIBDIR" default="$$MESCHACH_BASE/lib"/>
-    <environment name="INCLUDE" default="$$MESCHACH_BASE/include"/>
+    <environment name="CSCTRACKFINDEREMULATION_BASE" default="${PFX}"/>
+    <environment name="LIBDIR" default="$$CSCTRACKFINDEREMULATION_BASE/lib64"/>
+    <environment name="INCLUDE" default="$$CSCTRACKFINDEREMULATION_BASE/include"/>
   </client>
-  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
-  <use name="root_cxxdefaults"/>
-</tool>""")
+  <runtime name="CSC_TRACK_FINDER_DATA_DIR" default="$$CSCTRACKFINDEREMULATION_BASE/data/"/>
+  <runtime name="CMSSW_SEARCH_PATH" default="$$CSCTRACKFINDEREMULATION_BASE/data" type="path"/>
+</tool>
+""")
 
         contents = template.substitute(values)
         self.write_scram_toolfile(contents, fname)

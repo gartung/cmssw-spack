@@ -67,3 +67,37 @@ class Valgrind(AutotoolsPackage):
             options.append('--enable-ubsan')
 
         return options
+
+    def write_scram_toolfile(self, contents, filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
+            f.write(contents)
+            f.close()
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
+
+        fname = 'valgrind.xml'
+        template = Template("""
+<tool name="valgrind" version="${VER}">
+  <client>
+    <environment name="VALGRIND_BASE" default="${PFX}"/>
+    <environment name="INCLUDE" default="$$VALGRIND_BASE/include"/>
+  </client>
+  <runtime name="PATH" value="$$VALGRIND_BASE/bin" type="path"/>
+  <runtime name="VALGRIND_LIB" value="$$VALGRIND_BASE/lib/valgrind"/>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+</tool>
+""")
+
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents, fname)

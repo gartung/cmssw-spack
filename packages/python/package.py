@@ -684,6 +684,7 @@ class Python(AutotoolsPackage):
     <environment name="PYTHON_COMPILE" default="$PFX/lib/python${PYVER}/compileall.py"/>
   </client>
   <runtime name="PATH" value="$PFX/bin" type="path"/>
+  <runtime name="PYTHONPATH" value="$PFX/lib/python2.7" type="path"/>
   <runtime name="ROOT_INCLUDE_PATH" value="$PFX/include/python${PYVER}" type="path"/>
   <use name="root_cxxdefaults"/>
   <use name="sockets"/>

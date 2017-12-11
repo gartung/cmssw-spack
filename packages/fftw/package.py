@@ -56,7 +56,7 @@ class Fftw(AutotoolsPackage):
         'long_double', default=True,
         description='Produces a long double precision version of the library')
     variant(
-        'quad', default=False,
+        'quad', default=True,
         description='Produces a quad precision version of the library '
                     '(works only with GCC and libquadmath)')
     variant('openmp', default=False, description="Enable OpenMP support.")

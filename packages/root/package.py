@@ -32,11 +32,8 @@ class Root(CMakePackage):
     """ROOT is a data analysis framework."""
     homepage = "https://root.cern.ch"
     url = "https://root.cern.ch/download/root_v6.07.02.source.tar.gz"
-    # Development versions
-    version('6.11.02', '95e5705e203a5e0e70be7849c915f732')
-
-    # Production versions
-    version('6.10.08', '48f5044e9588d94fb2d79389e48e1d73', preferred=True)
+    
+    version('6.08.07', git='https://github.com/cms-sw/root', branch='cms/ff9a7c0')
 
     depends_on('cmake@3.4.3:', type='build')
     depends_on('pkg-config',   type='build')

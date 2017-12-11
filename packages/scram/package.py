@@ -112,6 +112,20 @@ class Scram(Package):
             with open('gcc-cxxcompiler.xml', 'w') as f:
                 f.write(template.substitute(values))
                 f.close()
+
+
+            template = Template("""
+  <tool name="gcc-atomic" version="${GCC_VER}">
+    <lib name="atomic"/>
+    <client>
+      <environment name="GCC_ATOMIC_BASE" default="${GCC_PREFIX}"/>
+    </client>
+  </tool>
+""")
+
+            with open('gcc-cxxcompiler.xml', 'w') as f:
+                f.write(template.substitute(values))
+                f.close()
             template = Template("""
   <tool name="gcc-f77compiler" version="${GCC_VER}" type="compiler">
     <lib name="gfortran"/>

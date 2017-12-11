@@ -72,7 +72,7 @@ class Cmssw(Package):
 
     depends_on('scram')
     depends_on('gmake')
-    depends_on('root@6.10.08')
+    depends_on('root@6.08.07')
     depends_on('tbb')
     depends_on('tinyxml')
     depends_on('clhep@2.3.1.1~cxx11+cxx14')
@@ -154,6 +154,7 @@ class Cmssw(Package):
     depends_on('tauola')
     depends_on('jimmy')
     depends_on('cascade')
+    depends_on('csctrackfinderemulation')
   
     if sys.platform == 'darwin':
         patch('macos.patch')
