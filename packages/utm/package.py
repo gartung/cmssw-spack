@@ -29,9 +29,9 @@ class Utm(Package):
     """FIXME: Put a proper description of your package here."""
 
     homepage = "http://www.example.com"
-    url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/utm/utm_0.6.5-fmblme/utm-utm_0.6.5.tgz"
+    url = "https://gitlab.cern.ch/cms-l1t-utm/utm/repository/utm_0.6.5/archive.tar.gz"
 
-    version('0.6.5', '7f118057dd56776af1fcec29bc352186')
+    version('0.6.5', git='https://gitlab.cern.ch/cms-l1t-utm/utm.git', tag='utm_0.6.5')
 
     depends_on('gmake')
     depends_on('xerces-c')

@@ -33,23 +33,47 @@ class Tauola(Package):
 
     # FIXME: Add a proper url for your package's homepage here.
     homepage = "http://www.example.com"
-    url      = "http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/tauola/tauola-28.121.2-x86_64-slc6-gcc46-opt.tgz"
+    url      = "http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/tauola/tauola-28.121.2-src.tgz"
 
-    version('28.121.2', '2f3665b7c332212f0dfe6db5cb9ad94261bb389086fa44b9f03c419f3e6e09b9')
+    #version('28.121.2', '275ec7dd7ce9c091c042c033a434754d')
+    #version('28.121',   'e2c75a6e566c98f3972744883f687b9c')
+    version('27.121.5', 'b0a155d16ea5759701636202d1f6de3e')
 
     depends_on('pythia6')
     depends_on('photos')
 
 
+    patch('tauola-27.121.5-gfortran-taueta.patch')
+    patch('tauola-27.121-gfortran-tauola-srs.patch')
+    patch('tauola-27.121.5-configure-makefile-update.patch')
+
+
     def install(self, spec, prefix):
-        with working_dir(str(self.version)):
-            du.copy_tree('x86_64-slc6-gcc46-opt',prefix)
+        cmsplatf=spec.architecture
+        with working_dir(self.version.string):
+            filter_file('hepevt.inc', '../include/hepevt.inc', './pretauola/tauola_srs.F')
+            filter_file('hepevt.inc', '../include/hepevt.inc', './pretauola/itldrc.F')
+            filter_file('hepevt.inc', '../include/hepevt.inc', './pretauola/pyhepc_t.F')
+            perl=which('perl')
+            perl('-p', '-i', '-e', 
+                's|-fno-globals||g;s|-finit-local-zero||g;'+
+                's|-fugly-logint||g;s|-fugly-complex||',
+                'configure')
+            configure('--lcgplatform=%s' % cmsplatf,
+                      '--with-pythia6libs=%s' % spec['pythia6'].prefix.lib)
+            make('PHOTOS=%s' % spec['photos'].prefix)
+            du.copy_tree('lib',prefix.lib)
+            du.copy_tree('include',prefix.include)
+            for f in glob.glob(prefix.lib+'/archive/*.a'):
+                shutil.move(f,join_path(prefix.lib,os.path.basename(f)))
+            shutil.rmtree(prefix.lib+'/archive')
 
     def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
         with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
+
 
     @run_after('install')
     def write_scram_toolfiles(self):

@@ -26,12 +26,12 @@ from spack import *
 
 
 class Fastjet(AutotoolsPackage):
-    """."""
+    """Fastjet"""
 
-    homepage = "http://www.example.com"
-    url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/fastjet/3.1.0/fastjet-3.1.0.tgz"
+    homepage = "http://fastjet.fr/"
+    url = "https://github.com/cms-externals/fastjet"
 
-    version('3.1.0', 'ca865ac0dfab9910dccd0ac4bd1ae7ea')
+    version('3.1.0', git='https://github.com/cms-externals/fastjet', branch='cms/v3.1.0')
 
     def configure_args(self):
         args = [

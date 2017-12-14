@@ -62,17 +62,30 @@ class Geant4(CMakePackage):
     def cmake_args(self):
         spec = self.spec
 
-        options = [
-            '-DGEANT4_USE_GDML=ON',
-            '-DGEANT4_USE_SYSTEM_CLHEP=ON',
-            '-DGEANT4_USE_G3TOG4=ON',
-            '-DGEANT4_INSTALL_DATA=OFF',
-            '-DGEANT4_BUILD_TLS_MODEL=global-dynamic',
-            '-DGEANT4_BUILD_MULTITHREADED=ON',
-            '-DGEANT4_USE_SYSTEM_EXPAT=ON',
-            '-DGEANT4_USE_SYSTEM_ZLIB=ON',
-            '-DXERCESC_ROOT_DIR:STRING=%s' %
-            spec['xerces-c'].prefix]
+        options = [ '-DCMAKE_CXX_COMPILER=g++'
+                   ,'-DCMAKE_CXX_FLAGS=-fPIC'
+                   ,'-DCMAKE_INSTALL_LIBDIR=lib'
+                   ,'-DCMAKE_BUILD_TYPE=Release'
+                   ,'-DGEANT4_USE_GDML=ON'
+                   ,'-DGEANT4_BUILD_CXXSTD:STRING=c++14'
+                   ,'-DGEANT4_BUILD_TLS_MODEL:STRING=global-dynamic'
+                   ,'-DGEANT4_ENABLE_TESTING=OFF'
+                   ,'-DGEANT4_BUILD_VERBOSE_CODE=OFF'
+                   ,'-DBUILD_SHARED_LIBS=ON'
+                   ,'-DXERCESC_ROOT_DIR:PATH=%s' %
+                     spec['xerces-c'].prefix
+                   ,'-DCLHEP_ROOT_DIR:PATH=%s' %
+                     spec['clhep'].prefix
+                   ,'-DEXPAT_INCLUDE_DIR:PATH=%s' %
+                     spec['expat'].prefix.include
+                   ,'-DEXPAT_LIBRARY:FILEPATH=%s/libexpat.%s' % 
+                     (spec['expat'].prefix.lib, dso_suffix)
+                   ,'-DBUILD_STATIC_LIBS=ON'
+                   ,'-DGEANT4_INSTALL_EXAMPLES=OFF'
+                   ,'-DGEANT4_USE_SYSTEM_CLHEP=ON'
+                   ,'-DGEANT4_BUILD_MULTITHREADED=ON'
+                   ,'-DCMAKE_STATIC_LIBRARY_CXX_FLAGS=-fPIC'
+                   ,'-DCMAKE_STATIC_LIBRARY_C_FLAGS=-fPIC' ]
 
         if '+vecgeom' in spec:
             options.append('-DGEANT4_USE_USOLIDS=ON')
@@ -84,7 +97,6 @@ class Geant4(CMakePackage):
             options.append('-DGEANT4_USE_OPENGL_X11=ON')
             options.append('-DGEANT4_USE_XM=ON')
             options.append('-DGEANT4_USE_RAYTRACER_X11=ON')
-        options.append('-DGEANT4_BUILD_CXXSTD:STRING=c++14')
 
         if '+qt' in spec:
             options.append('-DGEANT4_USE_QT=ON')
@@ -154,7 +166,7 @@ class Geant4(CMakePackage):
   <flags CXXFLAGS="-DG4MULTITHREADED -DG4USE_STD11 -ftls-model=global-dynamic -pthread"/>
   <client>
     <environment name="GEANT4_BASE" default="${GEANT4_PREFIX}"/>
-    <environment name="LIBDIR" default="$$GEANT4_BASE/lib64"/>
+    <environment name="LIBDIR" default="$$GEANT4_BASE/lib"/>
     <environment name="G4LIB" value="$$LIBDIR"/>
     <environment name="INCLUDE" default="$$GEANT4_BASE/include/Geant4"/>
   </client>

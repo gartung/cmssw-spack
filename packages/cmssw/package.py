@@ -155,7 +155,10 @@ class Cmssw(Package):
     depends_on('jimmy')
     depends_on('cascade')
     depends_on('csctrackfinderemulation')
-  
+    depends_on('mcdb')
+    depends_on('fftw') 
+    depends_on('lapack')
+ 
     if sys.platform == 'darwin':
         patch('macos.patch')
     else:
@@ -270,4 +273,4 @@ class Cmssw(Package):
     def url_for_version(self, version):
         """Handle CMSSW's version string."""
         version_underscore = str(self.version).replace('.', '_')
-        return "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc7_amd64_gcc630/cms/cmssw/CMSSW_%s/src.tar.gz" % version_underscore
+        return "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/cms/cmssw/CMSSW_%s/src.tar.gz" % version_underscore

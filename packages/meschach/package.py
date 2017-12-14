@@ -30,7 +30,7 @@ class Meschach(Package):
     """FIXME: Put a proper description of your package here."""
 
     homepage = "http://www.example.com"
-    url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/meschach/1.2.pCMS1/mesch12b.tar.gz"
+    url = "http://homepage.divms.uiowa.edu/~dstewart/meschach/mesch12b.tar.gz"
 
     version('12b', '4ccd520f30934ebc34796d80dab29e5c')
 
@@ -38,7 +38,7 @@ class Meschach(Package):
     patch('meschach-1.2-slc4.patch')
 
     def install(self, spec, prefix):
-        make()
+        make('all')
         mkdirp(prefix.lib)
         mkdirp(prefix.include)
         for f in glob.glob('*.h'):

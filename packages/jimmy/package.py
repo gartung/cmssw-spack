@@ -29,18 +29,21 @@ class Jimmy(Package):
     """FIXME: Put a proper description of your package here."""
 
     homepage = "http://www.example.com"
-    url      = "http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/jimmy/jimmy-4.31.3-x86_64-slc6-gcc46-opt.tgz"
+    url      = "http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/jimmy/jimmy-4.31.3-src.tgz"
 
-    version('4.31.3', 'f5e7acb12ea7d81e5afa5188c6361c8d')
+    version('4.31.3', '53a6dcd60f1b748698de6b4bf2209635')
+    version('4.31.2', '5952d98f74c809113ce204b165016406')
+    version('4.31',   '1e1855dadec60831dc4c3cd10efc1746')
 
     depends_on('herwig')
 
     def install(self, spec, prefix):
         with working_dir(str(self.version)):
-            du.copy_tree('x86_64-slc6-gcc46-opt',prefix)
+            make()
+            make('install')
 
     def url_for_version(self,version):
-        url='http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/jimmy/jimmy-%s-x86_64-slc6-gcc46-opt.tgz'%version
+        url='http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/jimmy/jimmy-%s-src.tgz'%version
         return url
 
     def write_scram_toolfile(self, contents, filename):

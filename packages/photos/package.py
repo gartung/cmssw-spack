@@ -25,6 +25,7 @@
 from spack import *
 import glob
 import os
+import shutil
 import distutils.dir_util as du
 
 
@@ -32,23 +33,38 @@ class Photos(Package):
     """FIXME: Put a proper description of your package here."""
 
     homepage = "http://www.example.com"
-    url = "http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/photos/photos-215.5-x86_64-slc6-gcc46-opt.tgz"
+    url = "http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/photos/photos-215.5-src.tgz"
 
-    version('215.5', '53139e91a8cdae460e2761b7ca0df8d8')
+    version('215.5', '87bc3383562e2583edb16dab8b2b5e30')
+    version('215.4', '2f1d40b865e65f0be05f62d092a193ca')
+    version('215.3', 'd154a46c818350bfc3f0da3efd39c8f6')
+    version('215.2', '4243b944cab04be0c5410e66db85f01c')
+    version('215',   'b54886924bcf9bf7648437f4631dac20')
+
+    patch('photos-215.5-update-configure.patch')
 
     def install(self, spec, prefix):
-        with working_dir(str(spec.version)):
-            du.copy_tree('x86_64-slc6-gcc46-opt', prefix)
+        cmsplatf=spec.architecture
+        with working_dir(self.version.string):
+            configure('--enable-static', '--disable-shared', '--lcgplatform=%s' % cmsplatf)
+            make()
+            du.copy_tree('lib', prefix.lib)
+            du.copy_tree('include', prefix.include)
+            for f in glob.glob(prefix.lib+'/archive/*.a'):
+                shutil.move(f, prefix.lib+'/'+os.path.basename(f))
+            shutil.rmtree(prefix.lib+'/archive')
 
     def url_for_version(self,version):
-        url='http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/photos/photos-%s-x86_64-slc6-gcc46-opt.tgz'%version
+        url='http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/photos/photos-%s-src.tgz'%version
         return url
+
 
     def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
         with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
+
 
     @run_after('install')
     def write_scram_toolfiles(self):

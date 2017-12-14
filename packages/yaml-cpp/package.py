@@ -29,9 +29,11 @@ class YamlCpp(CMakePackage):
     """A YAML parser and emitter in C++"""
 
     homepage = "https://github.com/jbeder/yaml-cpp"
-    url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/yaml-cpp/0.5.1-oenich2/yaml-cpp-0.5.1.tar.gz"
+    url = "https://github.com/jbeder/yaml-cpp/archive/release-0.5.1.tar.gz"
 
-    version('0.5.1', '0fa47a5ed8fedefab766592785c85ee7', preferred=True)
+    #version('0.5.3', 'e2507c3645fc2bec29ba9a1838fb3951')
+    #version('0.5.2', '96bdfa47d38711737d973b23d384d4f2')
+    version('0.5.1', '76c47d4a961797092650806dfdfc6cd9')
 
     depends_on('boost@1.63.0')
 

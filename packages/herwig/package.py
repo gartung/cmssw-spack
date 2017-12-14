@@ -30,23 +30,27 @@ class Herwig(Package):
 
     # FIXME: Add a proper url for your package's homepage here.
     homepage = "http://www.example.com"
-    url      = "http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/herwig/herwig-6.521-x86_64-slc5-gcc47-opt.tgz"
+    url      = "http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/herwig/herwig-6.521-src.tgz"
 
-    version('6.521',   'e52e89020946d2882bf67080c6e2443d', preferred=True)
+    version('6.521.2', 'f5eebb2d2318dc437ec534eb430293d9')
+    version('6.521',   '61bfc32cbf25fe92e9e3e7f23be1338f')
+
 
     depends_on('lhapdf')
     depends_on('photos')
 
     def install(self, spec, prefix):
-        with working_dir(join_path(self.version,'x86_64-slc5-gcc47-opt')):
-            install_tree('include',prefix.include)
-            install_tree('lib',prefix.lib)
+        with working_dir(join_path(self.version)):
+            make()
+            make('install')
+
 
     def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
         with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
+
 
     @run_after('install')
     def write_scram_toolfiles(self):

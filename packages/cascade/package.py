@@ -31,17 +31,30 @@ class Cascade(Package):
     """FIXME: Put a proper description of your package here."""
 
     homepage = "http://www.example.com"
-    url      = "http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/cascade/cascade-2.2.04-x86_64-slc6-gcc46-opt.tgz"
+    url      = "http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/cascade/cascade-2.2.04-src.tgz"
 
-    version('2.2.04', '9a92195e124a9290a567c93b8684da0e6649a881d69e29dd98bb5a300926dd0c')
+    version('2.2.04', '01986cfd390c41c6a3e066ff504aa1eb')
 
     depends_on('lhapdf')
     depends_on('pythia6')
 
+    patch('cascade-2.2.04-drop-dcasrn.patch')
+
     def install(self, spec, prefix):
-        with working_dir(str(self.version)):
-            du.copy_tree('x86_64-slc6-gcc46-opt',prefix)
-        with working_dir(prefix.lib):
+       with working_dir(self.version.string):
+            configure('--prefix=%s' % prefix,
+                      '--enable-static', '--disable-shared', 
+                      '--with-pythia6=%s' % spec['pythia6'].prefix,
+                      '--with-lhapdf=%s' % spec['lhapdf'].prefix,
+                      'LIBS=-lstdc++ -lz','F77=gfortran -fPIC'
+                      )
+            make()
+            make('install')
+
+
+    @run_after('install')
+    def make_merged_lib(self):
+        with working_dir(self.prefix.lib):
             ar=which('ar')
             for file in glob.glob('*.a'):
                 ar('-x',file)
@@ -55,7 +68,7 @@ class Cascade(Package):
 
 
     def url_for_version(self,version):
-        url="http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/cascade/cascade-%s-x86_64-slc6-gcc46-opt.tgz"%version
+        url="http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/cascade/cascade-%s-src.tgz"%version
         return url
 
 

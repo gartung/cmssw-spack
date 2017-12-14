@@ -606,6 +606,7 @@ class Llvm(CMakePackage):
   </client>
   <runtime name="PYTHONPATH" value="${LIB}/python$PYVER/site-packages" type="path"/>
   <use name="python"/>
+  <runtime name="COMPILER_RUNTIME_OBJECTS" value="${GCC_PREFIX}"/>
 </tool>""")
         contents = template.substitute(values)
         self.write_scram_toolfile(contents, fname)

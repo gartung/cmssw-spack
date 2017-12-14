@@ -30,17 +30,20 @@ class Pythia6(Package):
     particles such as e+, e-, p and pbar in various combinations."""
 
     homepage = "https://pythia6.hepforge.org/"
-    url = "http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/pythia6/pythia6-426-x86_64-slc6-gcc46-opt.tgz"
+    url = "http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/pythia6/pythia6-426-src.tgz"
 
-    version('426', '30a5c657e4b8d3ff259889772084cbefae34a7012484a8497bd2cb95c9e66b14')
+    version('426', '4dd75f551b7660c35f817c063abd74ca91b70259c0987905a06ebb2d21bcdf26')
 
     def install(self, spec, prefix):
-        with working_dir(str(self.version)):
-            du.copy_tree('x86_64-slc6-gcc46-opt', prefix)
-
+        with working_dir(self.version.string):
+            configure('--with-hepevt=4000')
+            make()
+            make('install')
+            du.copy_tree('lib',prefix.lib)
+            du.copy_tree('include',prefix.include)
 
     def url_for_version(self,version):
-        url='http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/pythia6/pythia6-426-x86_64-slc6-gcc46-opt.tgz'%self.version
+        url='http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/pythia6/pythia6-426-src.tgz'%self.version
         return url
 
 

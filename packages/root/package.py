@@ -26,6 +26,7 @@
 from spack import *
 import sys
 import re
+import os
 
 
 class Root(CMakePackage):
@@ -38,36 +39,138 @@ class Root(CMakePackage):
     depends_on('cmake@3.4.3:', type='build')
     depends_on('pkg-config',   type='build')
     depends_on("pcre")
-    depends_on("fftw~mpi")
-    depends_on("python+shared")
+    depends_on("fftw")
+    depends_on("python")
     depends_on("gsl")
-    depends_on("libxml2+python^python+shared")
-    depends_on("jpeg")
+    depends_on("libxml2+python")
+    depends_on("libjpeg-turbo")
     depends_on("libpng")
     depends_on("libtiff")
     depends_on("giflib")
     depends_on("xz")
+    depends_on('zlib')
     depends_on("openssl")
     depends_on("xrootd")
     depends_on("freetype")
+    depends_on("dcap")
+    depends_on("davix")
 
     def cmake_args(self):
         pyvers = str(self.spec['python'].version).split('.')
         pyver = pyvers[0] + '.' + pyvers[1]
-        options = ['-Dcxx17=on', '-Droofit=on', '-Dx11=on', '-Dminuit2=on', '-DPCRE_CONFIG_EXECUTABLE=%s/bin/pcre-config' %
-                   self.spec['pcre'].prefix, '-DPCRE_INCLUDE_DIR=%s/include' %
-                   self.spec['pcre'].prefix, '-DPCRE_PCRE_LIBRARY=%s/lib/libpcre.%s' %
-                   (self.spec['pcre'].prefix, dso_suffix), '-DPCRE_PCREPOSIX_LIBRARY=%s/lib/libpcreposix.%s' %
-                   (self.spec['pcre'].prefix, dso_suffix), '-DLZMA_DIR=%s' %
-                   self.spec['xz'].prefix, '-DLZMA_INCLUDE_DIR=%s/include' %
-                   self.spec['xz'].prefix, '-DLZMA_LIBRARY=%s/lib/liblzma.%s' %
-                   (self.spec['xz'].prefix, dso_suffix), '-DXROOTD_ROOT_DIR=%s' %
-                   self.spec['xrootd'].prefix, '-DPNG_INCLUDE_DIR=%s/include' %
-                   self.spec['libpng'].prefix, '-DPNG_LIBRARY=%s/lib/libpng.%s' %
-                   (self.spec['libpng'].prefix, dso_suffix), '-DPYTHON_EXECUTABLE=%s/python' %
-                   (self.spec['python'].prefix.bin), '-DPYTHON_INCLUDE=%s' %
-                   (self.spec['python'].prefix.include), '-DPYTHON_LIBRARY=%s/libpython%s.%s' %
-                   (self.spec['python'].prefix.lib, pyver, dso_suffix)]
+        options = [  '-Dfail-on-missing=ON'
+                    ,'-Dgnuinstall=OFF'
+                    ,'-Droofit=ON'
+                    ,'-Dvdt=OFF'
+                    ,'-Dhdfs=OFF'
+                    ,'-Dqt=OFF'
+                    ,'-Dqtgsi=OFF'
+                    ,'-Dpgsql=OFF'
+                    ,'-Dsqlite=OFF'
+                    ,'-Dmysql=OFF'
+                    ,'-Doracle=OFF'
+                    ,'-Dldap=OFF'
+                    ,'-Dkrb5=OFF'
+                    ,'-Dftgl=OFF'
+                    ,'-Dfftw3=ON'
+                    ,'-DFFTW_INCLUDE_DIR=%s' %
+                      self.spec['fftw'].prefix.include
+                    ,'-DFFTW_LIBRARY=%s/libfftw3.%s'%
+                     (self.spec['fftw'].prefix.lib, dso_suffix)
+                    ,'-Dminuit2=ON'
+                    ,'-Dmathmore=ON'
+                    ,'-Dexplicitlink=ON'
+                    ,'-Dtable=ON'
+                    ,'-Dbuiltin_pcre=OFF'
+                    ,'-Dbuiltin_freetype=OFF'
+                    ,'-Dbuiltin_zlib=OFF'
+                    ,'-Dbuiltin_lzma=OFF'
+                    ,'-Dbuiltin_gsl=OFF'
+                    ,'-DGSL_CONFIG_EXECUTABLE=%s/gsl-config' %
+                      self.spec['gsl'].prefix.bin
+                    ,'-Dcxx14=ON'
+                    ,'-Dssl=ON'
+                    ,'-DOPENSSL_ROOT_DIR=%s' %
+                      self.spec['openssl'].prefix
+                    ,'-DOPENSSL_INCLUDE_DIR=%s' %
+                      self.spec['openssl'].prefix.include
+                    ,'-Dpython=ON'
+                    ,'-Dxrootd=ON'
+                    ,'-Dbuiltin_xrootd=OFF'
+                    ,'-DXROOTD_INCLUDE_DIR=%s/xrootd' %
+                      self.spec['xrootd'].prefix.include
+                    ,'-DXROOTD_ROOT_DIR=%s' %
+                      self.spec['xrootd'].prefix
+                    ,'-DCMAKE_C_FLAGS=-D__ROOFIT_NOBANNER'
+                    ,'-Dgviz=OFF'
+                    ,'-Dbonjour=OFF'
+                    ,'-Dodbc=OFF'
+                    ,'-Dpythia6=OFF'
+                    ,'-Dpythia8=OFF'
+                    ,'-Dfitsio=OFF'
+                    ,'-Dgfal=OFF'
+                    ,'-Dchirp=OFF'
+                    ,'-Dsrp=OFF'
+                    ,'-Ddavix=ON'
+                    ,'-DDAVIX_DIR=%s' %
+                      self.spec['davix'].prefix
+                    ,'-Dglite=OFF'
+                    ,'-Dsapdb=OFF'
+                    ,'-Dalien=OFF'
+                    ,'-Dmonalisa=OFF'
+                    ,'-DLIBLZMA_INCLUDE_DIR=%s' %
+                      self.spec['xz'].prefix.include
+                    ,'-DLIBLZMA_LIBRARY=%s/liblzma.%s' %
+                     (self.spec['xz'].prefix.lib, dso_suffix)
+                    ,'-DZLIB_ROOT=%s' %
+                      self.spec['zlib'].prefix
+                    ,'-DZLIB_INCLUDE_DIR=%s' %
+                      self.spec['zlib'].prefix.include
+                    ,'-DLIBXML2_INCLUDE_DIR=%s/libxml2' %
+                      self.spec['libxml2'].prefix.include
+                    ,'-DLIBXML2_LIBRARIES=%s/libxml2.%s' %
+                     (self.spec['libxml2'].prefix.lib, dso_suffix)
+                    ,'-DPCRE_CONFIG_EXECUTABLE=%s/bin/pcre-config' %
+                      self.spec['pcre'].prefix
+                    ,'-DPCRE_INCLUDE_DIR=%s' %
+                      self.spec['pcre'].prefix.include
+                    ,'-DPCRE_PCRE_LIBRARY=%s/libpcre.%s' %
+                     (self.spec['pcre'].prefix.lib, dso_suffix)
+                    ,'-DPCRE_PCREPOSIX_LIBRARY=%s/libpcreposix.%s' %
+                     (self.spec['pcre'].prefix.lib, dso_suffix)
+                    ,'-DPYTHON_EXECUTABLE=%s/python' %
+                     (self.spec['python'].prefix.bin)
+                    ,'-DPYTHON_INCLUDE=%s' %
+                     (self.spec['python'].prefix.include)
+                    ,'-DPYTHON_LIBRARY=%s/libpython2.7.%s' %
+                     (self.spec['python'].prefix.lib, dso_suffix)
+                   ]
+
+        if sys.platform == 'linux2':
+            linux_options = [
+                     '-Drfio=OFF'
+                    ,'-Dcastor=OFF'
+                    ,'-Ddcache=ON'
+                    ,'-DDCAP_INCLUDE_DIR=%s' %
+                      self.spec['dcap'].prefix.include
+                    ,'-DDCAP_DIR=%s' %
+                      self.spec['dcap'].prefix
+                    ,'-DJPEG_INCLUDE_DIR=%s' %
+                      self.spec['libjpeg-turbo'].prefix.include
+                    ,'-DJPEG_LIBRARY=%s/libjpeg.%s' %
+                     (self.spec['libjpeg-turbo'].prefix.lib, dso_suffix)
+                    ,'-DPNG_INCLUDE_DIRS=%s' %
+                      self.spec['libpng'].prefix.include
+                    ,'-DPNG_LIBRARY=%s/libpng.%s' %
+                     (self.spec['libpng'].prefix.lib, dso_suffix)
+                    ,'-Dastiff=ON'
+                    ,'-DTIFF_INCLUDE_DIR=%s' %
+                      self.spec['libtiff'].prefix.include
+                    ,'-DTIFF_LIBRARY=%s/libtiff.%s' %
+                     (self.spec['libtiff'].prefix.lib, dso_suffix)
+            ]
+            options.extend(linux_options)
+
         if sys.platform == 'darwin':
             darwin_options = [
                 '-Dx11=off',
@@ -88,6 +191,12 @@ class Root(CMakePackage):
         run_env.prepend_path('PYTHONPATH', self.prefix.lib)
         run_env.set('ROOT_TTREECACHE_SIZE', '0')
         run_env.set('ROOT_TTREECACHE_PREFILL', '0')
+        spack_env.set('ROOTSYS', self.prefix)
+        spack_env.set('PYTHONV','2.7')
+        spack_env.append_flags('CFLAGS', '-D__ROOFIT_NOBANNER')
+        spack_env.append_flags('CXXFLAGS', '-D__ROOFIT_NOBANNER')
+#        for dep in os.environ['SPACK_DEPENDENCIES'].split(os.pathsep):
+#                spack_env.prepend_path('ROOT_INCLUDE_PATH',dep+'/include')
 
     def setup_dependent_environment(self, spack_env, run_env, dspec):
         spack_env.set('ROOTSYS', self.prefix)
