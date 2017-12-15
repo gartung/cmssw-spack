@@ -25,6 +25,8 @@
 
 from spack import *
 import platform
+import glob
+import os
 
 
 class Geant4(CMakePackage):
@@ -36,7 +38,7 @@ class Geant4(CMakePackage):
     homepage = "http://geant4.cern.ch/"
     url = "http://geant4.cern.ch/support/source/geant4.10.01.p03.tar.gz"
 
-    version('10.02.p02', '6aae1d0fc743b0edc358c5c8fbe48657')
+    version('10.02.p02', git='https://github.com/cms-externals/geant4', branch='cms/v10.02.p02')
 
     variant('qt', default=False, description='Enable Qt support')
     variant('vecgeom', default=False, description='Enable Vecgeom support')
@@ -107,15 +109,31 @@ class Geant4(CMakePackage):
 
         return options
 
+
     def url_for_version(self, version):
         """Handle Geant4's unusual version string."""
         return ("http://geant4.cern.ch/support/source/geant4.%s.tar.gz" % version)
+
 
     def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
         with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
+
+    @run_after('install')
+    def make_archive_dir(self):
+        mkdirp(self.prefix.lib+'/archive')
+        with working_dir(self.prefix.lib+'/archive'):
+            ar=which('ar')
+            for f in glob.glob(self.prefix.lib+'/*.a'):
+                ar('x', f)
+            args = ['rcs', 'libgeant4-static.a']
+            for f in glob.glob('*.o'):
+                args.append(f)
+            ar(*args)
+            for f in glob.glob('*.o'):
+                os.remove(f)
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -125,12 +143,12 @@ class Geant4(CMakePackage):
         mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
         values = {}
-        values['GEANT4_VER'] = self.spec.version
-        values['GEANT4_PREFIX'] = self.spec.prefix
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
 
         fname = 'geant4.xml'
         template = Template("""
-<tool name="geant4" version="${GEANT4_VER}">
+<tool name="geant4" version="${VER}">
   <info url="http://geant4.web.cern.ch/geant4/"/>
   <use name="geant4core"/>
   <use name="geant4vis"/>
@@ -142,7 +160,7 @@ class Geant4(CMakePackage):
 
         fname = 'geant4core.xml'
         template = Template("""
-<tool name="geant4core" version="${GEANT4_VER}">
+<tool name="geant4core" version="${VER}">
   <info url="http://geant4.web.cern.ch/geant4/"/>
   <lib name="G4digits_hits"/>
   <lib name="G4error_propagation"/>
@@ -165,7 +183,7 @@ class Geant4(CMakePackage):
   <lib name="G4analysis"/>
   <flags CXXFLAGS="-DG4MULTITHREADED -DG4USE_STD11 -ftls-model=global-dynamic -pthread"/>
   <client>
-    <environment name="GEANT4_BASE" default="${GEANT4_PREFIX}"/>
+    <environment name="GEANT4_BASE" default="${PFX}"/>
     <environment name="LIBDIR" default="$$GEANT4_BASE/lib"/>
     <environment name="G4LIB" value="$$LIBDIR"/>
     <environment name="INCLUDE" default="$$GEANT4_BASE/include/Geant4"/>
@@ -183,7 +201,7 @@ class Geant4(CMakePackage):
 
         fname = 'geant4data.xml'
         template = Template("""
-<tool name="geant4data" version="${GEANT4_VER}">
+<tool name="geant4data" version="${VER}">
   <use name="geant4data_g4abla"/>
   <use name="geant4data_g4emlow"/>
   <use name="geant4data_g4ensdfstate"/>
@@ -200,7 +218,7 @@ class Geant4(CMakePackage):
 
         fname = 'geant4vis.xml'
         template = Template("""
-<tool name="geant4vis" version="${GEANT4_VER}">
+<tool name="geant4vis" version="${VER}">
   <info url="http://geant4.web.cern.ch/geant4/"/>
   <lib name="G4FR"/>
   <lib name="G4modeling"/>
@@ -213,6 +231,24 @@ class Geant4(CMakePackage):
   <lib name="G4GMocren"/>
   <lib name="G4zlib"/>
   <use name="geant4core"/>
+</tool>
+""")
+
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents, fname)
+
+        fname = 'geant4static.xml'
+        template = Template("""
+<tool name="geant4static" version="${VER}">
+  <info url="http://geant4.web.cern.ch/geant4/"/>
+  <lib name="geant4-static"/>
+  <flags CXXFLAGS="-DG4MULTITHREADED -DG4USE_STD11  -ftls-model=global-dynamic -pthread"/>
+  <client>
+    <environment name="GEANT4STATIC_BASE" default="${PFX}"/>
+    <environment name="LIBDIR" default="$$GEANT4STATIC_BASE/lib/archive"/>
+  </client>
+  <use name="clhep"/>
+  <use name="xerces-c"/>
 </tool>
 """)
 

@@ -157,7 +157,7 @@ class Cmssw(Package):
     depends_on('csctrackfinderemulation')
     depends_on('mcdb')
     depends_on('fftw') 
-    depends_on('lapack')
+    depends_on('netlib-lapack')
  
     if sys.platform == 'darwin':
         patch('macos.patch')

@@ -24,23 +24,29 @@
 ##############################################################################
 from spack import *
 import  distutils.dir_util as du
-
+import  distutils.file_util as fu
+import glob
 class Jimmy(Package):
     """FIXME: Put a proper description of your package here."""
 
     homepage = "http://www.example.com"
-    url      = "http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/jimmy/jimmy-4.31.3-src.tgz"
-
-    version('4.31.3', '53a6dcd60f1b748698de6b4bf2209635')
-    version('4.31.2', '5952d98f74c809113ce204b165016406')
-    version('4.31',   '1e1855dadec60831dc4c3cd10efc1746')
+    url      = "http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/jimmy/jimmy-4.2-src.tgz"
+    
+    version('4.2', '940ca1c4404cb13d42c99986597dd57e')
 
     depends_on('herwig')
+ 
+    patch('jimmy-4.2-configure-update.patch')
 
     def install(self, spec, prefix):
         with working_dir(str(self.version)):
-            make()
-            make('install')
+            configure('--with-herwig=%s' % spec['herwig'].prefix)
+            make('HERWIG_ROOT=%s' % spec['herwig'].prefix, 'lib_archive')
+            du.copy_tree('include', prefix.include)
+            du.copy_tree('lib', prefix.lib)
+            for f in glob.glob(prefix.lib+'/archive/*.a'):
+                fu.move_file(f,prefix.lib)
+                du.remove_tree(prefix.lib+'/archive')
 
     def url_for_version(self,version):
         url='http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/jimmy/jimmy-%s-src.tgz'%version

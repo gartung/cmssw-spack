@@ -23,7 +23,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
 from spack import *
-
+import os
 
 class Herwig(Package):
     """FIXME: Put a proper description of your package here."""
@@ -40,9 +40,13 @@ class Herwig(Package):
     depends_on('photos')
 
     def install(self, spec, prefix):
-        with working_dir(join_path(self.version)):
-            make()
+        with working_dir(self.version.string):
+            configure('--enable-static', '--disable-shared', '--prefix=%s' % prefix, 'F77=gfortran -fPIC')
+            make('LHAPDF_ROOT=%s' % spec['lhapdf'],
+                 'PHOTOS_ROOT=%s' % spec['photos'])
+            make('check')
             make('install')
+        os.symlink('%s/HERWIG65.INC' % prefix.include, '%s/herwig65.inc'% prefix.include)
 
 
     def write_scram_toolfile(self, contents, filename):
