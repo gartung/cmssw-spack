@@ -22,51 +22,61 @@
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
-#
-# This is a template package file for Spack.  We've put "FIXME"
-# next to all the things you'll want to change. Once you've handled
-# them, you can save this file and test your package like this:
-#
-#     spack install fireworks-data
-#
-# You can edit this file again by typing:
-#
-#     spack edit fireworks-data
-#
-# See the Spack documentation for more information on packaging.
-# If you submit this package back to Spack as a pull request,
-# please first remove this boilerplate and all FIXME comments.
-#
 from spack import *
 from glob import glob
 
 
-class FireworksData(Package):
+class FireworksGeometry(Package):
     """FIXME: Put a proper description of your package here."""
 
     # FIXME: Add a proper url for your package's homepage here.
     homepage = "http://www.example.com"
-    url      = "https://github.com/cms-data/Fireworks-Geometry/archive/V07-05-01.tar.gz"
+    url = "https://github.com/cms-data/Fireworks-Geometry/archive/V07-05-01.tar.gz"
 
     version('07.05.01', '9f40fdf89286392d1d39d5ed52981051')
     version('07.05.02', '0277dd37c0ff7664ea733445445efb6a')
     version('07.05.03', 'cea2d9a9c03cb95470552f7fd73d3537')
 
-    # FIXME: Add dependencies if required.
-    # depends_on('foo')
 
     def install(self, spec, prefix):
-        matches=[]
-        cp=which('cp')
-        md=which('mkdir')
-        instpath=prefix+'/data-Fireworks-Geometry/'+str(self.version)+'/Fireworks/Geometry/data/'
-        md('-p',instpath)
-        for f in glob('*.root'):
-            matches.append(f)
-        for m in matches:
-            cp('-v',m,instpath,output=str)
+        matches = []
+        instpath = prefix.share+'/data/'
+        mkdirp(instpath)
+        for m in glob('*.root'):
+            install(m, join_path(instpath, m))
 
     def url_for_version(self, version):
         """Handle CMSSW's version string."""
-        version_underscore=str(self.version).replace('.','-')
-        return "https://github.com/cms-data/Fireworks-Geometry/archive/V%s.tar.gz" % version_underscore
+        return "https://github.com/cms-data/Fireworks-Geometry/archive/V%s.tar.gz" % version.dashed
+
+    def write_scram_toolfile(self, contents, filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
+            f.write(contents)
+            f.close()
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix.share + '/data'
+
+        fname = 'fireworks-geometry.xml'
+        template = Template("""
+<tool name="fwlitedata" version="${VER}">
+  <client>
+    <environment name="CMSSWDATA_BASE" default="${PFX}"/>
+    <environment name="CMSSW_DATA_PATH" default="$$CMSSWDATA_BASE"/>
+  </client>
+  <runtime name="CMSSW_DATA_PATH" value="$$CMSSWDATA_BASE" handler="warn" type="path"/>
+  <runtime name="CMSSW_SEARCH_PATH" default="${PFX}" handler="warn" type="path"/>
+</tool>
+""")
+
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents, fname)

@@ -31,63 +31,55 @@ import fnmatch
 import sys
 import shutil
 
+
 def relrelink(top):
-    for root, dirs, files in os.walk(top,topdown=False):
-       for x in files:
-           p = os.path.join(root,x)
-           f = os.path.abspath(p)
-           if os.path.islink(f):
-               linkto=os.path.realpath(f)
-               if not os.path.commonprefix((f,linkto)) == '/':
-                   rel=os.path.relpath(linkto,start=os.path.dirname(f))
-                   os.remove(p)
-                   os.symlink(rel, p)
-       for y in dirs:
-           p = os.path.join(root,y)
-           f = os.path.abspath(p)
-           if os.path.islink(f):
-               linkto=os.path.realpath(f)
-               if not os.path.commonprefix((f,linkto)) == '/':
-                   rel=os.path.relpath(linkto,start=os.path.dirname(f))
-                   os.remove(p)
-                   os.symlink(rel, p)
+    for root, dirs, files in os.walk(top, topdown=False):
+        for x in files:
+            p = os.path.join(root, x)
+            f = os.path.abspath(p)
+            if os.path.islink(f):
+                linkto = os.path.realpath(f)
+                if not os.path.commonprefix((f, linkto)) == '/':
+                    rel = os.path.relpath(linkto, start=os.path.dirname(f))
+                    os.remove(p)
+                    os.symlink(rel, p)
+        for y in dirs:
+            p = os.path.join(root, y)
+            f = os.path.abspath(p)
+            if os.path.islink(f):
+                linkto = os.path.realpath(f)
+                if not os.path.commonprefix((f, linkto)) == '/':
+                    rel = os.path.relpath(linkto, start=os.path.dirname(f))
+                    os.remove(p)
+                    os.symlink(rel, p)
+
 
 class Cmssw(Package):
     """CMSSW built as a scram project"""
 
     homepage = "http://cms-sw.github.io"
-    url      = "https://github.com/cms-sw/cmssw/archive/CMSSW_9_4_X.tar.gz"
+    url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc_amd64_gcc630/cms/cmssw/CMSSW_9_2_12/src.tar.gz"
 
-    version('9.4.X',git='https://github.com/gartung/cmssw.git',branch='CMSSW_9_4_X')
+    version('9.2.12', 'c66e3769785321309f70f85bc315e948')
 
-    config_tag='V05-05-56'
+    config_tag = 'V05-05-40'
 
     resource(name='config',
-             git='https://github.com/cms-sw/cmssw-config.git',
-             branch='linux',
-             destination='',
+             url='http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/cms/fwlite/CMSSW_9_2_13_FWLITE/%s.tar.gz' % config_tag,
+             md5='87af022eba2084d0db2b4d92245c3629',
              placement='config'
-    )
-    
-    resource(name='toolbox',
-             git='https://github.com/gartung/scram-tool-templ.git',
-             branch='linux',
-             destination='',
-             placement='tools'
-    )
+             )
 
-
-    depends_on('libuuid')
     depends_on('scram')
     depends_on('gmake')
-    depends_on('root^fftw~mpi')
-    depends_on('intel-tbb')
-    depends_on('tinyxml^boost+python^python+shared')
-    depends_on('clhep')
+    depends_on('root@6.08.07')
+    depends_on('tbb')
+    depends_on('tinyxml')
+    depends_on('clhep@2.3.1.1~cxx11+cxx14')
     depends_on('md5')
     depends_on('python+shared')
     depends_on('vdt')
-    depends_on('boost@1.63.0+python^python+shared')
+    depends_on('boost@1.63.0')
     depends_on('libsigcpp')
     depends_on('xrootd')
     depends_on('cppunit')
@@ -97,6 +89,7 @@ class Cmssw(Package):
     depends_on('bzip2')
     depends_on('gsl')
     depends_on('hepmc')
+    depends_on('heppdt')
     depends_on('libpng')
     depends_on('giflib')
     depends_on('openssl')
@@ -104,152 +97,180 @@ class Cmssw(Package):
     depends_on('zlib')
     depends_on('xz')
     depends_on('libtiff')
+    depends_on('libjpeg-turbo')
     depends_on('libxml2^python+shared')
     depends_on('bzip2')
-    depends_on('fireworks-data')
-    depends_on('llvm+python+shared_libs~gold^python+shared')
+    depends_on('fireworks-geometry')
+    depends_on('llvm@4.0.1~gold~libcxx+python+shared_libs')
+    depends_on('uuid-cms')
+    depends_on('valgrind')
+    depends_on('geant4~qt')
+    depends_on('expat')
+    depends_on('protobuf@3.2.0')
+    depends_on('eigen')
+    depends_on('curl')
+    depends_on('classlib')
+    depends_on('davix')
+    depends_on('tcmalloc-fake')
+    depends_on('meschach')
+    depends_on('fastjet')
+    depends_on('fastjet-contrib')
+    depends_on('fftjet')
+    depends_on('pythia6')
+    depends_on('pythia8')
+    depends_on('oracle')
+    depends_on('sqlite@3.16.02')
+    depends_on('coral')
+    depends_on('hector')
+    depends_on('geant4-g4emlow')
+    depends_on('geant4-g4ndl')
+    depends_on('geant4-g4photonevaporation')
+    depends_on('geant4-g4saiddata')
+    depends_on('geant4-g4abla')
+    depends_on('geant4-g4ensdfstate')
+    depends_on('geant4-g4neutronsxs')
+    depends_on('geant4-g4radioactivedecay')
+    depends_on('libhepml')
+    depends_on('castor')
+    depends_on('lhapdf')
+    depends_on('utm')
+    depends_on('tkonlinesw')
+    depends_on('photospp')
+    depends_on('rivet')
+    depends_on('evtgen')
+    depends_on('dcap')
+    depends_on('tauolapp')
+    depends_on('sherpa')
+    depends_on('lwtnn')
+    depends_on('yoda')
+    depends_on('openloops')
+    depends_on('qd')
+    depends_on('blackhat')
+    depends_on('yaml-cpp')
+    depends_on('jemalloc')
+    depends_on('ktjet')
+    depends_on('herwig')
+    depends_on('photos')
+    depends_on('tauola')
+    depends_on('jimmy')
+    depends_on('cascade')
+    depends_on('csctrackfinderemulation')
+    depends_on('mcdb')
+    depends_on('fftw') 
+    depends_on('netlib-lapack')
+ 
+    if sys.platform == 'darwin':
+        patch('macos.patch')
+    else:
+        patch('linux.patch')
+
+    scram_arch = 'linux_amd64_gcc'
+    if sys.platform == 'darwin':
+        scram_arch = 'osx10_amd64_clang'
 
     def install(self, spec, prefix):
-        scram=which('scram')
+        scram = which('scram')
         build_directory = join_path(self.stage.path, 'spack-build')
         source_directory = self.stage.source_path
-        cmssw_version='CMSSW.'+str(self.version)
-        cmssw_u_version=cmssw_version.replace('.','_')
-        scram_version='V'+str(spec['scram'].version)
-        
-        gcc=which(spack_f77)
-        gcc_prefix=re.sub('/bin/.*$','',self.compiler.f77)
-        gcc_machine=gcc('-dumpmachine',output=str)
-        gcc_ver=gcc('-dumpversion',output=str)
+        cmssw_version = 'CMSSW.' + str(self.version)
+        cmssw_u_version = cmssw_version.replace('.', '_')
+        scram_version = 'V' + str(spec['scram'].version)
+        project_dir = join_path(prefix, cmssw_u_version)
+
+        gcc = which(spack_f77)
+        gcc_prefix = re.sub('/bin/.*$', '', self.compiler.f77)
+        gcc_machine = gcc('-dumpmachine', output=str)
+        gcc_ver = gcc('-dumpversion', output=str)
 
         values = {}
-        values['GCC_VER']=gcc_ver.rstrip()
-        values['GCC_PREFIX']=gcc_prefix
-        values['GCC_MACHINE']=gcc_machine.rstrip()
-        values['ROOT_VER']=str(spec['root'].version)
-        values['ROOT_PREFIX']=str(spec['root'].prefix)
-        values['XROOTD_VER']=str(spec['xrootd'].version)
-        values['XROOTD_PREFIX']=str(spec['xrootd'].prefix)
-        values['BOOST_VER']=str(spec['boost'].version)
-        values['BOOST_PREFIX']=str(spec['boost'].prefix)
-        values['TBB_VER']=str(spec['intel-tbb'].version)
-        values['TBB_PREFIX']=str(spec['tbb'].prefix)
-        values['PYTHON_VER']=str(spec['python'].version)
-        values['PYTHON_PREFIX']=str(spec['python'].prefix)
-        values['XERCESC_VER']=str(spec['xerces-c'].version)
-        values['XERCESC_PREFIX']=str(spec['xerces-c'].prefix)
-        values['MD5_VER']=str(spec['md5'].version)
-        values['MD5_PREFIX']=str(spec['md5'].prefix)
-        values['TINYXML_VER']=str(spec['tinyxml'].version)
-        values['TINYXML_PREFIX']=str(spec['tinyxml'].prefix)
-        values['VDT_VER']=str(spec['vdt'].version)
-        values['VDT_PREFIX']=str(spec['vdt'].prefix)
-        values['XZ_VER']=str(spec['xz'].version)
-        values['XZ_PREFIX']=str(spec['xz'].prefix)
-        values['ZLIB_VER']=str(spec['zlib'].version)
-        values['ZLIB_PREFIX']=str(spec['zlib'].prefix)
-        values['SIGCPP_VER']=str(spec['libsigcpp'].version)
-        values['SIGCPP_PREFIX']=str(spec['libsigcpp'].prefix)
-        values['PCRE_VER']=str(spec['pcre'].version)
-        values['PCRE_PREFIX']=str(spec['pcre'].prefix)
-        values['OPENSSL_VER']=str(spec['openssl'].version)
-        values['OPENSSL_PREFIX']=str(spec['openssl'].prefix)
-        values['LIBXML2_VER']=str(spec['libxml2'].version)
-        values['LIBXML2_PREFIX']=str(spec['libxml2'].prefix)
-        values['LIBUUID_VER']=str(spec['libuuid'].version)
-        values['LIBUUID_PREFIX']=str(spec['libuuid'].prefix)
-        values['CFE_VER']=str(spec['llvm'].version)
-        values['CFE_PREFIX']=str(spec['llvm'].prefix)
-        values['LIBUNGIF_VER']=str(spec['giflib'].version)
-        values['LIBUNGIF_PREFIX']=str(spec['giflib'].prefix)
-        values['LIBTIFF_VER']=str(spec['libtiff'].version)
-        values['LIBTIFF_PREFIX']=str(spec['libtiff'].prefix)
-        values['LIBPNG_VER']=str(spec['libpng'].version)
-        values['LIBPNG_PREFIX']=str(spec['libpng'].prefix)
-        values['LIBJPEG_VER']=str(spec['jpeg'].version)
-        values['LIBJPEG_PREFIX']=str(spec['jpeg'].prefix)
-        values['HEPMC_VER']=str(spec['hepmc'].version)
-        values['HEPMC_PREFIX']=str(spec['hepmc'].prefix)
-        values['GSL_VER']=str(spec['gsl'].version)
-        values['GSL_PREFIX']=str(spec['gsl'].prefix)
-        values['CLHEP_VER']=str(spec['clhep'].version)
-        values['CLHEP_PREFIX']=str(spec['clhep'].prefix)
-        values['BZ2_VER']=str(spec['bzip2'].version)
-        values['BZ2_PREFIX']=str(spec['bzip2'].prefix)
-        values['GMAKE_VER']=str(spec['gmake'].version)
-        values['GMAKE_PREFIX']=str(spec['gmake'].prefix)
-        values['CPPUNIT_VER']=str(spec['cppunit'].version)
-        values['CPPUNIT_PREFIX']=str(spec['cppunit'].prefix)
-        values['FWLITEDATA_VER']=str(spec['fireworks-data'].version)
-        values['FWLITEDATA_PREFIX']=str(spec['fireworks-data'].prefix)
-        values['SELF_LIB']=prefix+'/'+cmssw_u_version+'/lib'+str(spec.architecture)
-        values['SELF_INC']=prefix+'/'+cmssw_u_version+'/src'
+        values['SELF_LIB'] = project_dir + '/lib/' + self.scram_arch
+        values['SELF_INC'] = project_dir + '/src'
+        values['GCC_VER'] = gcc_ver.rstrip()
+        values['GCC_PREFIX'] = gcc_prefix
+        values['GCC_MACHINE'] = gcc_machine.rstrip()
 
         with working_dir(build_directory, create=True):
-            rsync=which('rsync')
-            mkdirp('src')
-            rsync('-a', '--exclude', '.git', '--exclude', 'config',
-                  '--exclude', 'tools', '--exclude', 'spack-build.*',
-                  source_directory+'/','src/')
-            mkdirp('config')
-            rsync('-a', '--exclude', '.git', 
-                  source_directory+'/config/','config/')
-            with open('config/config_tag','w') as f:
+            install_tree(source_directory, 'src',
+                         ignore=shutil.ignore_patterns('spack_build.*',
+                                                       '.git', 'config'))
+            install_tree(join_path(source_directory, 'config'), 'config',
+                         ignore=shutil.ignore_patterns('.git'))
+            with open('config/config_tag', 'w') as f:
                 f.write(self.config_tag)
                 f.close()
-            mkdirp('tools')
-            rsync('-a', '--exclude', '.git', source_directory+'/tools/','tools/')
-            xmlfiles = glob(join_path('tools','selected','*.xml'))
-            for xmlfile in xmlfiles:
-                fin = open(xmlfile,'r')
-                tmpl = Template( fin.read() )
-                fin.close()
-                res = tmpl.substitute(values)
-                fout = open(xmlfile,'w')
-                fout.write(res)
-                fout.close() 
-            perl=which('perl')
+            mkdirp('tools/selected')
+            mkdirp('tools/available')
+            for dep in spec.dependencies():
+                xmlfiles = glob(join_path(dep.prefix.etc, 'scram.d', '*.xml'))
+                for xmlfile in xmlfiles:
+                    install(xmlfile, 'tools/selected')
+            perl = which('perl')
             perl('config/updateConfig.pl',
-                 '-p', 'CMSSW', 
+                 '-p', 'CMSSW',
                  '-v', cmssw_u_version,
                  '-s', scram_version,
                  '-t', build_directory,
-                 '--keys', 'SCRAM_COMPILER=gcc', 
-                 '--keys', 'PROJECT_GIT_HASH='+cmssw_u_version,
-                 '--arch', self.spec.architecture)
-            scram('project','-d', prefix, '-b', 'config/bootsrc.xml')
+                 '--keys', 'SCRAM_COMPILER=gcc',
+                 '--keys', 'PROJECT_GIT_HASH=' + cmssw_u_version,
+                 '--arch', self.scram_arch)
+            scram('project', '-d', prefix, '-b', 'config/bootsrc.xml')
 
-    
-        with working_dir(join_path(prefix,cmssw_u_version),create=False):
+        with working_dir(project_dir, create=False):
             matches = []
-            for f in glob('src/*/*/test/BuildFile.xml'):
+
+            for f in glob('src/*/*/test/BuildFile*'):
                 matches.append(f)
             for m in matches:
                 if os.path.exists(m):
                     os.remove(m)
-            scram('build', '-v', '-j4')
+
+            scram.add_default_env('LOCALTOP', project_dir)
+            scram.add_default_env('CMSSW_BASE', project_dir)
+            scram.add_default_env(
+                'LD_LIBRARY_PATH', project_dir + '/lib/' + self.scram_arch)
+            scram.add_default_env(
+                'LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib)
+            scram.add_default_env(
+                'LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib64)
+            scram('build', '-v', '-k', '-j8')
             relrelink('external')
             shutil.rmtree('tmp')
-             
-            
+#            install_tree(project_dir,prefix)
 
+
+#        with working_dir(join_path(prefix,cmssw_u_version), create=False):
+#            os.environ[ 'LOCALTOP' ] = os.getcwd()
+#            os.environ[ 'RELEASETOP' ] = os.getcwd()
+#            os.environ[ 'CMSSW_RELEASE_BASE' ] = os.getcwd()
+#            os.environ[ 'CMSSW_BASE' ] = os.getcwd()
+#            scram('build', 'ProjectRename')
 
     def setup_dependent_environment(self, spack_env, run_env, dspec):
-        cmssw_version='CMSSW.'+str(self.version)
-        cmssw_u_version=cmssw_version.replace('.','_')
+        cmssw_version = 'CMSSW.' + str(self.version)
+        cmssw_u_version = cmssw_version.replace('.', '_')
+        spack_env.set('LOCALTOP', self.prefix + '/' + cmssw_u_version)
+        spack_env.set('RELEASETOP', self.prefix + '/' + cmssw_u_version)
         spack_env.set('CMSSW_RELEASE_BASE', self.prefix)
         spack_env.set('CMSSW_BASE', self.prefix)
-        spack_env.append_path('LD_LIBRARY_PATH', self.prefix+'/'+cmssw_u_version+'/lib'+str(self.spec.architecture))
-
+        spack_env.append_path('LD_LIBRARY_PATH', self.prefix +
+                              '/' + cmssw_u_version + '/lib/' + self.scram_arch)
+        spack_env.append_path(
+            'LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib64)
 
     def setup_environment(self, spack_env, run_env):
-        cmssw_version='CMSSW.'+str(self.version)
-        cmssw_u_version=cmssw_version.replace('.','_')
-        spack_env.set('CMSSW_RELEASE_BASE', self.prefix)
+        cmssw_version = 'CMSSW.' + str(self.version)
+        cmssw_u_version = cmssw_version.replace('.', '_')
+        spack_env.set('LOCALTOP', self.prefix + '/' + cmssw_u_version)
+#        spack_env.set('RELEASETOP', self.prefix+'/'+cmssw_u_version)
+#        spack_env.set('CMSSW_RELEASE_BASE', self.prefix)
         spack_env.set('CMSSW_BASE', self.prefix)
-        spack_env.append_path('LD_LIBRARY_PATH', self.prefix+'/'+cmssw_u_version+'/lib/'+str(self.spec.architecture))
+        spack_env.append_path('LD_LIBRARY_PATH', self.prefix +
+                              '/' + cmssw_u_version + '/lib/' + self.scram_arch)
+        spack_env.append_path('LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib)
+        spack_env.append_path(
+            'LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib64)
 
     def url_for_version(self, version):
         """Handle CMSSW's version string."""
-        version_underscore=str(self.version).replace('.','_')
-        return "https://github.com/cms-sw/cmssw/archive/CMSSW_%s.tar.gz" % version_underscore
+        version_underscore = str(self.version).replace('.', '_')
+        return "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/cms/cmssw/CMSSW_%s/src.tar.gz" % version_underscore

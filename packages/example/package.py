@@ -1,5 +1,5 @@
 ##############################################################################
-# Copyright (c) 2013-2016, Lawrence Livermore National Security, LLC.
+# Copyright (c) 2013-2017, Lawrence Livermore National Security, LLC.
 # Produced at the Lawrence Livermore National Laboratory.
 #
 # This file is part of Spack.
@@ -7,7 +7,7 @@
 # LLNL-CODE-647188
 #
 # For details, see https://github.com/llnl/spack
-# Please also see the LICENSE file for our notice and the LGPL.
+# Please also see the NOTICE and LICENSE files for our notice and the LGPL.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License (as
@@ -27,40 +27,33 @@
 # next to all the things you'll want to change. Once you've handled
 # them, you can save this file and test your package like this:
 #
-#     spack install google-perftools
+#     spack install example
 #
 # You can edit this file again by typing:
 #
-#     spack edit google-perftools
+#     spack edit example
 #
 # See the Spack documentation for more information on packaging.
 # If you submit this package back to Spack as a pull request,
 # please first remove this boilerplate and all FIXME comments.
 #
 from spack import *
-from contextlib import closing
 
-class GooglePerftools(Package):
+
+class Example(Package):
     """FIXME: Put a proper description of your package here."""
 
     # FIXME: Add a proper url for your package's homepage here.
     homepage = "http://www.example.com"
-    url      = "http://cmsrep.cern.ch/cmssw/cms/SOURCES/slc6_amd64_gcc600/external/google-perftools/1.6-giojec2/google-perftools-1.6.tar.gz"
+    url = "http://www.example.com/example-1.2.3.tar.gz"
 
-    version('1.6', '7acfee8d3e2ba968d20684e9f7033015')
+    # FIXME: Add proper versions and checksums here.
+    # version('1.2.3', '0123456789abcdef0123456789abcdef')
+
+    # FIXME: Add dependencies if required.
+    # depends_on('foo')
 
     def install(self, spec, prefix):
-       comp=which('g++')
-       with closing(open('tmpgp.cc', 'w')) as f:
-          f.write("""
-namespace gptmp {
-  void foo(void*) {
-  }
-}
-""")
-       comp('-c','-o','tmp.o','-fPIC','tmpgp.cc')
-       comp('-shared','-o','libgptmp.so', 'tmp.o')
-       mkdirp('%s' % prefix.lib)
-       install('libgptmp.so','%s/libtcmalloc.so' % prefix.lib)
-       install('libgptmp.so','%s/libtcmalloc_minimal.so' % prefix.lib)
-       
+        # FIXME: Unknown build system
+        make()
+        make('install')

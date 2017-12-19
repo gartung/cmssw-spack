@@ -22,46 +22,61 @@
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
-#
-# This is a template package file for Spack.  We've put "FIXME"
-# next to all the things you'll want to change. Once you've handled
-# them, you can save this file and test your package like this:
-#
-#     spack install md5
-#
-# You can edit this file again by typing:
-#
-#     spack edit md5
-#
-# See the Spack documentation for more information on packaging.
-# If you submit this package back to Spack as a pull request,
-# please first remove this boilerplate and all FIXME comments.
-#
 from spack import *
 import sys
 
+
 class Md5(Package):
-    """FIXME: Put a proper description of your package here."""
+    """."""
 
-    # FIXME: Add a proper url for your package's homepage here.
     homepage = "https://github.com/cms-externals/md5"
-    url      = "http://cmsrep.cern.ch/cmssw/cms/SOURCES/slc6_amd64_gcc600/external/md5/1.0.0-giojec/md5.1.0.0-d97a571864a119cd5408d2670d095b4410e926cc.tgz"
+    url = "http://cmsrep.cern.ch/cmssw/cms/SOURCES/slc6_amd64_gcc600/external/md5/1.0.0-giojec/md5.1.0.0-d97a571864a119cd5408d2670d095b4410e926cc.tgz"
 
-    version('1.0.0', 'b154f78e89a70ac1328099d9c3820d13',url='http://cmsrep.cern.ch/cmssw/cms/SOURCES/slc6_amd64_gcc600/external/md5/1.0.0-giojec/md5.1.0.0-d97a571864a119cd5408d2670d095b4410e926cc.tgz')
-
-    # FIXME: Add dependencies if required.
+    version('1.0.0', 'b154f78e89a70ac1328099d9c3820d13',
+            url='http://cmsrep.cern.ch/cmssw/cms/SOURCES/slc6_amd64_gcc600/external/md5/1.0.0-giojec/md5.1.0.0-d97a571864a119cd5408d2670d095b4410e926cc.tgz')
 
     def install(self, spec, prefix):
-        comp=which('gcc')
-        cp=which('cp')
-        md=which('mkdir')
+        comp = which('gcc')
+        cp = which('cp')
+        md = which('mkdir')
         md('%s' % prefix.lib)
-        md('%s' % prefix.include)      
-        if sys.platform == 'darwin': 
-          comp('md5.c', '-shared', '-fPIC', '-o', 'libcms-md5.dylib')
-          cp('-v','libcms-md5.dylib',prefix.lib)
-          fix_darwin_install_name(prefix.lib)
-        else: 
-          comp('md5.c', '-shared', '-fPIC', '-o', 'libcms-md5.so')
-          cp('-v','libcms-md5.so',prefix.lib)
-        cp('-v','md5.h',prefix.include)
+        md('%s' % prefix.include)
+        if sys.platform == 'darwin':
+            comp('md5.c', '-shared', '-fPIC', '-o', 'libcms-md5.dylib')
+            cp('-v', 'libcms-md5.dylib', prefix.lib)
+            fix_darwin_install_name(prefix.lib)
+        else:
+            comp('md5.c', '-shared', '-fPIC', '-o', 'libcms-md5.so')
+            cp('-v', 'libcms-md5.so', prefix.lib)
+        cp('-v', 'md5.h', prefix.include)
+
+    def write_scram_toolfile(self, contents, filename):
+        """Write scram tool config file"""
+        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
+            f.write(contents)
+            f.close()
+
+    @run_after('install')
+    def write_scram_toolfiles(self):
+        """Create contents of scram tool config files for this package."""
+        from string import Template
+
+        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
+
+        values = {}
+        values['VER'] = self.spec.version
+        values['PFX'] = self.spec.prefix
+
+        fname = 'md5.xml'
+        template = Template("""<tool name="md5" version="$VER">
+  <info url="https://tls.mbed.org/md5-source-code"/>
+   <lib name="cms-md5"/>
+  <client>
+    <environment name="MD5_BASE" default="$PFX"/>
+    <environment name="LIBDIR" default="$$MD5_BASE/lib"/>
+    <environment name="INCLUDE" default="$$MD5_BASE/include"/>
+    </client>  
+</tool>""")
+
+        contents = template.substitute(values)
+        self.write_scram_toolfile(contents, fname)
