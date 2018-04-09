@@ -6,7 +6,7 @@
 # Created by Todd Gamblin, tgamblin@llnl.gov, All rights reserved.
 # LLNL-CODE-647188
 #
-# For details, see https://github.com/llnl/spack
+# For details, see https://github.com/spack/spack
 # Please also see the NOTICE and LICENSE files for our notice and the LGPL.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -684,7 +684,6 @@ class Python(AutotoolsPackage):
     <environment name="PYTHON_COMPILE" default="$PFX/lib/python${PYVER}/compileall.py"/>
   </client>
   <runtime name="PATH" value="$PFX/bin" type="path"/>
-  <runtime name="PYTHONPATH" value="$PFX/lib/python2.7" type="path"/>
   <runtime name="ROOT_INCLUDE_PATH" value="$PFX/include/python${PYVER}" type="path"/>
   <use name="root_cxxdefaults"/>
   <use name="sockets"/>

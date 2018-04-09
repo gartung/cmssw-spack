@@ -25,6 +25,7 @@
 
 from spack import *
 
+
 class Clhep(CMakePackage):
     """CLHEP is a C++ Class Library for High Energy Physics. """
     homepage = "http://proj-clhep.web.cern.ch/proj-clhep/"
@@ -42,7 +43,7 @@ class Clhep(CMakePackage):
     version('2.3.3.0', '3637eaa6750606e589e52c9e155a382e')
     version('2.3.2.2', '567b304b0fa017e1e9fbf199f456ebe9')
     version('2.3.2.1', '064903cb5c23b54f520d04ca6230b901')
-    version('2.3.1.1', '16efca7641bc118c9d217cc96fe90bf5', preferred=True)
+    version('2.3.1.1', '16efca7641bc118c9d217cc96fe90bf5')
     version('2.3.1.0', 'b084934fc26a4182a08c09c292e19161')
     version('2.3.0.0', 'a00399a2ca867f2be902c22fc71d7e2e')
     version('2.2.0.8', '5a23ed3af785ac100a25f6cb791846af')
@@ -68,18 +69,18 @@ class Clhep(CMakePackage):
         cmake_args = []
 
         if '+cxx11' in spec:
-            if 'CXXFLAGS' in self.env and self.env['CXXFLAGS']:
-                self.env['CXXFLAGS'] += ' ' + self.compiler.cxx11_flag
+            if 'CXXFLAGS' in env and env['CXXFLAGS']:
+                env['CXXFLAGS'] += ' ' + self.compiler.cxx11_flag
             else:
-                self.env['CXXFLAGS'] = self.compiler.cxx11_flag
+                env['CXXFLAGS'] = self.compiler.cxx11_flag
             cmake_args.append('-DCLHEP_BUILD_CXXSTD=' +
                               self.compiler.cxx11_flag)
 
         if '+cxx14' in spec:
-            if 'CXXFLAGS' in self.env and self.env['CXXFLAGS']:
-                self.env['CXXFLAGS'] += ' ' + self.compiler.cxx14_flag
+            if 'CXXFLAGS' in env and env['CXXFLAGS']:
+                env['CXXFLAGS'] += ' ' + self.compiler.cxx14_flag
             else:
-                self.env['CXXFLAGS'] = self.compiler.cxx14_flag
+                env['CXXFLAGS'] = self.compiler.cxx14_flag
             cmake_args.append('-DCLHEP_BUILD_CXXSTD=' +
                               self.compiler.cxx14_flag)
 

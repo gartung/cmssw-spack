@@ -142,33 +142,3 @@ class Cmake(Package):
 
     def install(self, spec, prefix):
         make('install')
-
-    def write_scram_toolfile(self, contents, filename):
-        """Write scram tool config file"""
-        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
-            f.write(contents)
-            f.close()
-
-    @run_after('install')
-    def write_scram_toolfiles(self):
-        """Create contents of scram tool config files for this package."""
-        from string import Template
-
-        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
-
-        values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
-
-        fname = 'cmake.xml'
-        template = Template("""
-<tool name="cmake" version="$VER">
-  <client>
-    <environment name="MAKE_BASE" default="$PFX"/>
-  </client>
-  <runtime name="PATH" value="$$MAKE_BASE/bin" type="path"/>
-</tool>
-""")
-
-        contents = template.substitute(values)
-        self.write_scram_toolfile(contents, fname)

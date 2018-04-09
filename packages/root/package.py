@@ -6,7 +6,7 @@
 # Created by Todd Gamblin, tgamblin@llnl.gov, All rights reserved.
 # LLNL-CODE-647188
 #
-# For details, see https://github.com/llnl/spack
+# For details, see https://github.com/spack/spack
 # Please also see the LICENSE file for our notice and the LGPL.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@ from spack import *
 import sys
 import re
 import os
-from spack.build_environment import dso_suffix
+
 
 class Root(CMakePackage):
     """ROOT is a data analysis framework."""

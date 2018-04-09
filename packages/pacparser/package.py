@@ -6,7 +6,7 @@
 # Created by Todd Gamblin, tgamblin@llnl.gov, All rights reserved.
 # LLNL-CODE-647188
 #
-# For details, see https://github.com/llnl/spack
+# For details, see https://github.com/spack/spack
 # Please also see the NOTICE and LICENSE files for our notice and the LGPL.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -29,12 +29,9 @@ class Pacparser(Package):
     """FIXME: Put a proper description of your package here."""
 
     homepage = "http://www.example.com"
-    url = "https://github.com/manugarg/pacparser/releases/download/1.3.5/pacparser-1.3.5.tar.gz"
+    url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/pacparser/1.3.5/pacparser-1.3.5.tar.gz"
 
-#    version('1.3.7', 'ca716d7a0c73df868cd0c1358b21c3fd')
     version('1.3.5', '9db90bd4d88dfd8d31fa707466259566')
-#    version('1.3.3', 'e5d2e0a347654ab35b3ff1f4c87f5ff3')
-
 
     def install(self, spec, prefix):
         make('-C', 'src', 'PREFIX=%s' % prefix)

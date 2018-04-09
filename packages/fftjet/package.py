@@ -29,12 +29,9 @@ class Fftjet(AutotoolsPackage):
     """FIXME: Put a proper description of your package here."""
 
     homepage = "http://www.example.com"
-    url = "https://www.hepforge.org/archive/fftjet/fftjet-1.5.0.tar.gz"
+    url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/fftjet/1.5.0/fftjet-1.5.0.tar.gz"
 
-    #version('1.5.1', '71ccb59dcb94d83c7e33919db0617656')
     version('1.5.0', '9f91b6974c00ba546833c38d5b3aa563')
-
-
 
     depends_on('fftw')
 

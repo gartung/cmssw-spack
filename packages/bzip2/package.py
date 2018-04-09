@@ -46,7 +46,7 @@ class Bzip2(Package):
     def libs(self):
         shared = '+shared' in self.spec
         return find_libraries(
-            'libbz2', root=self.prefix, shared=shared, recursive=True
+            'libbz2', root=self.prefix, shared=shared, recurse=True
         )
 
     def patch(self):

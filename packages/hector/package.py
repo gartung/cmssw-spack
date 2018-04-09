@@ -45,15 +45,20 @@ import os
 class Hector(Package):
     """FIXME: Put a proper description of your package here."""
 
-    homepage = "http://www.fynu.ucl.ac.be/hector.html"
-    url = "https://github.com/cms-externals/hector"
+    # FIXME: Add a proper url for your package's homepage here.
+    homepage = "http://www.example.com"
+    url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/hector/1.3.4_patch1-fmblme3/hector-1.3.4_patch1.tgz"
     depends_on('root')
 
-    version('1.3.4_patch1', git='https://github.com/cms-externals/hector', branch='cms/v1.3.4_patch1')
+    version('1.3.4_patch1', '419ec3ce8dfbcff972ea6d5b09e8c6f1')
 
     def install(self, spec, prefix):
+        mkdirp('obj')
+        mkdirp('lib')
         make()
-        make('install')
+        cp = which('cp')
+        for f in glob.glob('*'):
+            cp('-r', f, prefix)
 
     def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""

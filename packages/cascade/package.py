@@ -25,6 +25,7 @@
 from spack import *
 import glob
 import os
+import distutils.dir_util as du
 
 class Cascade(Package):
     """FIXME: Put a proper description of your package here."""
