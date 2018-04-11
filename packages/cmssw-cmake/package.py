@@ -42,12 +42,12 @@ class CmsswCmake(Package):
             commit='61eca6272e8c8b87ea69d1cb43a02ecc2a6b9c02')
 
     resource(name='cmaketools', git='https://github.com/gartung/cmaketools.git',
-             commit='3d151ab1ff9bbe634b8a629385236d8b0a84a77d',
+             commit='df41c9ce7c950397ed52b289887144749b866b24',
              placement='cmaketools'
              )
 
     resource(name='scram2cmake', git='https://github.com/gartung/scram2cmake.git',
-             commit='2a21924',
+             commit='b705f1461133e61396997aaf762536acc08fa962',
              placement='scram2cmake'
              )
 
@@ -100,6 +100,7 @@ class CmsswCmake(Package):
     depends_on('pythia6')
     depends_on('pythia8')
     depends_on('oracle')
+    depends_on('occi')
     depends_on('sqlite@3.16.02')
     depends_on('coral')
     depends_on('hector')
@@ -148,28 +149,29 @@ class CmsswCmake(Package):
             options.extend(std_cmake_args)
             args = ['-DCMakeTools_DIR=%s/cmaketools' % self.stage.source_path,
                     '-DCLHEP_ROOT_DIR=%s' % self.spec['clhep'].prefix,
-                    '-DCASTOR_INCLUDE_DIR=%s/include' % self.spec['castor'].prefix,
+                    '-DCASTOR_INCLUDE_DIR=%s' % self.spec['castor'].prefix.include,
                     '-DBOOST_ROOT=%s' % self.spec['boost'].prefix,
                     '-DTBB_ROOT_DIR=%s' % self.spec['tbb'].prefix,
                     '-DMD5ROOT=%s' % self.spec['md5'].prefix,
                     '-DDAVIXROOT=%s' % self.spec['davix'].prefix,
                     '-DSIGCPPROOT=%s' % self.spec['libsigcpp'].prefix,
-                    '-DSIGCPP_INCLUDE_DIR=%s/include/sigc++-2.0' % self.spec['libsigcpp'].prefix,
+                    '-DSIGCPP_INCLUDE_DIR=%s/sigc++-2.0' % self.spec['libsigcpp'].prefix.include,
                     '-DTINYXMLROOT=%s' % self.spec['tinyxml'].prefix,
                     '-DCPPUNITROOT=%s' % self.spec['cppunit'].prefix,
-                    '-DXERCESC_ROOT_DIR=%s' % self.spec['xerces-c'].prefix]
+                    '-DXERCESC_ROOT_DIR=%s' % self.spec['xerces-c'].prefix,
+                    '-DGEANT4_INCLUDE_DIRS=%s/Geant4' % self.spec['geant4'].prefix.include,
+                    '-DGEANT4_DIR=%s' % self.spec['geant4'].prefix,
+                    '-DCMAKE_CXX_FLAGS=-O2 -pthread -pipe -Werror=main -Werror=pointer-arith -Werror=overlength-strings -Wno-vla -Werror=overflow   -std=c++1z -ftree-vectorize -Wstrict-overflow -Werror=array-bounds -Werror=format-contains-nul -Werror=type-limits -fvisibility-inlines-hidden -fno-math-errno --param vect-max-version-for-alias-checks=50 -Xassembler --compress-debug-sections -msse3 -felide-constructors -fmessage-length=0 -Wall -Wno-non-template-friend -Wno-long-long -Wreturn-type -Wunused -Wparentheses -Wno-deprecated  -Wnon-virtual-dtor -fdiagnostics-show-option -Wno-unused-local-typedefs -Wno-attributes -Wno-psabic',
+                    '-GNinja']
             options.extend(args)
             if sys.platform == 'darwin':
                 options.append('-DUUID_INCLUDE_DIR=%s/include' %
                                self.spec['libuuid'].prefix)
                 options.append('-DUUID_ROOT_DIR=%s' %
                                self.spec['libuuid'].prefix)
-            options.append('-GNinja')
             cmake(*options)
-#            make = which('make')
-#            make('-j4', 'VERBOSE=1')
+#            make('-k', 'VERBOSE=1')
 #            make('install')
-            ninja = which('ninja')
-            ninja('-v', '-j4')
+            ninja('-v')
             ninja('install')
 
