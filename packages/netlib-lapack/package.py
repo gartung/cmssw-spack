@@ -23,7 +23,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
 from spack import *
-
+import os
 
 class NetlibLapack(Package):
     """LAPACK version 3.X is a comprehensive FORTRAN library that does
@@ -186,7 +186,7 @@ class NetlibLapack(Package):
 <tool name="lapack" version="${VER}">
   <client>
     <environment name="LAPACK_BASE" default="${PFX}"/>
-    <environment name="LIBDIR" default="$$LAPACK_BASE/lib"/>
+    <environment name="LIBDIR" default="$$LAPACK_BASE/lib64"/>
   </client>
 </tool>
 """)

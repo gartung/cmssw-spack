@@ -69,7 +69,7 @@ class Xrootd(CMakePackage):
     <environment name="XROOTD_BASE" default="$PFX"/>
     <environment name="INCLUDE" default="$$XROOTD_BASE/include/xrootd"/>
     <environment name="INCLUDE" default="$$XROOTD_BASE/include/xrootd/private"/>
-    <environment name="LIBDIR" default="$$XROOTD_BASE/lib64"/>
+    <environment name="LIBDIR" default="$$XROOTD_BASE/lib"/>
   </client>
   <runtime name="PATH" value="$$XROOTD_BASE/bin" type="path"/>
   <runtime name="PYTHONPATH" value="$$XROOTD_BASE/lib/python${PYVER}/site-packages" type="path"/>

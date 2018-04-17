@@ -71,7 +71,7 @@ class Coral(Package):
              placement='scram-config'
              )
 
-    scram_arch = 'linux_amd64_gcc'
+    scram_arch = 'slc_amd64_gcc'
     if sys.platform == 'darwin':
         scram_arch = 'osx10_amd64_clang'
 
@@ -150,14 +150,14 @@ class Coral(Package):
 
     def setup_dependent_environment(self, spack_env, run_env, dspec):
         spack_env.set('CORAL_RELEASE_BASE', self.prefix)
-        spack_env.append_path('LD_LIBRARY_PATH', '%s/CORAL_%s/lib/%s' %
+        spack_env.append_path('LD_LIBRARY_PATH', '%s/CORAL_%s/%s/lib' %
                               (self.prefix, self.version.underscored, self.scram_arch))
 
     def setup_environment(self, spack_env, run_env):
         spack_env.set('LOCALTOP', self.prefix + '/' +
                       self.version.underscored.string)
         spack_env.set('CORAL_BASE', self.prefix)
-        spack_env.append_path('LD_LIBRARY_PATH', '%s/CORAL_%s/lib/%s' %
+        spack_env.append_path('LD_LIBRARY_PATH', '%s/CORAL_%s/%s/lib' %
                               (self.prefix, self.version.underscored, self.scram_arch))
 
     def write_scram_toolfile(self, contents, filename):
@@ -165,6 +165,12 @@ class Coral(Package):
         with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
             f.write(contents)
             f.close()
+
+    @run_after('install')
+    def make_links(self):
+        with working_dir(self.spec.prefix):
+            os.symlink('CORAL_%s/include/LCG' % self.version.underscored, 'include')
+            os.symlink('CORAL_%s/%s/lib' % (self.version.underscored, self.scram_arch), 'lib')
 
     @run_after('install')
     def write_scram_toolfiles(self):

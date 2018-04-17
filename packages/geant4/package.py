@@ -36,14 +36,15 @@ class Geant4(CMakePackage):
     homepage = "http://geant4.cern.ch/"
     url = "http://geant4.cern.ch/support/source/geant4.10.01.p03.tar.gz"
 
+    version('10.04', git='https://github.com/cms-externals/geant4.git', commit='7788cfbecfee824344bd3761cb32efe2bdc53046')
     version('10.02.p02', '6aae1d0fc743b0edc358c5c8fbe48657')
 
     variant('qt', default=False, description='Enable Qt support')
-    variant('vecgeom', default=False, description='Enable Vecgeom support')
+    variant('vecgeom', default=True, description='Enable Vecgeom support')
 
     depends_on('cmake@3.5:', type='build')
 
-    depends_on("clhep@2.3.1.1~cxx11+cxx14")
+    depends_on("clhep~cxx11+cxx14")
     depends_on("expat")
     depends_on("zlib")
     depends_on("xerces-c")
@@ -166,7 +167,7 @@ class Geant4(CMakePackage):
   <flags CXXFLAGS="-DG4MULTITHREADED -DG4USE_STD11 -ftls-model=global-dynamic -pthread"/>
   <client>
     <environment name="GEANT4_BASE" default="${GEANT4_PREFIX}"/>
-    <environment name="LIBDIR" default="$$GEANT4_BASE/lib64"/>
+    <environment name="LIBDIR" default="$$GEANT4_BASE/lib"/>
     <environment name="G4LIB" value="$$LIBDIR"/>
     <environment name="INCLUDE" default="$$GEANT4_BASE/include/Geant4"/>
   </client>

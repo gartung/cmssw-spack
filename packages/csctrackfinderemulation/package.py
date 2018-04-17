@@ -24,6 +24,7 @@
 ##############################################################################
 from spack import *
 import distutils.dir_util as du
+import os
 
 class Csctrackfinderemulation(Package):
     """FIXME: Put a proper description of your package here."""

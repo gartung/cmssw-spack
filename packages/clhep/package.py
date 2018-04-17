@@ -33,22 +33,7 @@ class Clhep(CMakePackage):
     list_url = "https://proj-clhep.web.cern.ch/proj-clhep/"
     list_depth = 1
 
-    version('2.3.4.4', '8b8a33d0d19213b60d6c22ce5fc93761')
-    version('2.3.4.3', '6941279f70d69492fff1aa955f3f2562')
-    version('2.3.4.2', '1e7a9046c9ad0b347d6812f8031191da')
-    version('2.3.4.1', '5ae85571ff3d8b2c481c3f95ea89b751')
-    version('2.3.4.0', 'dd899d0791a823221927f97edf190348')
-    version('2.3.3.2', '8b9f8d7f4dccec6d058b3a078f66b6a3')
-    version('2.3.3.1', '456ef9d262ef4e776af984bfbe2f48c7')
-    version('2.3.3.0', '3637eaa6750606e589e52c9e155a382e')
-    version('2.3.2.2', '567b304b0fa017e1e9fbf199f456ebe9')
-    version('2.3.2.1', '064903cb5c23b54f520d04ca6230b901')
-    version('2.3.1.1', '16efca7641bc118c9d217cc96fe90bf5')
-    version('2.3.1.0', 'b084934fc26a4182a08c09c292e19161')
-    version('2.3.0.0', 'a00399a2ca867f2be902c22fc71d7e2e')
-    version('2.2.0.8', '5a23ed3af785ac100a25f6cb791846af')
-    version('2.2.0.5', '1584e8ce6ebf395821aed377df315c7c')
-    version('2.2.0.4', '71d2c7c2e39d86a0262e555148de01c1')
+    version('2.4.0.0', git='https://github.com/cms-externals/clhep.git', commit='4b23da33f4607fde6f47c864871972558aa75c39')
 
     variant('cxx11', default=False, description="Compile using c++11 dialect.")
     variant('cxx14', default=True, description="Compile using c++14 dialect.")
@@ -56,13 +41,6 @@ class Clhep(CMakePackage):
     depends_on('cmake@2.8.12.2:', when='@2.2.0.4:2.3.0.0', type='build')
     depends_on('cmake@3.2:', when='@2.3.0.1:', type='build')
 
-    def patch(self):
-        filter_file('SET CMP0042 OLD',
-                    'SET CMP0042 NEW',
-                    '%s/%s/CLHEP/CMakeLists.txt'
-                    % (self.stage.path, self.spec.version))
-
-    root_cmakelists_dir = 'CLHEP'
 
     def cmake_args(self):
         spec = self.spec
