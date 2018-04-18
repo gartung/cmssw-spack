@@ -34,7 +34,8 @@ class Root(CMakePackage):
     homepage = "https://root.cern.ch"
     url = "https://root.cern.ch/download/root_v6.07.02.source.tar.gz"
     
-    version('6.08.07', git='https://github.com/cms-sw/root', branch='cms/ff9a7c0')
+    version('6.10.09', git='https://github.com/cms-sw/root',
+            commit='57f8055b2ccf22d668c115c21acb84c6f802c76e')
 
     depends_on('cmake@3.4.3:', type='build')
     depends_on('pkg-config',   type='build')
@@ -54,11 +55,14 @@ class Root(CMakePackage):
     depends_on("freetype")
     depends_on("dcap")
     depends_on("davix")
+    depends_on("openblas")
+    depends_on("tbb")
 
     def cmake_args(self):
         pyvers = str(self.spec['python'].version).split('.')
         pyver = pyvers[0] + '.' + pyvers[1]
-        options = [  '-Dfail-on-missing=ON'
+        options = [  '-Droot7=ON'
+                    ,'-Dfail-on-missing=ON'
                     ,'-Dgnuinstall=OFF'
                     ,'-Droofit=ON'
                     ,'-Dvdt=OFF'
@@ -73,6 +77,8 @@ class Root(CMakePackage):
                     ,'-Dkrb5=OFF'
                     ,'-Dftgl=OFF'
                     ,'-Dfftw3=ON'
+                    ,'-Dtbb=ON'
+                    ,'-Dimt=ON'
                     ,'-DFFTW_INCLUDE_DIR=%s' %
                       self.spec['fftw'].prefix.include
                     ,'-DFFTW_LIBRARY=%s/libfftw3.%s'%
@@ -81,6 +87,7 @@ class Root(CMakePackage):
                     ,'-Dmathmore=ON'
                     ,'-Dexplicitlink=ON'
                     ,'-Dtable=ON'
+                    ,'-Dbuiltin_tbb=OFF'
                     ,'-Dbuiltin_pcre=OFF'
                     ,'-Dbuiltin_freetype=OFF'
                     ,'-Dbuiltin_zlib=OFF'
@@ -88,7 +95,7 @@ class Root(CMakePackage):
                     ,'-Dbuiltin_gsl=OFF'
                     ,'-DGSL_CONFIG_EXECUTABLE=%s/gsl-config' %
                       self.spec['gsl'].prefix.bin
-                    ,'-Dcxx14=ON'
+                    ,'-Dcxx17=ON'
                     ,'-Dssl=ON'
                     ,'-DOPENSSL_ROOT_DIR=%s' %
                       self.spec['openssl'].prefix
@@ -195,8 +202,9 @@ class Root(CMakePackage):
         spack_env.set('PYTHONV','2.7')
         spack_env.append_flags('CFLAGS', '-D__ROOFIT_NOBANNER')
         spack_env.append_flags('CXXFLAGS', '-D__ROOFIT_NOBANNER')
-#        for dep in os.environ['SPACK_DEPENDENCIES'].split(os.pathsep):
-#                spack_env.prepend_path('ROOT_INCLUDE_PATH',dep+'/include')
+        for d in self.spec.traverse(root=False, deptype=('link')):
+            spack_env.append_path('ROOT_INCLUDE_PATH',str(self.spec[d.name].prefix.include))
+            run_env.append_path('ROOT_INCLUDE_PATH',str(self.spec[d.name].prefix.include))
 
     def setup_dependent_environment(self, spack_env, run_env, dspec):
         spack_env.set('ROOTSYS', self.prefix)
@@ -207,7 +215,11 @@ class Root(CMakePackage):
         run_env.set('ROOT_VERSION', 'v6')
         run_env.prepend_path('PYTHONPATH', self.prefix.lib)
         run_env.prepend_path('PATH', self.prefix.bin)
+        spack_env.prepend_path('ROOT_INCLUDE_PATH', self.prefix.include)
         run_env.prepend_path('ROOT_INCLUDE_PATH', self.prefix.include)
+        for d in self.spec.traverse(root=False, deptype=('link')):
+            spack_env.append_path('ROOT_INCLUDE_PATH',str(self.spec[d.name].prefix.include))
+            run_env.append_path('ROOT_INCLUDE_PATH',str(self.spec[d.name].prefix.include))
         run_env.set('ROOT_TTREECACHE_SIZE', '0')
         run_env.set('ROOT_TTREECACHE_PREFILL', '0')
 

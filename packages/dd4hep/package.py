@@ -31,6 +31,8 @@ class Dd4hep(CMakePackage):
     homepage = "https://github.com/AIDASoft/DD4hep/"
     url      = "https://github.com/AIDASoft/DD4hep/archive/v01-02.tar.gz"
 
+    version('01.05x', git='https://github.com/cms-externals/DD4hep.git',
+             commit='82625a4b3f873ebf9af329d74da67b2ad0eaaca3')
     version('01.05', 'ab9aaa59e9d9ad9d60205151d984ec2b')
     version('01.02', 'bcef07aaf7a28b5ed9062a76a7ba5633')
     version('00.19', 'f5e162261433082c6363e6c96c08c66e')
@@ -44,6 +46,7 @@ class Dd4hep(CMakePackage):
     depends_on('xerces-c')
     depends_on('geant4')
     depends_on('root')
+    depends_on('clhep')
 
     def cmake_args(self):
         spec = self.spec

@@ -38,8 +38,8 @@ class CmsswCmake(Package):
     homepage = "http://cms-sw.github.io"
     url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc_amd64_gcc630/cms/cmssw/CMSSW_9_2_12/src.tar.gz"
 
-    version('10.2.X', git='https://github.com/gartung/cmssw.git',
-            commit='61eca6272e8c8b87ea69d1cb43a02ecc2a6b9c02')
+    version('10.2.X', git='git@github.com:gartung/cmssw.git',
+            commit='cc9e2f4b51b760e42d26409236c927b619a79334')
 
     resource(name='cmaketools', git='https://github.com/gartung/cmaketools.git',
              commit='df41c9ce7c950397ed52b289887144749b866b24',
@@ -47,7 +47,7 @@ class CmsswCmake(Package):
              )
 
     resource(name='scram2cmake', git='https://github.com/gartung/scram2cmake.git',
-             commit='17dc019e145895d757f8d3934db4e63804a834b2',
+             commit='cfd823f',
              placement='scram2cmake'
              )
 
@@ -99,8 +99,8 @@ class CmsswCmake(Package):
     depends_on('fftjet')
     depends_on('pythia6')
     depends_on('pythia8')
-    depends_on('oracle')
     depends_on('occi')
+    depends_on('oracle')
     depends_on('sqlite@3.16.02')
     depends_on('coral')
     depends_on('hector')
@@ -140,6 +140,8 @@ class CmsswCmake(Package):
     depends_on('mcdb')
     depends_on('fftw') 
     depends_on('netlib-lapack')
+    depends_on('tensorflow')
+    depends_on('dd4hep')
  
     def install(self, spec, prefix):
         s2c=Executable('scram2cmake/scram2cmake.py')
@@ -165,18 +167,20 @@ class CmsswCmake(Package):
                     '-DSIGCPPROOT=%s' % self.spec['libsigcpp'].prefix,
                     '-DSIGCPP_INCLUDE_DIR=%s/sigc++-2.0' % self.spec['libsigcpp'].prefix.include,
                     '-DSHERPA_INCLUDE_DIR=%s/SHERPA-MC' % self.spec['sherpa'].prefix.include,
+                    '-DDAVIX_INCLUDE_DIR=%s/davix' % self.spec['davix'].prefix.include,
+                    '-DXROOTD_INCLUDE_DIR=%s/xrootd' % self.spec['xrootd'].prefix.include,
                     '-DTINYXMLROOT=%s' % self.spec['tinyxml'].prefix,
                     '-DCPPUNITROOT=%s' % self.spec['cppunit'].prefix,
                     '-DXERCESC_ROOT_DIR=%s' % self.spec['xerces-c'].prefix,
                     '-DGEANT4_INCLUDE_DIRS=%s/Geant4' % self.spec['geant4'].prefix.include,
                     '-DGEANT4_DIR=%s' % self.spec['geant4'].prefix,
                     '-DPYTHON_INCLUDE_DIR=%s/python%s' % (self.spec['python'].prefix.include, self.spec['python'].version.up_to(2)),
-                    '-DCMAKE_CXX_FLAGS=-O2 -pthread -pipe -Werror=main -Werror=pointer-arith -Werror=overlength-strings -Wno-vla -Werror=overflow   -std=c++1z -ftree-vectorize -Wstrict-overflow -Werror=array-bounds -Werror=format-contains-nul -Werror=type-limits -fvisibility-inlines-hidden -fno-math-errno --param vect-max-version-for-alias-checks=50 -Xassembler --compress-debug-sections -msse3 -felide-constructors -fmessage-length=0 -Wall -Wno-non-template-friend -Wno-long-long -Wreturn-type -Wunused -Wparentheses -Wno-deprecated  -Wnon-virtual-dtor -fdiagnostics-show-option -Wno-unused-local-typedefs -Wno-attributes -Wno-psabic'
+                    '-DCMAKE_CXX_FLAGS=-O2 -pthread -pipe -Werror=main -Werror=pointer-arith -Werror=overlength-strings -Wno-vla -Werror=overflow   -std=c++1z -ftree-vectorize -Wstrict-overflow -Werror=array-bounds -Werror=format-contains-nul -Werror=type-limits -fvisibility-inlines-hidden -fno-math-errno --param vect-max-version-for-alias-checks=50 -Xassembler --compress-debug-sections -msse3 -felide-constructors -fmessage-length=0 -Wall -Wno-non-template-friend -Wno-long-long -Wreturn-type -Wunused -Wparentheses -Wno-deprecated  -Wnon-virtual-dtor -fdiagnostics-show-option -Wno-unused-local-typedefs -Wno-attributes'
                     ,]
 #                    ,'-GNinja']
             options.extend(args)
             cmake(*options)
-            make('VERBOSE=1')
+            make('-k','VERBOSE=1')
             make('install')
 #            ninja('-v')
 #            ninja('install')
