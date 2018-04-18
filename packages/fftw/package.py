@@ -72,7 +72,7 @@ class Fftw(AutotoolsPackage):
 
     @property
     def libs(self):
-        result = find_libraries(['libfftw3'], root=self.prefix, recurse=True)
+        result = find_libraries(['libfftw3'], root=self.prefix, recursive=True)
         return result
 
     def autoreconf(self, spec, prefix):
