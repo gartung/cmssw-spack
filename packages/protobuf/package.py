@@ -33,9 +33,10 @@ class Protobuf(AutotoolsPackage):
     url = "https://github.com/google/protobuf/archive/v3.2.0.tar.gz"
     root_cmakelists_dir = "cmake"
 
+    version('3.5.2', 'ff6742018c172c66ecc627029ad54280')
     version('3.4.0', '1d077a7d4db3d75681f5c333f2de9b1a')
     version('3.3.0', 'f0f712e98de3db0c65c0c417f5e7aca8')
-    version('3.2.0', 'efaa08ae635664fb5e7f31421a41a995', preferred=True)
+    version('3.2.0', 'efaa08ae635664fb5e7f31421a41a995')
     version('3.1.0', '39d6a4fa549c0cce164aa3064b1492dc')
     version('3.0.2', '7349a7f43433d72c6d805c6ca22b7eeb')
     # does not build with CMake:
@@ -60,6 +61,9 @@ class Protobuf(AutotoolsPackage):
         ]
         return args
 
+    def setup_dependent_environment(self,spack_env,run_env,dspec):
+        spack_env.set('PROTOBUF_SOURCE','https://github.com/google/protobuf/archive/v%s.tar.gz'%self.version)
+        spack_env.set('PROTOBUF_STRIP_PREFIX','protobuf-%s'%self.version)
 
     def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
