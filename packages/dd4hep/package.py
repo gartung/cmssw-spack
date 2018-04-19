@@ -31,8 +31,8 @@ class Dd4hep(CMakePackage):
     homepage = "https://github.com/AIDASoft/DD4hep/"
     url      = "https://github.com/AIDASoft/DD4hep/archive/v01-02.tar.gz"
 
-    version('01.05x', git='https://github.com/cms-externals/DD4hep.git',
-             commit='82625a4b3f873ebf9af329d74da67b2ad0eaaca3')
+    version('01.07', git='https://github.com/cms-externals/DD4hep.git',
+             commit='ffe3645730224bf0b0a6dd6a8d2c6c1d87fa2b53')
     version('01.05', 'ab9aaa59e9d9ad9d60205151d984ec2b')
     version('01.02', 'bcef07aaf7a28b5ed9062a76a7ba5633')
     version('00.19', 'f5e162261433082c6363e6c96c08c66e')
@@ -44,7 +44,6 @@ class Dd4hep(CMakePackage):
     depends_on('cmake', type='build')
     depends_on('boost')
     depends_on('xerces-c')
-    depends_on('geant4')
     depends_on('root')
     depends_on('clhep')
 
@@ -54,18 +53,19 @@ class Dd4hep(CMakePackage):
         options = []
 
         # Set the correct compiler flag
-        if self.compiler.cxx11_flag:
-            options.extend(['-DDD4HEP_USE_CXX11=ON'])
-        if self.compiler.cxx14_flag:
-            options.extend(['-DDD4HEP_USE_CXX14=ON'])
-        if self.compiler.cxx17_flag:
-            options.extend(['-DDD4HEP_USE_CXX17=ON'])
+        #if self.compiler.cxx11_flag:
+        #    options.extend(['-DDD4HEP_USE_CXX11=ON'])
+        #if self.compiler.cxx14_flag:
+        #    options.extend(['-DDD4HEP_USE_CXX14=ON'])
+        #if self.compiler.cxx17_flag:
+        #    options.extend(['-DDD4HEP_USE_CXX17=ON'])
 
         options.extend([
             '-DROOTSYS=%s' % spec['root'].prefix,
-            '-DDD4HEP_USE_GEANT4=ON',
+            '-DDD4HEP_USE_GEANT4=OFF',
             '-DDD4HEP_USE_XERCESC=ON',
-            '-DXERCESC_ROOT_DIR=%s' % spec['xerces-c'].prefix
+            '-DXERCESC_ROOT_DIR=%s' % spec['xerces-c'].prefix,
+            '-DCMAKE_CXX_STANDARD=17'
         ])
 
         return options
