@@ -30,7 +30,7 @@ import os
 import fnmatch
 import sys
 import shutil
-
+from spack.util.executable import Executable
 
 def relrelink(top):
     for root, dirs, files in os.walk(top, topdown=False):
@@ -58,123 +58,37 @@ class Cmssw(Package):
     """CMSSW built as a scram project"""
 
     homepage = "http://cms-sw.github.io"
-    url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc_amd64_gcc630/cms/cmssw/CMSSW_9_2_12/src.tar.gz"
+    url = "https://github.com/cms-sw/cmssw/archive/CMSSW_10_1_0_pre1.tar.gz"
 
-    version('9.2.12', 'c66e3769785321309f70f85bc315e948')
+    version('10.2.0.pre1', git='https://github.com/cms-sw/cmssw.git', tag='CMSSW_10_2_0_pre1')
 
     config_tag = 'V05-05-40'
 
-    resource(name='config',
-             url='http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/cms/fwlite/CMSSW_9_2_13_FWLITE/%s.tar.gz' % config_tag,
-             md5='87af022eba2084d0db2b4d92245c3629',
-             placement='config'
-             )
+    def url_for_version(self, version):
+        """Handle CMSSW's version string."""
+        version_underscore = str(self.version).replace('.', '_')
+        return "https://github.com/cms-sw/cmssw/archive/CMSSW_%s.tar.gz" % version_underscore
 
     depends_on('scram')
+    depends_on('cmssw-config')
+    depends_on('cmssw-tool-conf')
     depends_on('gmake')
-    depends_on('root@6.08.07')
-    depends_on('tbb')
-    depends_on('tinyxml')
-    depends_on('clhep@2.3.1.1~cxx11+cxx14')
-    depends_on('md5')
-    depends_on('python+shared')
-    depends_on('vdt')
-    depends_on('boost@1.63.0')
-    depends_on('libsigcpp')
-    depends_on('xrootd')
-    depends_on('cppunit')
-    depends_on('xerces-c')
-    depends_on('expat')
-    depends_on('sqlite')
-    depends_on('bzip2')
-    depends_on('gsl')
-    depends_on('hepmc')
-    depends_on('heppdt')
-    depends_on('libpng')
-    depends_on('giflib')
-    depends_on('openssl')
-    depends_on('pcre')
-    depends_on('zlib')
-    depends_on('xz')
-    depends_on('libtiff')
-    depends_on('libjpeg-turbo')
-    depends_on('libxml2^python+shared')
-    depends_on('bzip2')
-    depends_on('fireworks-geometry')
-    depends_on('llvm@4.0.1~gold~libcxx+python+shared_libs')
-    depends_on('uuid-cms')
-    depends_on('valgrind')
-    depends_on('geant4~qt')
-    depends_on('expat')
-    depends_on('protobuf@3.2.0')
-    depends_on('eigen')
-    depends_on('curl')
-    depends_on('classlib')
-    depends_on('davix')
-    depends_on('tcmalloc-fake')
-    depends_on('meschach')
-    depends_on('fastjet')
-    depends_on('fastjet-contrib')
-    depends_on('fftjet')
-    depends_on('pythia6')
-    depends_on('pythia8')
-    depends_on('oracle')
-    depends_on('sqlite@3.16.02')
-    depends_on('coral')
-    depends_on('hector')
-    depends_on('geant4-g4emlow')
-    depends_on('geant4-g4ndl')
-    depends_on('geant4-g4photonevaporation')
-    depends_on('geant4-g4saiddata')
-    depends_on('geant4-g4abla')
-    depends_on('geant4-g4ensdfstate')
-    depends_on('geant4-g4neutronsxs')
-    depends_on('geant4-g4radioactivedecay')
-    depends_on('libhepml')
-    depends_on('castor')
-    depends_on('lhapdf')
-    depends_on('utm')
-    depends_on('tkonlinesw')
-    depends_on('photospp')
-    depends_on('rivet')
-    depends_on('evtgen')
-    depends_on('dcap')
-    depends_on('tauolapp')
-    depends_on('sherpa')
-    depends_on('lwtnn')
-    depends_on('yoda')
-    depends_on('openloops')
-    depends_on('qd')
-    depends_on('blackhat')
-    depends_on('yaml-cpp')
-    depends_on('jemalloc')
-    depends_on('ktjet')
-    depends_on('herwig')
-    depends_on('photos')
-    depends_on('tauola')
-    depends_on('jimmy')
-    depends_on('cascade')
-    depends_on('csctrackfinderemulation')
-    depends_on('mcdb')
-    depends_on('fftw') 
-    depends_on('netlib-lapack')
+    depends_on('llvm')
  
     if sys.platform == 'darwin':
         patch('macos.patch')
     else:
         patch('linux.patch')
 
-    scram_arch = 'linux_amd64_gcc'
-    if sys.platform == 'darwin':
-        scram_arch = 'osx10_amd64_clang'
+    scram_arch = 'slc7_amd64_gcc700'
 
     def install(self, spec, prefix):
-        scram = which('scram')
+        scram = Executable(spec['scram'].prefix.bin+'/scram')
         build_directory = join_path(self.stage.path, 'spack-build')
         source_directory = self.stage.source_path
         cmssw_version = 'CMSSW.' + str(self.version)
         cmssw_u_version = cmssw_version.replace('.', '_')
-        scram_version = 'V' + str(spec['scram'].version)
+        scram_version = 'V%s' % spec['scram'].version
         project_dir = join_path(prefix, cmssw_u_version)
 
         gcc = which(spack_f77)
@@ -188,31 +102,29 @@ class Cmssw(Package):
         values['GCC_VER'] = gcc_ver.rstrip()
         values['GCC_PREFIX'] = gcc_prefix
         values['GCC_MACHINE'] = gcc_machine.rstrip()
-
         with working_dir(build_directory, create=True):
             install_tree(source_directory, 'src',
                          ignore=shutil.ignore_patterns('spack_build.*',
                                                        '.git', 'config'))
-            install_tree(join_path(source_directory, 'config'), 'config',
+            install_tree(spec['cmssw-config'].prefix.bin, 'config',
                          ignore=shutil.ignore_patterns('.git'))
             with open('config/config_tag', 'w') as f:
-                f.write(self.config_tag)
+                f.write(self.config_tag+'\n')
                 f.close()
-            mkdirp('tools/selected')
-            mkdirp('tools/available')
-            for dep in spec.dependencies():
-                xmlfiles = glob(join_path(dep.prefix.etc, 'scram.d', '*.xml'))
-                for xmlfile in xmlfiles:
-                    install(xmlfile, 'tools/selected')
-            perl = which('perl')
-            perl('config/updateConfig.pl',
-                 '-p', 'CMSSW',
-                 '-v', cmssw_u_version,
-                 '-s', scram_version,
-                 '-t', build_directory,
+            #mkdirp('tools/selected')
+            #mkdirp('tools/available')
+            #for dep in spec.dependencies():
+            #    xmlfiles = glob(join_path(dep.prefix.etc, 'scram.d', '*.xml'))
+            #    for xmlfile in xmlfiles:
+            #        install(xmlfile, 'tools/selected')
+            uc = Executable('config/updateConfig.pl')
+            uc('-p', 'CMSSW',
+                 '-v', '%s' % cmssw_u_version,
+                 '-s', '%s' % scram_version,
+                 '-t', '%s' % self.spec['cmssw-tool-conf'].prefix,
                  '--keys', 'SCRAM_COMPILER=gcc',
                  '--keys', 'PROJECT_GIT_HASH=' + cmssw_u_version,
-                 '--arch', self.scram_arch)
+                 '--arch', '%s' % self.scram_arch)
             scram('project', '-d', prefix, '-b', 'config/bootsrc.xml')
 
         with working_dir(project_dir, create=False):
@@ -270,7 +182,3 @@ class Cmssw(Package):
         spack_env.append_path(
             'LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib64)
 
-    def url_for_version(self, version):
-        """Handle CMSSW's version string."""
-        version_underscore = str(self.version).replace('.', '_')
-        return "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/cms/cmssw/CMSSW_%s/src.tar.gz" % version_underscore

@@ -38,11 +38,11 @@ class Scram(Package):
     homepage = "https://github.com/cms-sw/SCRAM"
     url = "https://github.com/cms-sw/SCRAM/archive/V2_2_6.tar.gz"
 
-    version('2_2_7_pre3', 'b451f27fff6a74f44544d90bd3140ca6')
+    version('2_2_8_pre1', 'b5992a1d94ba5f87517e9a5b5941a7fb')
 
     depends_on('gmake')
 
-    scram_arch = 'slc_amd64_gcc'
+    scram_arch = 'slc7_amd64_gcc700'
     if sys.platform == 'darwin':
         scram_arch = 'osx10_amd64_clang'
 

@@ -37,9 +37,9 @@ class Lwtnn(Package):
     depends_on('boost')
     depends_on('eigen')
 
-    def setup_environment(self, spack_env, run_env):
-        spack_env.set('BOOST_ROOT', self.spec['boost'].prefix)
-        spack_env.set('EIGEN_ROOT', self.spec['eigen'].prefix)
+#    def setup_environment(self, spack_env, run_env):
+#        spack_env.set('BOOST_ROOT', self.spec['boost'].prefix)
+#        spack_env.set('EIGEN_ROOT', self.spec['eigen'].prefix)
 
     def install(self, spec, prefix):
         make('all')

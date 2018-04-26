@@ -37,9 +37,9 @@ class Utm(Package):
     depends_on('xerces-c')
     depends_on('boost')
 
-    def setup_environment(self, spack_env, run_env):
-        spack_env.set('XERCES_C_BASE', '%s' % self.spec['xerces-c'].prefix)
-        spack_env.set('BOOST_BASE', '%s' % self.spec['boost'].prefix)
+#    def setup_environment(self, spack_env, run_env):
+#        spack_env.set('XERCES_C_BASE', '%s' % self.spec['xerces-c'].prefix)
+#        spack_env.set('BOOST_BASE', '%s' % self.spec['boost'].prefix)
 
     def install(self, spec, prefix):
         make('-f', 'Makefile.standalone', 'all')

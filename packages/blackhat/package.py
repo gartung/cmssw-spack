@@ -35,7 +35,7 @@ class Blackhat(Package):
     version('0.9.9', '64a4e64a95754bb701bf0c1f88c8ee53')
 
     patch('blackhat-gcc48.patch')
-    patch('blackhat-0.9.9-armv7hl.patch')
+#    patch('blackhat-0.9.9-armv7hl.patch')
     patch('blackhat-no_warnings.patch')
     patch('blackhat-0.9.9-default-arg-at-first-decl.patch')
     patch('blackhat-0.9.9-gcc600.patch')

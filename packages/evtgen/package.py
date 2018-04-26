@@ -46,7 +46,7 @@ class Evtgen(Package):
     depends_on('autoconf', type='build')
     depends_on('automake', type='build')
 
-    patch('evtgen-1.5.0-configure-gcc6.patch')
+    patch('evtgen-1.6.0-configure-new-gcc.patch')
 
 
     def install(self, spec, prefix):

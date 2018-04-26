@@ -31,9 +31,9 @@ class Geant4G4radioactivedecay(Package):
     """FIXME: Put a proper description of your package here."""
 
     homepage = "http://www.example.com"
-    url = "http://geant4.web.cern.ch/geant4/support/source/G4RadioactiveDecay.4.3.2.tar.gz"
+    url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc7_amd64_gcc700/external/geant4-G4RadioactiveDecay/5.2/G4RadioactiveDecay.5.2.tar.gz"
 
-    version('4.3.2', 'ed171641682cf8c10fc3f0266c8d482e')
+    version('5.2', 'e035ed77e12be3a69c2d32806d1b5cde')
 
     def install(self, spec, prefix):
         mkdirp(join_path(prefix.share, 'data'))
@@ -43,7 +43,7 @@ class Geant4G4radioactivedecay(Package):
 
     def url_for_version(self, version):
         """Handle version string."""
-        return ("http://geant4.web.cern.ch/geant4/support/source/G4RadioactiveDecay.%s.tar.gz" % version)
+        return ("http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc7_amd64_gcc700/external/geant4-G4RadioactiveDecay/%s/G4RadioactiveDecay.%s.tar.gz" % (version,version))
 
     def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""
