@@ -38,8 +38,8 @@ class CmsswCmake(Package):
     homepage = "http://cms-sw.github.io"
     url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc_amd64_gcc630/cms/cmssw/CMSSW_9_2_12/src.tar.gz"
 
-    version('10.2.X', git='git@github.com:gartung/cmssw.git',
-            commit='cc9e2f4b51b760e42d26409236c927b619a79334')
+    version('10.2.0.pre1', git='https://github.com/cms-sw/cmssw.git',
+            tag='CMSSW_10_2_0_pre1')
 
     resource(name='cmaketools', git='https://github.com/gartung/cmaketools.git',
              commit='df41c9ce7c950397ed52b289887144749b866b24',
@@ -47,14 +47,14 @@ class CmsswCmake(Package):
              )
 
     resource(name='scram2cmake', git='https://github.com/gartung/scram2cmake.git',
-             commit='cfd823f',
+             commit='034c581',
              placement='scram2cmake'
              )
 
-    depends_on('ninja')
-    depends_on('cmake')
+    depends_on('builtin.ninja')
+    depends_on('builtin.cmake')
     depends_on('root')
-    depends_on('tbb')
+    depends_on('intel-tbb')
     depends_on('tinyxml')
     depends_on('clhep~cxx11+cxx14')
     depends_on('md5')
@@ -79,20 +79,19 @@ class CmsswCmake(Package):
     depends_on('xz')
     depends_on('libtiff')
     depends_on('libjpeg-turbo')
-    depends_on('libxml2^python+shared')
+    depends_on('libxml2')
     depends_on('bzip2')
     depends_on('fireworks-geometry')
-    depends_on('llvm@4.0.1~gold~libcxx+python+shared_libs')
+    depends_on('llvm')
     depends_on('uuid-cms')
     depends_on('valgrind')
-    depends_on('geant4~qt')
+    depends_on('geant4')
     depends_on('expat')
-    depends_on('protobuf@3.2.0')
+    depends_on('protobuf')
     depends_on('eigen')
     depends_on('curl')
     depends_on('classlib')
     depends_on('davix')
-    depends_on('tcmalloc-fake')
     depends_on('meschach')
     depends_on('fastjet')
     depends_on('fastjet-contrib')
@@ -101,7 +100,7 @@ class CmsswCmake(Package):
     depends_on('pythia8')
     depends_on('occi')
     depends_on('oracle')
-    depends_on('sqlite@3.16.02')
+    depends_on('sqlite')
     depends_on('coral')
     depends_on('hector')
     depends_on('geant4-g4emlow')
@@ -113,10 +112,8 @@ class CmsswCmake(Package):
     depends_on('geant4-g4neutronsxs')
     depends_on('geant4-g4radioactivedecay')
     depends_on('libhepml')
-    depends_on('castor')
     depends_on('lhapdf')
     depends_on('utm')
-    depends_on('tkonlinesw')
     depends_on('photospp')
     depends_on('rivet')
     depends_on('evtgen')
@@ -161,7 +158,7 @@ class CmsswCmake(Package):
             args = ['-DCMakeTools_DIR=%s/cmaketools' % self.stage.source_path,
                     '-DCLHEP_ROOT_DIR=%s' % self.spec['clhep'].prefix,
                     '-DBOOST_ROOT=%s' % self.spec['boost'].prefix,
-                    '-DTBB_ROOT_DIR=%s' % self.spec['tbb'].prefix,
+                    '-DTBB_ROOT_DIR=%s' % self.spec['intel-tbb'].prefix,
                     '-DMD5ROOT=%s' % self.spec['md5'].prefix,
                     '-DDAVIXROOT=%s' % self.spec['davix'].prefix,
                     '-DSIGCPPROOT=%s' % self.spec['libsigcpp'].prefix,
@@ -176,12 +173,12 @@ class CmsswCmake(Package):
                     '-DGEANT4_DIR=%s' % self.spec['geant4'].prefix,
                     '-DPYTHON_INCLUDE_DIR=%s/python%s' % (self.spec['python'].prefix.include, self.spec['python'].version.up_to(2)),
                     '-DCMAKE_CXX_FLAGS=-O2 -pthread -pipe -Werror=main -Werror=pointer-arith -Werror=overlength-strings -Wno-vla -Werror=overflow   -std=c++1z -ftree-vectorize -Wstrict-overflow -Werror=array-bounds -Werror=format-contains-nul -Werror=type-limits -fvisibility-inlines-hidden -fno-math-errno --param vect-max-version-for-alias-checks=50 -Xassembler --compress-debug-sections -msse3 -felide-constructors -fmessage-length=0 -Wall -Wno-non-template-friend -Wno-long-long -Wreturn-type -Wunused -Wparentheses -Wno-deprecated  -Wnon-virtual-dtor -fdiagnostics-show-option -Wno-unused-local-typedefs -Wno-attributes'
-                    ,]
-#                    ,'-GNinja']
+                    ,'-GNinja']
+#                    ,]
             options.extend(args)
             cmake(*options)
-            make('-k','VERBOSE=1')
-            make('install')
-#            ninja('-v')
-#            ninja('install')
+#            make('-k','VERBOSE=1')
+#            make('install')
+            ninja('-k','-1', '-v')
+            ninja('install')
 

@@ -31,9 +31,9 @@ class Geant4G4emlow(Package):
     """FIXME: Put a proper description of your package here."""
 
     homepage = "http://www.example.com"
-    url = "http://geant4.web.cern.ch/geant4/support/source/G4EMLOW.6.48.tar.gz"
+    url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc7_amd64_gcc700/external/geant4-G4EMLOW/7.3/G4EMLOW.7.3.tar.gz"
 
-    version('6.48', '844064faa16a063a6a08406dc7895b68')
+    version('7.3', '0446e7f53af993343956e5d3900157b8')
 
     def install(self, spec, prefix):
         mkdirp(join_path(prefix.share, 'data'))
@@ -43,7 +43,7 @@ class Geant4G4emlow(Package):
 
     def url_for_version(self, version):
         """Handle version string."""
-        return ("http://geant4.web.cern.ch/geant4/support/source/G4EMLOW.%s.tar.gz" % version)
+        return ("http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc7_amd64_gcc700/external/geant4-G4EMLOW/%s/G4EMLOW.%s.tar.gz" % (version,version))
 
     def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""

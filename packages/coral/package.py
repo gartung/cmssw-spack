@@ -63,18 +63,6 @@ class Coral(Package):
     version('2.3.21', git='https://github.com/cms-externals/coral',
             branch='cms/CORAL_2_3_21')
 
-    config_tag = 'V05-05-22'
-    resource(name='scram-config',
-             url='http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/cms/coral/CORAL_2_3_21-oenich2/%s.tar.gz' % config_tag,
-             md5='785f25f05c5b446728172ef89ddfab9b',
-             destination='.',
-             placement='scram-config'
-             )
-
-    scram_arch = 'slc_amd64_gcc'
-    if sys.platform == 'darwin':
-        scram_arch = 'osx10_amd64_clang'
-
     depends_on('scram')
     depends_on('gmake')
     depends_on('python')
@@ -87,28 +75,25 @@ class Coral(Package):
     depends_on('openssl')
     depends_on('pcre')
     depends_on('zlib')
-    depends_on('uuid-cms')
+    depends_on('libuuid')
     depends_on('oracle')
     depends_on('frontier-client')
 
+    scram_arch = 'slc7_amd64_gcc700'
+ 
     def install(self, spec, prefix):
         scram = which('scram')
         build_directory = join_path(self.stage.path, 'spack-build')
         source_directory = self.stage.source_path
-        scram_version = 'V' + str(spec['scram'].version)
+        scram_version = 'V%' % spec['scram'].version
         project_dir = join_path(prefix, 'CORAL_%s' % self.version.underscored)
 
         with working_dir(build_directory, create=True):
             rsync = which('rsync')
-            mkdirp('src')
-            rsync('-a', '--exclude', '.git', '--exclude', 'scram-config',
-                  '--exclude', 'spack-build.*',
-                  source_directory + '/', 'src/')
-            mkdirp('config')
-            rsync('-a', '--exclude', '.git',
-                  source_directory + '/scram-config/', 'config/')
+            install_tree(source_directory,'src')
+            install_tree(spec['cmssw-config'].prefix.bin,'config')
             with open('config/config_tag', 'w') as f:
-                f.write(self.config_tag)
+                f.write('%s\n' % spec['cmssw-config'].version.underscored )
                 f.close()
             mkdirp('tools/selected')
             mkdirp('tools/available')
@@ -116,19 +101,14 @@ class Coral(Package):
                 xmlfiles = glob(join_path(dep.prefix.etc, 'scram.d', '*.xml'))
                 for xmlfile in xmlfiles:
                     install(xmlfile, 'tools/selected')
-
-            with open('config/config_tag', 'w') as f:
-                f.write(self.config_tag)
-                f.close()
-            perl = which('perl')
-            perl('config/updateConfig.pl',
-                 '-p', 'CORAL',
+            uc=Executable('config/updateConfig.pl')
+            uc(  '-p', 'CORAL',
                  '-v', 'CORAL_%s' % self.version.underscored,
                  '-s', scram_version,
-                 '-t', build_directory,
+                 '-t', spec['cmssw-tool-conf'].prefix,
                  '--keys', 'SCRAM_COMPILER=gcc',
                  '--keys', 'PROJECT_GIT_HASH=CORAL_%s' % self.version.underscored,
-                 '--arch', '%s' % self.scram_arch)
+                 '--arch', '%s' % spec['scram'].scram_arch)
             scram('project', '-d', '%s' % prefix, '-b', 'config/bootsrc.xml')
 
         with working_dir(project_dir, create=False):

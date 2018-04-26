@@ -31,7 +31,7 @@ class Geant4G4ndl(Package):
     """FIXME: Put a proper description of your package here."""
 
     homepage = "http://www.example.com"
-    url = "http://geant4.web.cern.ch/geant4/support/source/G4NDL.4.5.tar.gz"
+    url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc7_amd64_gcc700/external/geant4-G4NDL/4.5/G4NDL.4.5.tar.gz"
 
     version('4.5', 'fd29c45fe2de432f1f67232707b654c0')
 
@@ -43,7 +43,7 @@ class Geant4G4ndl(Package):
 
     def url_for_version(self, version):
         """Handle version string."""
-        return ("http://geant4.web.cern.ch/geant4/support/source/G4NDL.%s.tar.gz" % version)
+        return ("http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc7_amd64_gcc700/external/geant4-G4NDL/%s/G4NDL.%s.tar.gz" % (version,version))
 
     def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""

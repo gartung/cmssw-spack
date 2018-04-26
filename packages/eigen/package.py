@@ -31,14 +31,10 @@ class Eigen(CMakePackage):
     """
 
     homepage = 'http://eigen.tuxfamily.org/'
-    url = 'https://bitbucket.org/eigen/eigen/get/3.3.3.tar.bz2'
+    url='https://github.com/cms-externals/eigen-git-mirror/archive/1ae2849542a7892089f81f2ee460b510cdb0a16d.tar.gz'
 
-    version('3.3.3', 'b2ddade41040d9cf73b39b4b51e8775b')
-    version('3.3.1', 'edb6799ef413b0868aace20d2403864c')
-    version('3.2.10', 'a85bb68c82988648c3d53ba9768d7dcbcfe105f8')
-    version('3.2.9', '59ab81212f8eb2534b1545a9b42c38bf618a0d71')
-    version('3.2.8', '64f4aef8012a424c7e079eaf0be71793ab9bc6e0')
-    version('3.2.7', 'cc1bacbad97558b97da6b77c9644f184')
+    version('1ae2849542a7892089f81f2ee460b510cdb0a16d',git='https://github.com/cms-externals/eigen-git-mirror',
+            commit='1ae2849542a7892089f81f2ee460b510cdb0a16d')
 
     variant('metis', default=False, description='Enables metis backend')
     variant('scotch', default=False, description='Enables scotch backend')
@@ -58,6 +54,10 @@ class Eigen(CMakePackage):
     depends_on('suite-sparse', when='+suitesparse')
     depends_on('mpfr@2.3.0:', when='+mpfr')
     depends_on('gmp', when='+mpfr')
+
+    def setup_dependent_environment(self, spack_env, run_env, dspec):
+        spack_env.set('EIGEN_SOURCE','https://github.com/cms-externals/eigen-git-mirror/archive/%s.tar.gz'%self.version)
+        spack_env.set('EIGEN_STRIP_PREFIX','eigen-git-mirror-%s'%self.version)
 
     def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""

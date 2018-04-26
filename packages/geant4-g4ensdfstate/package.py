@@ -31,9 +31,9 @@ class Geant4G4ensdfstate(Package):
     """FIXME: Put a proper description of your package here."""
 
     homepage = "http://www.example.com"
-    url = "http://geant4.web.cern.ch/geant4/support/source/G4ENSDFSTATE.2.1.tar.gz"
+    url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc7_amd64_gcc700/external/geant4-G4ENSDFSTATE/2.2/G4ENSDFSTATE.2.2.tar.gz"
 
-    version('1.2.3', '98fef898ea35df4010920ad7ad88f20b')
+    version('2.2', '495439cf600225753d7bd99825e5c6bc')
 
     def install(self, spec, prefix):
         mkdirp(join_path(prefix.share, 'data'))
@@ -43,7 +43,7 @@ class Geant4G4ensdfstate(Package):
 
     def url_for_version(self, version):
         """Handle version string."""
-        return ("http://geant4.web.cern.ch/geant4/support/source/G4ENSDFSTATE.%s.tar.gz" % version)
+        return "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc7_amd64_gcc700/external/geant4-G4ENSDFSTATE/%s/G4ENSDFSTATE.%s.tar.gz" % (version,version)
 
     def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""

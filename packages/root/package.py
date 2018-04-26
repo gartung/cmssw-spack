@@ -34,8 +34,11 @@ class Root(CMakePackage):
     homepage = "https://root.cern.ch"
     url = "https://root.cern.ch/download/root_v6.07.02.source.tar.gz"
     
-    version('6.10.09', git='https://github.com/cms-sw/root',
-            commit='57f8055b2ccf22d668c115c21acb84c6f802c76e')
+    version('6.10.09',
+             '1bffe3ef37558d5773ab596758037ffa',
+             url='http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc7_amd64_gcc700/lcg/root/6.10.09-omkpbe3/root-6.10.09-287883fd1b96f3a53c80032651656565c3a04901.tgz')
+
+    patch('root_new_cxx17.patch')
 
     depends_on('cmake@3.4.3:', type='build')
     depends_on('pkg-config',   type='build')

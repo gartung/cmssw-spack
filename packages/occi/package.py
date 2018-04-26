@@ -43,9 +43,9 @@ class Occi(Package):
             shutil.copytree('lib',prefix.lib)
             shutil.copytree('include',prefix.include)
 
-    def setup_environment(self, spack_env, run_env):
-        spack_env.set('INCLUDE_DIR','%s' % self.spec['oracle'].prefix.include)
-        spack_env.set('LIB_DIR', '%s' % self.spec['oracle'].prefix.lib)
+#    def setup_environment(self, spack_env, run_env):
+#        spack_env.set('INCLUDE_DIR','%s' % self.spec['oracle'].prefix.include)
+#        spack_env.set('LIB_DIR', '%s' % self.spec['oracle'].prefix.lib)
 
     def write_scram_toolfile(self, contents, filename):
         """Write scram tool config file"""

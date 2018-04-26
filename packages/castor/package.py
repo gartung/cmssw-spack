@@ -47,7 +47,7 @@ class Castor(Package):
 
 
     def patch(self):
-        filter_file('-Werror','-Werror -Wno-error=unused-but-set-variable','config/Imake.tmpl')
+        filter_file('-Werror','','config/Imake.tmpl')
         filter_file('--no-undefined', '', 'config/Imake.rules')
         perl=which('perl')
         perl('-pi', '-e', 's/\ \ __MAJORVERSION__/%s/'%self.version[0], 'h/patchlevel.h')

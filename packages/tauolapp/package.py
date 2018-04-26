@@ -52,15 +52,15 @@ class Tauolapp(Package):
                 install(join_path(os.path.dirname(__file__), '../../config.guess'), './config/config.guess')
 
 
-    def setup_environment(self, spack_env, run_env):
-        self.HEPMC_ROOT = self.spec['hepmc'].prefix
-        self.HEPMC_VERSION = self.spec['hepmc'].version
-        self.LHAPDF_ROOT = self.spec['lhapdf'].prefix
-        self.PYTHIA8_ROOT = self.spec['pythia8'].prefix
-        spack_env.set('HEPMCLOCATION',self.HEPMC_ROOT)
-        spack_env.set('HEPMCVERSION',self.HEPMC_VERSION)
-        spack_env.set('LHAPDF_LOCATION',self.LHAPDF_ROOT)
-        spack_env.set('PYTHIA8_LOCATION',self.PYTHIA8_ROOT)
+#    def setup_environment(self, spack_env, run_env):
+#        self.HEPMC_ROOT = self.spec['hepmc'].prefix
+#        self.HEPMC_VERSION = self.spec['hepmc'].version
+#        self.LHAPDF_ROOT = self.spec['lhapdf'].prefix
+#        self.PYTHIA8_ROOT = self.spec['pythia8'].prefix
+#        spack_env.set('HEPMCLOCATION',self.HEPMC_ROOT)
+#        spack_env.set('HEPMCVERSION',self.HEPMC_VERSION)
+#        spack_env.set('LHAPDF_LOCATION',self.LHAPDF_ROOT)
+#        spack_env.set('PYTHIA8_LOCATION',self.PYTHIA8_ROOT)
 
 
     def install(self, spec, prefix):

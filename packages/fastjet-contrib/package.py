@@ -29,9 +29,9 @@ class FastjetContrib(AutotoolsPackage):
     """."""
 
     homepage = "http://www.example.com"
-    url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/fastjet-contrib/1.026/fastjet-contrib-1.026.tgz"
+    url = "http://fastjet.hepforge.org/contrib/downloads/fjcontrib-1.014.tar.gz"
 
-    version('1.026', '2b38f78d1126bf5185626f2923b4577b')
+    version('1.033', git='https://github.com/cms-externals/fastjet-contrib.git', commit='69e835bfc3d36adfe70a1355a2773bc05d9f5599')
 
     depends_on('fastjet')
 

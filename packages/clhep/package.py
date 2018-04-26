@@ -34,6 +34,7 @@ class Clhep(CMakePackage):
     list_depth = 1
 
     version('2.4.0.0', git='https://github.com/cms-externals/clhep.git', commit='4b23da33f4607fde6f47c864871972558aa75c39')
+    version('2.3.4.2', git='https://github.com/cms-externals/clhep.git', commit='03bdb22fe139303b43ca834a641f451f8e79bbcf')
 
     variant('cxx11', default=False, description="Compile using c++11 dialect.")
     variant('cxx14', default=True, description="Compile using c++14 dialect.")
@@ -41,6 +42,7 @@ class Clhep(CMakePackage):
     depends_on('cmake@2.8.12.2:', when='@2.2.0.4:2.3.0.0', type='build')
     depends_on('cmake@3.2:', when='@2.3.0.1:', type='build')
 
+    #root_cmakelists_dir = 'CLHEP'
 
     def cmake_args(self):
         spec = self.spec
