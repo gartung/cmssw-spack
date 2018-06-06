@@ -1,35 +1,12 @@
-##############################################################################
-# Copyright (c) 2013-2016, Lawrence Livermore National Security, LLC.
-# Produced at the Lawrence Livermore National Laboratory.
-#
-# This file is part of Spack.
-# Created by Todd Gamblin, tgamblin@llnl.gov, All rights reserved.
-# LLNL-CODE-647188
-#
-# For details, see https://github.com/spack/spack
-# Please also see the LICENSE file for our notice and the LGPL.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License (as
-# published by the Free Software Foundation) version 2.1, February 1999.
-#
-# This program is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the IMPLIED WARRANTY OF
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the terms and
-# conditions of the GNU Lesser General Public License for more details.
-#
-# You should have received a copy of the GNU Lesser General Public
-# License along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-##############################################################################
 from spack import *
 from glob import glob
 from string import Template
 import re
-import os
 import fnmatch
-import sys
 import shutil
+import sys,os
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
+from scrampackage import write_scram_toolfile
 
 
 class Scram(Package):
@@ -66,7 +43,7 @@ class Scram(Package):
             values['GCC_PREFIX'] = gcc_prefix
             values['GCC_MACHINE'] = gcc_machine.rstrip()
 
-            template = Template("""
+            contents = str("""
   <tool name="gcc-ccompiler" version="${GCC_VER}" type="compiler">
     <client>
       <environment name="GCC_CCOMPILER_BASE" default="${GCC_PREFIX}"/>
@@ -75,11 +52,11 @@ class Scram(Package):
     <flags CFLAGS="-O2 -pthread   "/>
   </tool>
 """)
-            with open('gcc-ccompiler.xml', 'w') as f:
-                f.write(template.substitute(values))
-                f.close()
+    
+            write_scram_toolfile(contents, values, 'gcc-ccompiler.xml')
+    
 
-            template = Template("""
+            contents = str("""
   <tool name="gcc-cxxcompiler" version="${GCC_VER}" type="compiler">
     <client>
       <environment name="GCC_CXXCOMPILER_BASE" default="${GCC_PREFIX}"/>
@@ -109,10 +86,10 @@ class Scram(Package):
     <runtime name="PATH" value="$$GCC_CXXCOMPILER_BASE/bin" type="path"/>
   </tool>
 """)
-            with open('gcc-cxxcompiler.xml', 'w') as f:
-                f.write(template.substitute(values))
-                f.close()
-            template = Template("""
+            write_scram_toolfile(contents, values, 'gcc-cxxcompiler.xml')
+
+
+            contents = str("""
   <tool name="gcc-f77compiler" version="${GCC_VER}" type="compiler">
     <lib name="gfortran"/>
     <lib name="m"/>
@@ -126,11 +103,10 @@ class Scram(Package):
     <flags FSHAREDOBJECTFLAGS="-fPIC   "/>
   </tool>
 """)
-            with open('gcc-f77compiler.xml', 'w') as f:
-                f.write(template.substitute(values))
-                f.close()
+            write_scram_toolfile(contents, values, 'gcc-f77compiler.xml')
 
-            template = Template("""
+
+            contents = str("""
 <tool name="root_cxxdefaults" version="6">
   <runtime name="ROOT_GCC_TOOLCHAIN" value="${GCC_PREFIX}" type="path"/>
   <runtime name="ROOT_INCLUDE_PATH" value="${GCC_PREFIX}/include/c++/${GCC_VER}" type="path"/>
@@ -140,34 +116,33 @@ class Scram(Package):
   <runtime name="ROOT_INCLUDE_PATH" value="/usr/include" type="path"/>
 </tool>
 """)
-            with open('root_cxxdefaults.xml', 'w') as f:
-                f.write(template.substitute(values))
-                f.close()
+            write_scram_toolfile(contents, values, 'root_cxxdefaults.xml')
 
-            contents = """
+
+            contents = str("""
   <tool name="sockets" version="1.0">
     <lib name="nsl"/>
     <lib name="crypt"/>
     <lib name="dl"/>
     <lib name="rt"/>
   </tool>
-"""
+""")
             if sys.platform == 'darwin':
-                contents = """
+                contents = str("""
   <tool name="sockets" version="1.0">
     <lib name="dl"/>
   </tool>
-"""
-            with open('sockets.xml', 'w') as f:
-                f.write(contents)
-                f.close()
-            contents = """
+""")
+            write_scram_toolfile(contents, values, 'sockets.xml')
+
+
+            contents = str("""
   <tool name="opengl" version="XFree4.2">
     <lib name="GL"/>
     <lib name="GLU"/>
     <use name="x11"/>
     <environment name="ORACLE_ADMINDIR" default="/etc"/>
-"""
+""")
             if sys.platform == 'darwin':
                 contents += """
     <client>
@@ -177,18 +152,15 @@ class Scram(Package):
     </client>
 """
             contents += """</tool>"""
-            with open('opengl.xml', 'w') as f:
-                f.write(contents)
-                f.close()
+            write_scram_toolfile(contents, values, 'opengl.xml')
 
-            contents = """
+
+            contents = str("""
   <tool name="x11" version="R6">
     <use name="sockets"/>
   </tool>
-"""
-            with open('x11.xml', 'w') as f:
-                f.write(contents)
-                f.close()
+""")
+            write_scram_toolfile(contents, values, 'x11.xml')
 
     def setup_dependent_environment(self, spack_env, run_env, dspec):
         spack_env.set('SCRAM_ARCH', self.scram_arch)

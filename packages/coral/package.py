@@ -1,58 +1,12 @@
-##############################################################################
-# Copyright (c) 2013-2016, Lawrence Livermore National Security, LLC.
-# Produced at the Lawrence Livermore National Laboratory.
-#
-# This file is part of Spack.
-# Created by Todd Gamblin, tgamblin@llnl.gov, All rights reserved.
-# LLNL-CODE-647188
-#
-# For details, see https://github.com/spack/spack
-# Please also see the LICENSE file for our notice and the LGPL.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License (as
-# published by the Free Software Foundation) version 2.1, February 1999.
-#
-# This program is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the IMPLIED WARRANTY OF
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the terms and
-# conditions of the GNU Lesser General Public License for more details.
-#
-# You should have received a copy of the GNU Lesser General Public
-# License along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-##############################################################################
 from spack import *
 from glob import glob
 from string import Template
 import re
-import os
 import fnmatch
-import sys
 import shutil
-
-
-def relrelink(top):
-    for root, dirs, files in os.walk(top, topdown=False):
-        for x in files:
-            p = os.path.join(root, x)
-            f = os.path.abspath(p)
-            if os.path.islink(f):
-                linkto = os.path.realpath(f)
-                if not os.path.commonprefix((f, linkto)) == '/':
-                    rel = os.path.relpath(linkto, start=os.path.dirname(f))
-                    os.remove(p)
-                    os.symlink(rel, p)
-        for y in dirs:
-            p = os.path.join(root, y)
-            f = os.path.abspath(p)
-            if os.path.islink(f):
-                linkto = os.path.realpath(f)
-                if not os.path.commonprefix((f, linkto)) == '/':
-                    rel = os.path.relpath(linkto, start=os.path.dirname(f))
-                    os.remove(p)
-                    os.symlink(rel, p)
-
+import sys,os
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
+from scrampackage import relrelink, write_scram_toolfile
 
 class Coral(Package):
     """CORAL built as a scram project"""
@@ -140,12 +94,6 @@ class Coral(Package):
         spack_env.append_path('LD_LIBRARY_PATH', '%s/CORAL_%s/%s/lib' %
                               (self.prefix, self.version.underscored, self.scram_arch))
 
-    def write_scram_toolfile(self, contents, filename):
-        """Write scram tool config file"""
-        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
-            f.write(contents)
-            f.close()
-
     @run_after('install')
     def make_links(self):
         with working_dir(self.spec.prefix):
@@ -154,18 +102,13 @@ class Coral(Package):
 
     @run_after('install')
     def write_scram_toolfiles(self):
-        """Create contents of scram tool config files for this package."""
-        from string import Template
-
-        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
-
         values = {}
         values['VER'] = self.spec.version
         values['PFX'] = self.spec.prefix
         values['UVER'] = 'CORAL_%s' % self.version.underscored
 
         fname = 'coral.xml'
-        template = Template("""
+        contents = str("""
 <tool name="coral" version="${VER}" type="scram">
   <client>
     <environment name="CORAL_BASE" default="${PFX}/${UVER}"/>
@@ -178,5 +121,4 @@ class Coral(Package):
   <use name="root_cxxdefaults"/>
 </tool>
 """)
-        contents = template.substitute(values)
-        self.write_scram_toolfile(contents, fname)
+        write_scram_toolfile(contents, values, fname)

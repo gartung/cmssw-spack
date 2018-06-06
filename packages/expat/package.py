@@ -23,7 +23,9 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
 from spack import *
-import sys
+import sys,os
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
+from scrampackage import write_scram_toolfile
 
 
 class Expat(AutotoolsPackage):
@@ -53,26 +55,14 @@ class Expat(AutotoolsPackage):
         if '+libbsd' in spec and '@2.2.1:' in spec:
             args = ['--with-libbsd']
         return args
-
-    def write_scram_toolfile(self, contents, filename):
-        """Write scram tool config file"""
-        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
-            f.write(contents)
-            f.close()
-
     @run_after('install')
     def write_scram_toolfiles(self):
-        """Create contents of scram tool config files for this package."""
-        from string import Template
-
-        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
-
         values = {}
         values['VER'] = self.spec.version
         values['PFX'] = self.spec.prefix
 
         fname = 'expat.xml'
-        template = Template("""<tool name="expat" version="$VER">
+        contents = str("""<tool name="expat" version="$VER">
   <lib name="expat"/>
   <client>
     <environment name="EXPAT_BASE" default="$PFX"/>
@@ -84,5 +74,5 @@ class Expat(AutotoolsPackage):
   <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
   <use name="root_cxxdefaults"/>
 </tool>""")
-        contents = template.substitute(values)
-        self.write_scram_toolfile(contents, fname)
+
+        write_scram_toolfile(contents, values, fname)

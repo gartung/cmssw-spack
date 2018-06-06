@@ -1,39 +1,17 @@
-##############################################################################
-# Copyright (c) 2013-2017, Lawrence Livermore National Security, LLC.
-# Produced at the Lawrence Livermore National Laboratory.
-#
-# This file is part of Spack.
-# Created by Todd Gamblin, tgamblin@llnl.gov, All rights reserved.
-# LLNL-CODE-647188
-#
-# For details, see https://github.com/spack/spack
-# Please also see the NOTICE and LICENSE files for our notice and the LGPL.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License (as
-# published by the Free Software Foundation) version 2.1, February 1999.
-#
-# This program is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the IMPLIED WARRANTY OF
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the terms and
-# conditions of the GNU Lesser General Public License for more details.
-#
-# You should have received a copy of the GNU Lesser General Public
-# License along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-##############################################################################
+from spack import *
 import ast
-import os
 import platform
 import re
-import sys
+import sys,os
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
+from scrampackage import write_scram_toolfile
+
 
 import llnl.util.tty as tty
 from llnl.util.lang import match_predicate
 from llnl.util.filesystem import force_remove
 
 import spack
-from spack import *
 from spack.util.prefix import Prefix
 import spack.util.spack_json as sjson
 
@@ -592,7 +570,7 @@ class Python(AutotoolsPackage):
             if not os.path.isfile(easy_pth):
                 continue
 
-            with open(easy_pth) as f:
+    
                 for line in f:
                     line = line.rstrip()
 
@@ -657,17 +635,9 @@ class Python(AutotoolsPackage):
                 exts,
                 prefix=extensions_layout.extendee_target_directory(self))
 
-    def write_scram_toolfile(self, contents,filename):
-        """Write scram tool config file"""
-        mkdirp(self.spec.prefix.etc+'/scram.d')
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
-            f.write(contents)
-            f.close()
-
-
     @run_after('install')
     def write_scram_toolfiles(self):
-        from string import Template
+
         pyvers=str(self.spec['python'].version).split('.')
         pyver=pyvers[0]+'.'+pyvers[1]
         values={}
@@ -675,7 +645,7 @@ class Python(AutotoolsPackage):
         values['PFX']=self.spec.prefix
         values['PYVER']=pyver
         fname='python.xml'
-        template=Template("""<tool name="python" version="$VER">
+        contents = str("""<tool name="python" version="$VER">
   <lib name="python${PYVER}"/>
   <client>
     <environment name="PYTHON_BASE" default="$PFX"/>
@@ -689,4 +659,4 @@ class Python(AutotoolsPackage):
   <use name="sockets"/>
 </tool>""")
         contents=template.substitute(values)
-        self.write_scram_toolfile(contents,fname)
+        write_scram_toolfile(contents, values, fname)

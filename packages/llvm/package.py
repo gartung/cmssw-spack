@@ -1,28 +1,7 @@
-##############################################################################
-# Copyright (c) 2013-2017, Lawrence Livermore National Security, LLC.
-# Produced at the Lawrence Livermore National Laboratory.
-#
-# This file is part of Spack.
-# Created by Todd Gamblin, tgamblin@llnl.gov, All rights reserved.
-# LLNL-CODE-647188
-#
-# For details, see https://github.com/spack/spack
-# Please also see the NOTICE and LICENSE files for our notice and the LGPL.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License (as
-# published by the Free Software Foundation) version 2.1, February 1999.
-#
-# This program is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the IMPLIED WARRANTY OF
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the terms and
-# conditions of the GNU Lesser General Public License for more details.
-#
-# You should have received a copy of the GNU Lesser General Public
-# License along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-##############################################################################
 from spack import *
+import sys,os
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
+from scrampackage import write_scram_toolfile
 
 
 class Llvm(CMakePackage):
@@ -449,21 +428,9 @@ class Llvm(CMakePackage):
         with working_dir(self.build_directory):
             install_tree('bin', join_path(self.prefix, 'libexec', 'llvm'))
 
-    def write_scram_toolfile(self, contents, filename):
-        """Write scram tool config file"""
-        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
-            f.write(contents)
-            f.close()
 
     @run_after('install')
     def write_scram_toolfiles(self):
-        """Create contents of scram tool config files for this package."""
-        from string import Template
-        import sys
-        import re
-
-        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
-
         gcc = which(spack_f77)
         gcc_prefix = re.sub('/bin/.*$', '', self.compiler.f77)
         gcc_machine = gcc('-dumpmachine', output=str)
@@ -485,7 +452,7 @@ class Llvm(CMakePackage):
             values['LDPATH_NAME'] = 'DYLD_LIBRARY_PATH'
 
 #        fname='llvm-cxxcompiler.xml'
-#        template=Template("""<tool name="llvm-cxxcompiler" version="${VER}" type="compiler">
+#        contents = str("""<tool name="llvm-cxxcompiler" version="${VER}" type="compiler">
 #    <use name="gcc-cxxcompiler"/>
 #    <client>
 #      <environment name="LLVM_CXXCOMPILER_BASE" default="${PFX}"/>
@@ -516,48 +483,48 @@ class Llvm(CMakePackage):
 #    <runtime name="PATH" value="${BIN}" type="path"/>
 #    <runtime name="COMPILER_RUNTIME_OBJECTS" value="${GCC_PREFIX}"/>
 #  </tool>""")
-#        contents = template.substitute(values)
-#        self.write_scram_toolfile(contents,fname)
+
+#        write_scram_toolfile(contents,values, fname)
 #
 #
 #        fname='iwyu-cxxcompiler.xml'
-#        template=Template("""<tool name="iwyu-cxxcompiler" version="${VER}" type="compiler">
+#        contents = str("""<tool name="iwyu-cxxcompiler" version="${VER}" type="compiler">
 #    <use name="llvm-cxxcompiler"/>
 #    <client>
 #      <environment name="LLVM_CXXCOMPILER_BASE" default="${PFX}"/>
 #      <environment name="CXX" value="${BIN}/include-what-you-use"/>
 #    </client>
 #  </tool>""")
-#        contents = template.substitute(values)
-#        self.write_scram_toolfile(contents,fname)
+
+#        write_scram_toolfile(contents, values, fname)
 #
 #
 #        fname='llvm-ccompiler.xml'
-#        template=Template("""<tool name="llvm-ccompiler" version="${VER}" type="compiler">
+#        contents = str("""<tool name="llvm-ccompiler" version="${VER}" type="compiler">
 #    <use name="gcc-ccompiler"/>
 #    <client>
 #      <environment name="LLVM_CCOMPILER_BASE" default="${PFX}"/>
 #      <environment name="CC" value="clang"/>
 #    </client>
 #  </tool>""")
-#        contents = template.substitute(values)
-#        self.write_scram_toolfile(contents,fname)
+
+#        write_scram_toolfile(contents, values, fname)
 #
 #
 #        fname='llvm-f77compiler.xml'
-#        template=Template("""  <tool name="llvm-f77compiler" version="${VER}" type="compiler">
+#        contents = str("""  <tool name="llvm-f77compiler" version="${VER}" type="compiler">
 #    <use name="gcc-f77compiler"/>
 #    <client>
 #      <environment name="FC" default="gfortran"/>
 #    </client>
 #  </tool>""")
-#        contents = template.substitute(values)
-#        self.write_scram_toolfile(contents,fname)
+
+#        write_scram_toolfile(contents, values, fname)
 #
 #
 # Clang analyzer compilers
 #        fname='llvm-analyzer-cxxcompiler.xml'
-#        template=Template("""  <tool name="llvm-analyzer-cxxcompiler" version="${VER}" type="compiler">
+#        contents = str("""  <tool name="llvm-analyzer-cxxcompiler" version="${VER}" type="compiler">
 #    <use name="llvm-cxxcompiler"/>
 #    <client>
 #      <environment name="LLVM_ANALYZER_CXXCOMPILER_BASE" default="${PFX}"/>
@@ -565,25 +532,25 @@ class Llvm(CMakePackage):
 #    </client>
 #    <runtime name="COMPILER_RUNTIME_OBJECTS" value="${GCC_PREFIX}"/>
 #  </tool>""")
-#        contents = template.substitute(values)
-#        self.write_scram_toolfile(contents,fname)
+
+#        write_scram_toolfile(contents, values, fname)
 #
 #
 #        fname='llvm-analyzer-ccompiler.xml'
-#        template=Template("""  <tool name="llvm-analyzer-ccompiler" version="${VER}" type="compiler">
+#        contents = str("""  <tool name="llvm-analyzer-ccompiler" version="${VER}" type="compiler">
 #    <use name="llvm-ccompiler"/>
 #    <client>
 #      <environment name="LLVM_ANALYZER_CCOMPILER_BASE" default="${PFX}"/>
 #      <environment name="CC" value="${BIN}/ccc-analyzer"/>
 #    </client>
 #  </tool>""")
-#        contents = template.substitute(values)
-#        self.write_scram_toolfile(contents,fname)
+
+#        write_scram_toolfile(contents, values, fname)
 #
 
 # This is a toolfile to use llvm / clang as a library, not as a compiler.
         fname = 'llvm.xml'
-        template = Template("""  <tool name="llvm" version="${VER}">
+        contents = str("""  <tool name="llvm" version="${VER}">
     <lib name="clang"/>
     <client>
       <environment name="LLVM_BASE" default="${PFX}"/>
@@ -596,16 +563,16 @@ class Llvm(CMakePackage):
     <flags CXXFLAGS="-fomit-frame-pointer -fPIC -Wno-enum-compare "/>
     <flags CXXFLAGS="-Wno-strict-aliasing -fno-rtti"/>
   </tool>""")
-        contents = template.substitute(values)
-        self.write_scram_toolfile(contents, fname)
+
+        write_scram_toolfile(contents, values, fname)
 
         fname = 'pyclang.xml'
-        template = Template("""<tool name="pyclang" version="${VER}">
+        contents = str("""<tool name="pyclang" version="${VER}">
   <client>
     <environment name="PYCLANG_BASE" default="${PFX}"/>
   </client>
   <runtime name="PYTHONPATH" value="${LIB}/python$PYVER/site-packages" type="path"/>
   <use name="python"/>
 </tool>""")
-        contents = template.substitute(values)
-        self.write_scram_toolfile(contents, fname)
+
+        write_scram_toolfile(contents, values, fname)

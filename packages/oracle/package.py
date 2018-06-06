@@ -1,36 +1,11 @@
-##############################################################################
-# Copyright (c) 2013-2017, Lawrence Livermore National Security, LLC.
-# Produced at the Lawrence Livermore National Laboratory.
-#
-# This file is part of Spack.
-# Created by Todd Gamblin, tgamblin@llnl.gov, All rights reserved.
-# LLNL-CODE-647188
-#
-# For details, see https://github.com/spack/spack
-# Please also see the NOTICE and LICENSE files for our notice and the LGPL.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License (as
-# published by the Free Software Foundation) version 2.1, February 1999.
-#
-# This program is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the IMPLIED WARRANTY OF
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the terms and
-# conditions of the GNU Lesser General Public License for more details.
-#
-# You should have received a copy of the GNU Lesser General Public
-# License along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-##############################################################################
 from spack import *
 import glob
 import shutil
-import os
-
+import sys,os
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
+from scrampackage import write_scram_toolfile
 
 class Oracle(Package):
-    """FIXME: Put a proper description of your package here."""
-
     homepage = "http://www.example.com"
     url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/oracle/12.1.0.2.0/instantclient-basic-linux.x64-12.1.0.2.0.zip"
 
@@ -61,25 +36,14 @@ class Oracle(Package):
                     '.')[0] + '.' + dso_suffix
                 os.symlink(f, dest)
 
-    def write_scram_toolfile(self, contents, filename):
-        """Write scram tool config file"""
-        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
-            f.write(contents)
-            f.close()
-
     @run_after('install')
     def write_scram_toolfiles(self):
-        """Create contents of scram tool config files for this package."""
-        from string import Template
-
-        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
-
         values = {}
         values['VER'] = self.spec.version
         values['PFX'] = self.spec.prefix
 
         fname = 'oracle.xml'
-        template = Template("""<tool name="oracle" version="$VER">
+        contents = str("""<tool name="oracle" version="$VER">
   <lib name="clntsh"/>
   <client>
     <environment name="ORACLE_BASE" default="$PFX"/>
@@ -94,14 +58,13 @@ class Oracle(Package):
   <use name="root_cxxdefaults"/>
   <use name="sockets"/>
 </tool>""")
-        contents = template.substitute(values)
-        self.write_scram_toolfile(contents, fname)
+
+        write_scram_toolfile(contents, values, fname)
 
         fname = 'oracleocci.xml'
-        template = Template("""<tool name="oracleocci" version="$VER">
+        contents = str("""<tool name="oracleocci" version="$VER">
   <lib name="occi"/>
   <use name="oracle"/>
 </tool>""")
 
-        contents = template.substitute(values)
-        self.write_scram_toolfile(contents, fname)
+        write_scram_toolfile(contents, values, fname)

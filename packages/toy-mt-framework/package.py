@@ -1,6 +1,5 @@
 from spack import *
 
-
 class ToyMtFramework(Package):
     homepage = "https://github.com/gartung/toy-mt-framework.git"
 

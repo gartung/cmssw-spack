@@ -1,30 +1,7 @@
-##############################################################################
-# Copyright (c) 2013-2017, Lawrence Livermore National Security, LLC.
-# Produced at the Lawrence Livermore National Laboratory.
-#
-# This file is part of Spack.
-# Created by Todd Gamblin, tgamblin@llnl.gov, All rights reserved.
-# LLNL-CODE-647188
-#
-# For details, see https://github.com/spack/spack
-# Please also see the NOTICE and LICENSE files for our notice and the LGPL.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License (as
-# published by the Free Software Foundation) version 2.1, February 1999.
-#
-# This program is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the IMPLIED WARRANTY OF
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the terms and
-# conditions of the GNU Lesser General Public License for more details.
-#
-# You should have received a copy of the GNU Lesser General Public
-# License along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-##############################################################################
 from spack import *
-import sys
-import os
+import sys,os
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
+from scrampackage import write_scram_toolfile
 
 
 class Boost(Package):
@@ -384,25 +361,15 @@ class Boost(Package):
         if (sys.platform == 'darwin') and ('+shared' in spec):
             fix_darwin_install_name(prefix.lib)
 
-    def write_scram_toolfile(self, contents, filename):
-        """Write scram tool config file"""
-        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
-            f.write(contents)
-            f.close()
-
     @run_after('install')
     def write_scram_toolfiles(self):
-        """Create contents of scram tool config files for this package."""
-        from string import Template
-        import sys
-        mkdirp(join_path(self.spec.prefix.etc, 'scram.d'))
 
         values = {}
         values['VER'] = self.spec.version
         values['PFX'] = self.spec.prefix
 
         fname = 'boost.xml'
-        template = Template("""<tool name="boost" version="$VER">
+        contents = str("""<tool name="boost" version="$VER">
   <info url="http://www.boost.org"/>
   <lib name="boost_thread"/>
   <lib name="boost_signals"/>
@@ -419,59 +386,54 @@ class Boost(Package):
   <flags CXXFLAGS="-Wno-error=unused-variable"/>
   <use name="sockets"/>
 </tool>""")
-        contents = template.substitute(values)
-        self.write_scram_toolfile(contents, fname)
+        write_scram_toolfile(contents, values, fname)
 
 
 # boost_chrono toolfile
         fname = 'boost_chrono.xml'
-        template = Template("""<tool name="boost_chrono" version="$VER">
+        contents = str("""<tool name="boost_chrono" version="$VER">
   <info url="http://www.boost.org"/>
   <lib name="boost_chrono"/>
   <use name="boost_system"/>
   <use name="boost"/>
 </tool>""")
-        contents = template.substitute(values)
-        self.write_scram_toolfile(contents, fname)
+        write_scram_toolfile(contents, values, fname)
 
 
 # boost_filesystem toolfile
         fname = 'boost_filesystem.xml'
-        template = Template("""<tool name="boost_filesystem" version="$VER">
+        contents = str("""<tool name="boost_filesystem" version="$VER">
   <info url="http://www.boost.org"/>
   <lib name="boost_filesystem"/>
   <use name="boost_system"/>
   <use name="boost"/>
 </tool>""")
-        contents = template.substitute(values)
-        self.write_scram_toolfile(contents, fname)
+        write_scram_toolfile(contents, values, fname)
 
 
 # boost_system toolfile
         fname = 'boost_system.xml'
-        template = Template("""<tool name="boost_system" version="$VER">
+        contents = str("""<tool name="boost_system" version="$VER">
   <info url="http://www.boost.org"/>
   <lib name="boost_system"/>
   <use name="boost"/>
 </tool>""")
-        contents = template.substitute(values)
-        self.write_scram_toolfile(contents, fname)
+        write_scram_toolfile(contents, values, fname)
 
 
 # boost_program_options toolfile
         fname = 'boost_program_options.xml'
-        template = Template("""<tool name="boost_program_options" version="$VER">
+        contents = str("""<tool name="boost_program_options" version="$VER">
   <info url="http://www.boost.org"/>
   <lib name="boost_program_options"/>
   <use name="boost"/>
 </tool>""")
-        contents = template.substitute(values)
-        self.write_scram_toolfile(contents, fname)
+        write_scram_toolfile(contents, values, fname)
 
 
 # boost_python toolfile
         fname = 'boost_python.xml'
-        template = """
+        contents = str("""
 <tool name="boost_python" version="$VER">
   <info url="http://www.boost.org"/>
   <lib name="boost_python"/>
@@ -483,63 +445,57 @@ class Boost(Package):
   <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
   <use name="root_cxxdefaults"/>
   <use name="python"/>
-</tool>"""
-        contents = Template(template).substitute(values)
-        self.write_scram_toolfile(contents, fname)
+</tool>""")
+        write_scram_toolfile(contents, values, fname)
 
 
 # boost_regex toolfile
         fname = 'boost_regex.xml'
-        template = Template("""<tool name="boost_regex" version="$VER">
+        contents = str("""<tool name="boost_regex" version="$VER">
   <info url="http://www.boost.org"/>
   <lib name="boost_regex"/>
   <use name="boost"/>
 </tool>""")
-        contents = template.substitute(values)
-        self.write_scram_toolfile(contents, fname)
+        write_scram_toolfile(contents, values, fname)
 
 
 # boost_signals toolfile
         fname = 'boost_signals.xml'
-        template = Template("""<tool name="boost_signals" version="$VER">
+        contents = str("""<tool name="boost_signals" version="$VER">
   <info url="http://www.boost.org"/>
   <lib name="boost_signals"/>
   <use name="boost"/>
 </tool>""")
-        contents = template.substitute(values)
-        self.write_scram_toolfile(contents, fname)
+        write_scram_toolfile(contents, values, fname)
 
         fname = 'boost_serialization.xml'
-        template = Template("""<tool name="boost_serialization" version="$VER">
+        contents = str("""<tool name="boost_serialization" version="$VER">
   <info url="http://www.boost.org"/>
   <lib name="boost_serialization"/>
   <use name="boost"/>
 </tool>""")
-        contents = template.substitute(values)
-        self.write_scram_toolfile(contents, fname)
+        write_scram_toolfile(contents, values, fname)
 
         fname = 'boost_test.xml'
-        template = Template("""<tool name="boost_test" version="$VER">
+        contents = str("""<tool name="boost_test" version="$VER">
   <info url="http://www.boost.org"/>
   <lib name="boost_unit_test_framework"/>
   <use name="boost"/>
 </tool>""")
-        contents = template.substitute(values)
-        self.write_scram_toolfile(contents, fname)
+        write_scram_toolfile(contents, values, fname)
 
         fname = 'boost_iostreams.xml'
-        template = Template("""<tool name="boost_iostreams" version="$VER">
+        contents = str("""<tool name="boost_iostreams" version="$VER">
   <info url="http://www.boost.org"/>
   <lib name="boost_iostreams"/>
   <use name="boost"/>
 </tool>""")
-        contents = template.substitute(values)
-        self.write_scram_toolfile(contents, fname)
+        write_scram_toolfile(contents, values, fname)
 
 
 # boost_header toolfile
         fname = 'boost_header.xml'
-        template = Template("""<tool name="boost_header" version="$VER">
+        contents = str("""<tool name="boost_header" version="$VER">
   <info url="http://www.boost.org"/>
   <client>
     <environment name="BOOSTHEADER_BASE" default="$PFX"/>
@@ -548,5 +504,4 @@ class Boost(Package):
   <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
   <use name="root_cxxdefaults"/>
 </tool>""")
-        contents = template.substitute(values)
-        self.write_scram_toolfile(contents, fname)
+        write_scram_toolfile(contents, values, fname)

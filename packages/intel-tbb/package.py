@@ -1,31 +1,9 @@
-##############################################################################
-# Copyright (c) 2013-2016, Lawrence Livermore National Security, LLC.
-# Produced at the Lawrence Livermore National Laboratory.
-#
-# This file is part of Spack.
-# Created by Todd Gamblin, tgamblin@llnl.gov, All rights reserved.
-# LLNL-CODE-647188
-#
-# For details, see https://github.com/spack/spack
-# Please also see the LICENSE file for our notice and the LGPL.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU Lesser General Public License (as
-# published by the Free Software Foundation) version 2.1, February 1999.
-#
-# This program is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the IMPLIED WARRANTY OF
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the terms and
-# conditions of the GNU Lesser General Public License for more details.
-#
-# You should have received a copy of the GNU Lesser General Public
-# License along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-##############################################################################
 from spack import *
-import os
 import re
 import glob
+import sys,os
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
+from scrampackage import write_scram_toolfile
 
 
 class IntelTbb(Package):
@@ -115,16 +93,16 @@ class IntelTbb(Package):
             for f in fs:
                 install(f, prefix.lib)
 
-    def write_scram_toolfile(self, contents, filename):
-        """Write scram tool config file"""
+
+
         mkdirp(self.spec.prefix.etc + '/scram.d/')
-        with open(self.spec.prefix.etc + '/scram.d/' + filename, 'w') as f:
-            f.write(contents)
-            f.close()
+
+
+
 
     @run_after('install')
     def write_scram_toolfiles(self):
-        from string import Template
+
         gcc = which(spack_f77)
         gcc_prefix = re.sub('/bin/.*$', '', self.compiler.f77)
         gcc_machine = gcc('-dumpmachine', output=str)
@@ -138,7 +116,7 @@ class IntelTbb(Package):
         values['GCC_PREFIX'] = gcc_prefix
         values['GCC_MACHINE'] = gcc_machine.rstrip()
         fname = 'tbb.xml'
-        template = Template("""
+        contents = str("""
 <tool name="tbb" version="$VER">
   <info url="http://threadingbuildingblocks.org"/>
   <lib name="tbb"/>
@@ -152,5 +130,5 @@ class IntelTbb(Package):
   <flags CPPDEFINES="TBB_USE_GLIBCXX_VERSION=$GCC_GLIBCXX_VER"/>
 </tool>
 """)
-        contents = template.substitute(values)
-        self.write_scram_toolfile(contents, fname)
+
+        write_scram_toolfile(contents, values, fname)

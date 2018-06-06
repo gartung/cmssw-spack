@@ -23,12 +23,12 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
 from spack import *
+import sys,os
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
+from scrampackage import write_scram_toolfile
 
 
 class Rivet(AutotoolsPackage):
-    """FIXME: Put a proper description of your package here."""
-
-    # FIXME: Add a proper url for your package's homepage here.
     homepage = "http://www.example.com"
     url = "http://lcgpackages.web.cern.ch/lcgpackages/tarFiles/sources/MCGeneratorsTarFiles/Rivet-2.5.4.tar.bz2"
 
@@ -43,8 +43,6 @@ class Rivet(AutotoolsPackage):
     depends_on('py-cython')
 
     def configure_args(self):
-        # FIXME: Add arguments other than --prefix
-        # FIXME: If not needed delete this function
         args = ['--disable-silent-rules',
                 '--with-hepmc=%s' % self.spec['hepmc'].prefix,
                 '--with-fastjet=%s' % self.spec['fastjet'].prefix,
@@ -59,17 +57,9 @@ class Rivet(AutotoolsPackage):
         return args
 
 
-    def write_scram_toolfile(self, contents,filename):
-        """Write scram tool config file"""
-        mkdirp(self.spec.prefix.etc+'/scram.d')
-        with open(self.spec.prefix.etc+'/scram.d/'+filename,'w') as f:
-            f.write(contents)
-            f.close()
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
-        from string import Template
         pyvers=str(self.spec['python'].version).split('.')
         pyver=pyvers[0]+'.'+pyvers[1]
         values={}
@@ -77,7 +67,7 @@ class Rivet(AutotoolsPackage):
         values['PFX']=self.spec.prefix
         values['PYVER']=pyver
         fname='rivet.xml'
-        template=Template("""
+        contents = str("""
 <tool name="rivet" version="${VER}">
 <lib name="Rivet"/>
 <client>
