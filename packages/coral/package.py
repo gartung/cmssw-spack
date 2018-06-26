@@ -32,6 +32,7 @@ class Coral(Package):
     depends_on('libuuid')
     depends_on('oracle')
     depends_on('frontier-client')
+    depends_on('cmssw-config')
 
     scram_arch = 'slc7_amd64_gcc700'
  
@@ -39,7 +40,7 @@ class Coral(Package):
         scram = which('scram')
         build_directory = join_path(self.stage.path, 'spack-build')
         source_directory = self.stage.source_path
-        scram_version = 'V%' % spec['scram'].version
+        scram_version = 'V%s' % spec['scram'].version
         project_dir = join_path(prefix, 'CORAL_%s' % self.version.underscored)
 
         with working_dir(build_directory, create=True):
@@ -59,10 +60,10 @@ class Coral(Package):
             uc(  '-p', 'CORAL',
                  '-v', 'CORAL_%s' % self.version.underscored,
                  '-s', scram_version,
-                 '-t', spec['cmssw-tool-conf'].prefix,
+                 '-t', build_directory,
                  '--keys', 'SCRAM_COMPILER=gcc',
                  '--keys', 'PROJECT_GIT_HASH=CORAL_%s' % self.version.underscored,
-                 '--arch', '%s' % spec['scram'].scram_arch)
+                 '--arch', '%s' % self.scram_arch)
             scram('project', '-d', '%s' % prefix, '-b', 'config/bootsrc.xml')
 
         with working_dir(project_dir, create=False):

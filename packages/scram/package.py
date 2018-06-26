@@ -42,6 +42,8 @@ class Scram(Package):
             values['GCC_VER'] = gcc_ver.rstrip()
             values['GCC_PREFIX'] = gcc_prefix
             values['GCC_MACHINE'] = gcc_machine.rstrip()
+            values['PFX'] = ""
+            values['VER'] = ""
 
             contents = str("""
   <tool name="gcc-ccompiler" version="${GCC_VER}" type="compiler">

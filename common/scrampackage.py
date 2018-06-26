@@ -1,8 +1,11 @@
+from spack import *
+from llnl.util.filesystem import *
+
 def write_scram_toolfile(tmplstr, vals, fname):
     """Create contents of scram tool config files for this package."""
     from string import Template
     mkdirp(join_path(vals['PFX'], 'scram.d'))
-    filename=join_path(vals['PFX'], 'scram.d', name)
+    filename=join_path(vals['PFX'], 'scram.d', fname)
     template = Template(tmplstr)
     contents = template.substitute(vals)
     with open(filename, 'w') as f:

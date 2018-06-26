@@ -658,5 +658,4 @@ class Python(AutotoolsPackage):
   <use name="root_cxxdefaults"/>
   <use name="sockets"/>
 </tool>""")
-        contents=template.substitute(values)
         write_scram_toolfile(contents, values, fname)
