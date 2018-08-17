@@ -37,21 +37,3 @@ class Eigen(CMakePackage):
     def setup_dependent_environment(self, spack_env, run_env, dspec):
         spack_env.set('EIGEN_SOURCE','https://github.com/cms-externals/eigen-git-mirror/archive/%s.tar.gz'%self.version)
         spack_env.set('EIGEN_STRIP_PREFIX','eigen-git-mirror-%s'%self.version)
-
-    @run_after('install')
-    def write_scram_toolfiles(self):
-        values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
-
-        fname = 'eigen3.xml'
-        contents = str("""
-<tool name="eigen" version="${VER}">
-  <client>
-    <environment name="EIGEN_BASE"   default="${PFX}"/>
-    <environment name="INCLUDE"      default="$$EIGEN_BASE/include/eigen3"/>
-  </client>
-  <flags CPPDEFINES="EIGEN_DONT_PARALLELIZE"/>
-</tool>
-""")
-        write_scram_toolfile(contents, values, fname)

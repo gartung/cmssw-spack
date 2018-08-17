@@ -50,29 +50,3 @@ class Classlib(AutotoolsPackage):
     def build(self, spec, prefix):
         make('CXXFLAGS=-Wno-error -ansi -pedantic -W -Wall -Wno-long-long ')
 
-    @run_after('install')
-    def write_scram_toolfiles(self):
-        values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
-
-        fname = 'classlib.xml'
-
-        contents = str("""<tool name="classlib" version="$VER">
-    <info url="http://cmsmac01.cern.ch/~lat/exports/"/>
-    <client>
-      <environment name="CLASSLIB_BASE" default="$PFX"/>
-      <environment name="LIBDIR" default="$$CLASSLIB_BASE/lib"/>
-      <environment name="INCLUDE" default="$$CLASSLIB_BASE/include"/>
-      <flags CPPDEFINES="__STDC_LIMIT_MACROS"/>
-      <flags CPPDEFINES="__STDC_FORMAT_MACROS"/>
-      <lib name="classlib"/>
-      <use name="zlib"/>
-      <use name="bz2lib"/>
-      <use name="pcre"/>
-      <use name="openssl"/>
-    </client>
-    <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
-    <use name="root_cxxdefaults"/>
-  </tool>""")
-        write_scram_toolfile(contents, values, fname)

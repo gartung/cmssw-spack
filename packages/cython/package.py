@@ -5,9 +5,6 @@ from scrampackage import write_scram_toolfile
 
 class Cython(Package):
 
-
-
-    homepage = "http://www.example.com"
     url = "http://cern.ch/service-spi/external/MCGenerators/distribution/cython/cython-0.22-src.tgz"
 
     version('0.22', 'f7653aaae762593e13a66f94dadf1835')
@@ -22,20 +19,3 @@ class Cython(Package):
             python('setup.py', 'build')
             python('setup.py', 'install', '--prefix=%s' % prefix)
 
-    @run_after('install')
-    def write_scram_toolfiles(self):
-        values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
-
-        fname = 'cython.xml'
-        contents = str("""
-<tool name="cython" version="${VER}">
-  <client>
-    <environment name="CYTHON_BASE" default="${PFX}"/>
-  </client>
-  <runtime name="PYTHONPATH" value="${PFX}/lib/python2.7/site-packages" type="path"/>
-  <use name="python"/>
-</tool>
-""")
-        write_scram_toolfile(contents, values, fname)

@@ -18,24 +18,3 @@ class Csctrackfinderemulation(Package):
         make()
         make('install')
         du.copy_tree('installDir',prefix)
-
-    @run_after('install')
-    def write_scram_toolfiles(self):
-        values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
-
-        fname = 'csctrackfinderemulation.xml'
-        contents = str("""
-<tool name="CSCTrackFinderEmulation" version="${VER}">
-  <lib name="CSCTrackFinderEmulation"/>
-  <client>
-    <environment name="CSCTRACKFINDEREMULATION_BASE" default="${PFX}"/>
-    <environment name="LIBDIR" default="$$CSCTRACKFINDEREMULATION_BASE/lib64"/>
-    <environment name="INCLUDE" default="$$CSCTRACKFINDEREMULATION_BASE/include"/>
-  </client>
-  <runtime name="CSC_TRACK_FINDER_DATA_DIR" default="$$CSCTRACKFINDEREMULATION_BASE/data/"/>
-  <runtime name="CMSSW_SEARCH_PATH" default="$$CSCTRACKFINDEREMULATION_BASE/data" type="path"/>
-</tool>
-""")
-        write_scram_toolfile(contents, values, fname)

@@ -2,15 +2,10 @@ from spack import *
 import glob
 import shutil
 import sys,os
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
-from scrampackage import write_scram_toolfile
 
 
 class Evtgen(Package):
 
-
-
-    homepage = "http://www.example.com"
     url = "http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/evtgen/evtgen-1.6.0-src.tgz"
 
     version('1.6.0', '6f81a213c03ed41f9a7f2e6225e42330')
@@ -43,27 +38,3 @@ class Evtgen(Package):
             shutil.move(f, '../'+os.path.basename(f))
         shutil.rmtree(prefix.lib+'/archive')
 
-    @run_after('install')
-    def write_scram_toolfiles(self):
-        values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
-
-        fname = 'evtgen.xml'
-        contents = str("""
-<tool name="evtgen" version="${VER}">
-  <lib name="EvtGen"/>
-  <lib name="EvtGenExternal"/>
-  <client>
-    <environment name="EVTGEN_BASE" default="${PFX}"/>
-    <environment name="LIBDIR" default="$$EVTGEN_BASE/lib"/>
-    <environment name="INCLUDE" default="$$EVTGEN_BASE/include"/>
-  </client>
-  <runtime name="EVTGENDATA" value="$$EVTGEN_BASE/share"/>
-  <use name="hepmc"/>
-  <use name="pythia8"/>
-  <use name="tauolapp"/>
-  <use name="photospp"/>
-</tool>
-""")
-        write_scram_toolfile(contents, values, fname)

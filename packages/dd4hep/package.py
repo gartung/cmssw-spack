@@ -1,8 +1,5 @@
 from spack import *
 import sys,os
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
-from scrampackage import write_scram_toolfile
-
 
 class Dd4hep(CMakePackage):
     """software framework of the FCC project"""
@@ -11,13 +8,6 @@ class Dd4hep(CMakePackage):
 
     version('01.07', git='https://github.com/cms-externals/DD4hep.git',
              commit='ffe3645730224bf0b0a6dd6a8d2c6c1d87fa2b53')
-    version('01.05', 'ab9aaa59e9d9ad9d60205151d984ec2b')
-    version('01.02', 'bcef07aaf7a28b5ed9062a76a7ba5633')
-    version('00.19', 'f5e162261433082c6363e6c96c08c66e')
-    version('00.18', 'ab4f3033c9ac7494f863bc88eedbdcf5')
-    version('00.17', '9b9ea29790aa887893484ed8a4afae68')
-    version('00.16', '4df618f2f7b10f0e995d7f30214f0850')
-    version('00.15', 'cf0b50903e37c30f2361318c79f115ce')
 
     depends_on('cmake', type='build')
     depends_on('boost')
@@ -29,14 +19,6 @@ class Dd4hep(CMakePackage):
         spec = self.spec
 
         options = []
-
-        # Set the correct compiler flag
-        #if self.compiler.cxx11_flag:
-        #    options.extend(['-DDD4HEP_USE_CXX11=ON'])
-        #if self.compiler.cxx14_flag:
-        #    options.extend(['-DDD4HEP_USE_CXX14=ON'])
-        #if self.compiler.cxx17_flag:
-        #    options.extend(['-DDD4HEP_USE_CXX17=ON'])
 
         options.extend([
             '-DROOTSYS=%s' % spec['root'].prefix,

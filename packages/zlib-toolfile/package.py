@@ -1,29 +1,29 @@
 from spack import *
-from string import Template
-import os
+import sys,os
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
+from scrampackage import write_scram_toolfile
+
 
 class ZlibToolfile(Package):
-    """A free, general-purpose, legally unencumbered lossless
-       data-compression library."""
-
-    fname = 'zlib.xml'
-    homepage = "http://zlib.net"
-    # URL must remain http:// so Spack can bootstrap curl
-    url = 'file://' + os.path.dirname(__file__) + '/' + fname
-    sha1 = 'c4b943907d14c74c93ae121e7789e23148beb5f0'
-
-    version('1.0.0', sha1, expand=False)
+    url = 'file://' + os.path.dirname(__file__) + '/package.py'
+    version('1.0.0', '', expand=False)
     depends_on('zlib')
 
     def install(self, spec, prefix):
         values = {}
         values['VER'] = self.spec['zlib'].version
         values['PFX'] = self.spec['zlib'].prefix
-        fin = open(self.fname,'r')
-        tmpl = Template( fin.read() )
-        fin.close()
-        contents = tmpl.substitute(values)
-        mkdirp(join_path(prefix.etc,'scram.d'))
-        fout = open(join_path(prefix.etc,'scram.d',self.fname), 'w')
-        fout.write(contents)
-        fout.close()
+        fname = 'zlib.xml'
+        contents = str("""
+<tool name="zlib" version="$VER">
+  <lib name="z"/>
+  <client>
+    <environment name="ZLIB_BASE" default="$PFX"/>
+    <environment name="INCLUDE" default="$$ZLIB_BASE/include"/>
+    <environment name="LIBDIR" default="$$ZLIB_BASE/lib"/>
+  </client>
+  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
+  <use name="root_cxxdefaults"/>
+</tool>
+""")
+        write_scram_toolfile(contents, values, fname)

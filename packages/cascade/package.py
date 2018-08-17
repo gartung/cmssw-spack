@@ -2,8 +2,6 @@ from spack import *
 import glob
 import distutils.dir_util as du
 import sys,os
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
-from scrampackage import write_scram_toolfile 
 
 
 class Cascade(Package):
@@ -49,38 +47,3 @@ class Cascade(Package):
     def url_for_version(self,version):
         url="http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/cascade/cascade-%s-src.tgz"%version
         return url
-
-    @run_after('install')
-    def write_scram_toolfiles(self):
-        values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
-
-        fname = 'cascade.xml'
-        contents = str("""
-<tool name="cascade" version="${VER}">
-    <lib name="cascade_merged"/>
-  <client>
-    <environment name="CASCADE_BASE" default="${PFX}"/>
-    <environment name="LIBDIR" default="$$CASCADE_BASE/lib"/>
-  </client>
-  <runtime name="CASCADE_PDFPATH" value="$$CASCADE_BASE/share"/>
-  <use name="f77compiler"/>
-  <use name="cascade_headers"/>
-</tool>
-""")
-        write_scram_toolfile(contents, values, fname)
-
-        fname = 'cascade_headers.xml'
-        contents = str("""
-<tool name="cascade_headers" version="${VER}">
-  <client>
-    <environment name="CASCADE_HEADERS_BASE" default="${PFX}"/>
-    <environment name="INCLUDE" default="$$CASCADE_HEADERS_BASE/include"/>
-  </client>
-  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
-  <use name="root_cxxdefaults"/>
-</tool>
-""")
-        write_scram_toolfile(contents, values, fname)
-

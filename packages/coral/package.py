@@ -12,27 +12,15 @@ class Coral(Package):
     """CORAL built as a scram project"""
 
     homepage = "http://cms-sw.github.io"
-    url = "https://github.com/cms-externals/coral"
+    url = "https://github.com/cms-externals/coral.tgz"
 
     version('2.3.21', git='https://github.com/cms-externals/coral',
             branch='cms/CORAL_2_3_21')
 
     depends_on('scram')
     depends_on('gmake')
-    depends_on('python')
-    depends_on('boost')
-    depends_on('cppunit')
-    depends_on('xerces-c')
-    depends_on('expat')
-    depends_on('sqlite')
-    depends_on('bzip2')
-    depends_on('openssl')
-    depends_on('pcre')
-    depends_on('zlib')
-    depends_on('libuuid')
-    depends_on('oracle')
-    depends_on('frontier-client')
     depends_on('cmssw-config')
+    depends_on('coral-tool-conf')
 
     scram_arch = 'slc7_amd64_gcc700'
  

@@ -6,9 +6,6 @@ from scrampackage import write_scram_toolfile
 
 class CfeBindings(Package):
 
-
-
-    homepage = "http://www.example.com"
     url = "http://releases.llvm.org/5.0.0/cfe-5.0.0.src.tar.xz"
 
     version('5.0.0', '699c448c6d6d0edb693c87beb1cc8c6e')
