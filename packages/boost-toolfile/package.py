@@ -5,15 +5,15 @@ from scrampackage import write_scram_toolfile
 
 
 class BoostToolfile(Package):
-    url = 'file://' + os.path.dirname(__file__) + '/package.py'
-    version('1.0.0', '', expand=False)
+    url = 'file://' + os.path.dirname(__file__) + '/../../common/junk.xml'
+    version('1.0', '68841b7dcbd130afd7d236afe8fd5b949f017615', expand=False)
     depends_on('boost')
 
     def install(self, spec, prefix):
 
         values = {}
-        values['VER'] = self.spec['boost'].version
-        values['PFX'] = self.spec['boost'].prefix
+        values['VER'] = spec['boost'].version
+        values['PFX'] = spec['boost'].prefix
 
         fname = 'boost.xml'
         contents = str("""<tool name="boost" version="$VER">
@@ -33,7 +33,7 @@ class BoostToolfile(Package):
   <flags CXXFLAGS="-Wno-error=unused-variable"/>
   <use name="sockets"/>
 </tool>""")
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, prefix)
 
 
 # boost_chrono toolfile
@@ -44,7 +44,7 @@ class BoostToolfile(Package):
   <use name="boost_system"/>
   <use name="boost"/>
 </tool>""")
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, prefix)
 
 
 # boost_filesystem toolfile
@@ -55,7 +55,7 @@ class BoostToolfile(Package):
   <use name="boost_system"/>
   <use name="boost"/>
 </tool>""")
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, prefix)
 
 
 # boost_system toolfile
@@ -65,7 +65,7 @@ class BoostToolfile(Package):
   <lib name="boost_system"/>
   <use name="boost"/>
 </tool>""")
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, prefix)
 
 
 # boost_program_options toolfile
@@ -75,7 +75,7 @@ class BoostToolfile(Package):
   <lib name="boost_program_options"/>
   <use name="boost"/>
 </tool>""")
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, prefix)
 
 
 # boost_python toolfile
@@ -93,7 +93,7 @@ class BoostToolfile(Package):
   <use name="root_cxxdefaults"/>
   <use name="python"/>
 </tool>""")
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, prefix)
 
 
 # boost_regex toolfile
@@ -103,7 +103,7 @@ class BoostToolfile(Package):
   <lib name="boost_regex"/>
   <use name="boost"/>
 </tool>""")
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, prefix)
 
 
 # boost_signals toolfile
@@ -113,7 +113,7 @@ class BoostToolfile(Package):
   <lib name="boost_signals"/>
   <use name="boost"/>
 </tool>""")
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, prefix)
 
         fname = 'boost_serialization.xml'
         contents = str("""<tool name="boost_serialization" version="$VER">
@@ -121,7 +121,7 @@ class BoostToolfile(Package):
   <lib name="boost_serialization"/>
   <use name="boost"/>
 </tool>""")
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, prefix)
 
         fname = 'boost_test.xml'
         contents = str("""<tool name="boost_test" version="$VER">
@@ -129,7 +129,7 @@ class BoostToolfile(Package):
   <lib name="boost_unit_test_framework"/>
   <use name="boost"/>
 </tool>""")
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, prefix)
 
         fname = 'boost_iostreams.xml'
         contents = str("""<tool name="boost_iostreams" version="$VER">
@@ -137,7 +137,7 @@ class BoostToolfile(Package):
   <lib name="boost_iostreams"/>
   <use name="boost"/>
 </tool>""")
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, prefix)
 
 
 # boost_header toolfile
@@ -151,4 +151,4 @@ class BoostToolfile(Package):
   <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
   <use name="root_cxxdefaults"/>
 </tool>""")
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, prefix)

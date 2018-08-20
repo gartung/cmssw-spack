@@ -5,14 +5,14 @@ from scrampackage import write_scram_toolfile
 
 
 class FastjetToolfile(Package):
-    url = 'file://' + os.path.dirname(__file__) + '/package.py'
-    version('1.0', '', expand=False)
+    url = 'file://' + os.path.dirname(__file__) + '/../../common/junk.xml'
+    version('1.0', '68841b7dcbd130afd7d236afe8fd5b949f017615', expand=False)
     depends_on('fastjet')
 
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec['fastjet'].version
-        values['PFX'] = self.spec['fastjet'].prefix
+        values['VER'] = spec['fastjet'].version
+        values['PFX'] = spec['fastjet'].prefix
         fname = 'fastjet.xml'
         contents = str("""<tool name="fastjet" version="$VER">
     <info url="http://www.lpthe.jussieu.fr/~salam/fastjet/"/>
@@ -30,4 +30,4 @@ class FastjetToolfile(Package):
     <use name="root_cxxdefaults"/>
   </tool>""")
 
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, prefix)

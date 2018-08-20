@@ -17,7 +17,6 @@ class Blackhat(Package):
 
     depends_on('qd')
     depends_on('openssl')
-    depends_on('python')
 
     def patch(self):
         if os.path.exists('./config/config.sub'):

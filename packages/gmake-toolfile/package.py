@@ -5,14 +5,14 @@ from scrampackage import write_scram_toolfile
 
 
 class GmakeToolfile(Package):
-    url = 'file://' + os.path.dirname(__file__) + '/package.py'
-    version('1.0', '', expand=True)
+    url = 'file://' + os.path.dirname(__file__) + '/../../common/junk.xml'
+    version('1.0', '68841b7dcbd130afd7d236afe8fd5b949f017615', expand=False)
     depends_on('gmake')
 
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec['gmake'].version
-        values['PFX'] = self.spec['gmake'].prefix
+        values['VER'] = spec['gmake'].version
+        values['PFX'] = spec['gmake'].prefix
         fname = 'gmake.xml'
         contents = str("""<tool name="gmake" version="$VER">
   <client>
@@ -20,4 +20,4 @@ class GmakeToolfile(Package):
   </client>
   <runtime name="PATH" value="$$MAKE_BASE/bin" type="path"/>
 </tool>""")
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, prefix)

@@ -8,10 +8,8 @@ import fnmatch
 class CmsswToolConf(Package):
 
     version('1.0.0', '', expand=False)
-
-    depends_on('scram')
     depends_on('gmake-toolfile')
-    depends_on('root-toolfile')
+    depends_on('root-cms-toolfile')
     depends_on('intel-tbb-toolfile')
     depends_on('tinyxml-toolfile')
     depends_on('clhep-toolfile')
@@ -94,7 +92,6 @@ class CmsswToolConf(Package):
     depends_on('mcdb-toolfile')
     depends_on('fftw-toolfile')
     depends_on('netlib-lapack-toolfile')
-    depends_on('libuuid-toolfile')
     depends_on('frontier-client-toolfile')
 
     def install(self, spec, prefix):

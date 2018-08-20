@@ -1,20 +1,18 @@
 from spack import *
-import glob
-import distutils.dir_util as du
 import sys,os
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
 from scrampackage import write_scram_toolfile 
 
 
 class CascadeToolfile(Package):
-    url = 'file://' + os.path.dirname(__file__) + '/package.py'
-    version('1.0', '', expand=False)
+    url = 'file://' + os.path.dirname(__file__) + '/../../common/junk.xml'
+    version('1.0', '68841b7dcbd130afd7d236afe8fd5b949f017615', expand=False)
     depends_on('cascade')
 
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec['cascade'].version
-        values['PFX'] = self.spec['cascase'].prefix
+        values['VER'] = spec['cascade'].version
+        values['PFX'] = spec['cascase'].prefix
 
         fname = 'cascade.xml'
         contents = str("""

@@ -5,14 +5,14 @@ from scrampackage import write_scram_toolfile
 
 
 class Db6Toolfile(Package):
-    url = 'file://' + os.path.dirname(__file__) + '/package.py'
-    version('1.0', '', expand=False)
+    url = 'file://' + os.path.dirname(__file__) + '/../../common/junk.xml'
+    version('1.0', '68841b7dcbd130afd7d236afe8fd5b949f017615', expand=False)
     depends_on('berkely-db')
 
     def install(self,spec,prefix):
         values = {}
-        values['VER'] = self.spec['berkley-db'].version
-        values['PFX'] = self.spec['berkley-db'].prefix
+        values['VER'] = spec['berkley-db'].version
+        values['PFX'] = spec['berkley-db'].prefix
 
         fname = 'db6.xml'
         contents = str("""
@@ -27,5 +27,4 @@ class Db6Toolfile(Package):
   <runtime name="PATH" value="$$BINDIR" type="path"/>
 </tool>
 """)
-        write_scram_toolfile(contents, values, fname)
-
+        write_scram_toolfile(contents, values, fname, prefix)

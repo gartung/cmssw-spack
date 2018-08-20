@@ -5,16 +5,16 @@ from scrampackage import write_scram_toolfile
 
 
 class FreetypeToolfile(Package):
-    url = 'file://' + os.path.dirname(__file__) + '/package.py'
-    depends_on('freetype')
+    url = 'file://' + os.path.dirname(__file__) + '/../../common/junk.xml'
+    version('1.0', '68841b7dcbd130afd7d236afe8fd5b949f017615', expand=False)
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec['freetype'].version
-        values['PFX'] = self.spec['freetype'].prefix
+        values['VER'] = spec['freetype'].version
+        values['PFX'] = spec['freetype'].prefix
         fname = 'freetype.xml'
         contents = str("""
 <tool name="freetype" version="${VER}">
-  <lib name="freetype-cms"/>
+  <lib name="freetype"/>
   <client>
     <environment name="FREETYPE_BASE" default="${PFX}"/>
     <environment name="INCLUDE"      default="$$FREETYPE_BASE/include"/>
@@ -25,4 +25,4 @@ class FreetypeToolfile(Package):
   <use name="root_cxxdefaults"/>
 </tool>
 """)
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, prefix)

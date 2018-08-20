@@ -5,14 +5,14 @@ from scrampackage import write_scram_toolfile
 
 
 class Bzip2Toolfile(Package):
-    url = 'file://' + os.path.dirname(__file__) + '/package.py'
-    version('1.0', '', expand=False)
+    url = 'file://' + os.path.dirname(__file__) + '/../../common/junk.xml'
+    version('1.0', '68841b7dcbd130afd7d236afe8fd5b949f017615', expand=False)
     depends_on('bzip2')
 
     def install(self):
         values = {}
-        values['VER'] = self.spec['bzip2'].version
-        values['PFX'] = self.spec['bzip2'].prefix
+        values['VER'] = spec['bzip2'].version
+        values['PFX'] = spec['bzip2'].prefix
 
         fname = 'bz2lib.xml'
         contents = str("""<tool name="bz2lib" version="$VER">
@@ -25,4 +25,4 @@ class Bzip2Toolfile(Package):
   <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
   <use name="root_cxxdefaults"/>
 </tool>""")
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, prefix)

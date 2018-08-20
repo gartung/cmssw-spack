@@ -5,12 +5,14 @@ from scrampackage import write_scram_toolfile
 
 
 class HepmcToolfile(Package):
-    depends_on("hepmc")
+    url = 'file://' + os.path.dirname(__file__) + '/../../common/junk.xml'
+    version('1.0', '68841b7dcbd130afd7d236afe8fd5b949f017615', expand=False)
+    version('1.0', '', expand=False)
 
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec['hepmc'].version
-        values['PFX'] = self.spec['hepmc'].prefix
+        values['VER'] = spec['hepmc'].version
+        values['PFX'] = spec['hepmc'].prefix
         fname = 'hepmc.xml'
         contents = str("""<tool name="HepMC" version="$VER">
   <lib name="HepMCfio"/>
@@ -33,4 +35,4 @@ class HepmcToolfile(Package):
   <runtime name="ROOT_INCLUDE_PATH"  value="$$INCLUDE" type="path"/>
   <use name="root_cxxdefaults"/>
 </tool>""")
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, prefix)

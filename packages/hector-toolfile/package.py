@@ -5,14 +5,14 @@ from scrampackage import write_scram_toolfile
 
 
 class HectorToolfile(Package):
-
-    version('1.0', '', expand=True)
+    url = 'file://' + os.path.dirname(__file__) + '/../../common/junk.xml'
+    version('1.0', '68841b7dcbd130afd7d236afe8fd5b949f017615', expand=False)
     depends_on('hector')
 
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec['hector'].version
-        values['PFX'] = self.spec['hector'].prefix
+        values['VER'] = spec['hector'].version
+        values['PFX'] = spec['hector'].prefix
         fname = 'hector.xml'
         contents = str("""
 <tool name="Hector" version="${VER}">
@@ -27,4 +27,4 @@ class HectorToolfile(Package):
   <use name="root_cxxdefaults"/>
 </tool>
 """)
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, prefix)

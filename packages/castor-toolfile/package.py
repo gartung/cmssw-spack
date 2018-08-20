@@ -5,14 +5,14 @@ from scrampackage import write_scram_toolfile
 
 
 class CastorToolfile(Package):
-    url = 'file://' + os.path.dirname(__file__) + '/package.py'
-    version('1.0', '', expand=False)
+    url = 'file://' + os.path.dirname(__file__) + '/../../common/junk.xml'
+    version('1.0', '68841b7dcbd130afd7d236afe8fd5b949f017615', expand=False)
     depends_on('castor')
 
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec['castor'].version
-        values['PFX'] = self.spec['castor'].prefix
+        values['VER'] = spec['castor'].version
+        values['PFX'] = spec['castor'].prefix
 
         fname = 'castor_header.xml'
         contents = str("""
@@ -27,7 +27,7 @@ class CastorToolfile(Package):
   <use name="root_cxxdefaults"/>
 </tool>
 """)
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, prefix)
 
         fname = 'castor.xml'
         contents = str("""
@@ -45,4 +45,4 @@ class CastorToolfile(Package):
   <use name="libuuid"/>
 </tool>
 """)
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, prefix)

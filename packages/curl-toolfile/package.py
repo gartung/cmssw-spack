@@ -5,13 +5,13 @@ from scrampackage import write_scram_toolfile
 
 
 class CurlToolfile(Package):
-    url = 'file://' + os.path.dirname(__file__) + '/package.py'
-    version('1.0', '', expand=False)
+    url = 'file://' + os.path.dirname(__file__) + '/../../common/junk.xml'
+    version('1.0', '68841b7dcbd130afd7d236afe8fd5b949f017615', expand=False)
     depends_on('curl')
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
+        values['VER'] = spec['curl'].version
+        values['PFX'] = spec['curl'].prefix
         fname = 'curl.xml'
         contents = str("""
 <tool name="curl" version="${VER}">
@@ -27,5 +27,4 @@ class CurlToolfile(Package):
   <flags SKIP_TOOL_SYMLINKS="1"/>
 </tool>
 """)
-
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, prefix)

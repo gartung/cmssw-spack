@@ -5,14 +5,14 @@ from scrampackage import write_scram_toolfile
 
 
 class FftwToolfile(Package):
-    url = 'file://' + os.path.dirname(__file__) + '/package.py'
-    version('1.0', '', expand=False)
+    url = 'file://' + os.path.dirname(__file__) + '/../../common/junk.xml'
+    version('1.0', '68841b7dcbd130afd7d236afe8fd5b949f017615', expand=False)
     depends_on('fftw')
 
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec['fftw'].version
-        values['PFX'] = self.spec['fftw'].prefix
+        values['VER'] = spec['fftw'].version
+        values['PFX'] = spec['fftw'].prefix
         fname = 'fftw3.xml'
         contents = str("""
 <tool name="fftw3" version="${VER}">
@@ -26,4 +26,4 @@ class FftwToolfile(Package):
   <use name="root_cxxdefaults"/>
 </tool>
 """)
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, prefix)

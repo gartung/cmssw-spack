@@ -5,14 +5,14 @@ from scrampackage import write_scram_toolfile
 
 
 class GslToolfile(Package):
-    url = 'file://' + os.path.dirname(__file__) + '/package.py'
-    version('1.0', '', expand=False)
+    url = 'file://' + os.path.dirname(__file__) + '/../../common/junk.xml'
+    version('1.0', '68841b7dcbd130afd7d236afe8fd5b949f017615', expand=False)
     depends_on('gsl')
 
     def install(self,spec,prefix):
         values = {}
-        values['VER'] = self.spec['gsl'].version
-        values['PFX'] = self.spec['gsl'].prefix
+        values['VER'] = spec['gsl'].version
+        values['PFX'] = spec['gsl'].prefix
         fname = 'gsl.xml'
         contents = str("""<tool name="gsl" version="$VER">
   <info url="http://www.gnu.org/software/gsl/gsl.html"/>
@@ -26,4 +26,4 @@ class GslToolfile(Package):
   <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
   <use name="root_cxxdefaults"/>
 </tool>""")
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, prefix)

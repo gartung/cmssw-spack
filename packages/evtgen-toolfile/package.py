@@ -1,20 +1,18 @@
 from spack import *
-import glob
-import shutil
 import sys,os
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
 from scrampackage import write_scram_toolfile
 
 
 class EvtgenToolfile(Package):
-    url = 'file://' + os.path.dirname(__file__) + '/package.py'
-    version('1.0', '', expand=False)
+    url = 'file://' + os.path.dirname(__file__) + '/../../common/junk.xml'
+    version('1.0', '68841b7dcbd130afd7d236afe8fd5b949f017615', expand=False)
     depends_on('evtgen')
 
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec['evtgen'].version
-        values['PFX'] = self.spec['evtgen'].prefix
+        values['VER'] = spec['evtgen'].version
+        values['PFX'] = spec['evtgen'].prefix
         fname = 'evtgen.xml'
         contents = str("""
 <tool name="evtgen" version="${VER}">
@@ -32,4 +30,4 @@ class EvtgenToolfile(Package):
   <use name="photospp"/>
 </tool>
 """)
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, prefix)
