@@ -4,7 +4,7 @@ import sys,os
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
 from scrampackage import write_scram_toolfile
 
-class Openloops(SConsPackage):
+class Openloops(Package):
     homepage = "http://www.example.com"
     url      = "https://github.com/cms-externals/openloops/archive/v1.1.1.tar.gz"
 
@@ -27,6 +27,10 @@ loop_optimisation = -O0
 generic_optimisation = -O0
 born_optimisation = -O0
 """
+        filename='openloops.cfg'
+        with open(filename, 'w') as f:
+            f.write(contents)
+            f.close()
 
     def build(self, spec, prefix):
         builder = Executable('./openloops')

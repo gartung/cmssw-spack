@@ -1,5 +1,5 @@
 from spack import *
-import sys,os
+import sys,os,re
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
 from scrampackage import write_scram_toolfile
 
@@ -7,7 +7,7 @@ from scrampackage import write_scram_toolfile
 class IntelTbbToolfile(Package):
     url = 'file://' + os.path.dirname(__file__) + '/../../common/junk.xml'
     version('1.0', '68841b7dcbd130afd7d236afe8fd5b949f017615', expand=False)
-    version('1.0', '', expand=False)
+    depends_on('intel-tbb')
 
     def install(self, spec, prefix):
         gcc = which(spack_f77)

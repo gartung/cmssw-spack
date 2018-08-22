@@ -150,11 +150,11 @@ class Root(CMakePackage):
                     ,'-DJPEG_INCLUDE_DIR=%s' %
                       self.spec['libjpeg-turbo'].prefix.include
                     ,'-DJPEG_LIBRARY=%s/libjpeg.%s' %
-                     (self.spec['libjpeg-turbo'].prefix.lib, dso_suffix)
+                     (self.spec['libjpeg-turbo'].prefix.lib64, dso_suffix)
                     ,'-DPNG_INCLUDE_DIRS=%s' %
                       self.spec['libpng'].prefix.include
                     ,'-DPNG_LIBRARY=%s/libpng.%s' %
-                     (self.spec['libpng'].prefix.lib64, dso_suffix)
+                     (self.spec['libpng'].prefix.lib, dso_suffix)
                     ,'-Dastiff=ON'
                     ,'-DTIFF_INCLUDE_DIR=%s' %
                       self.spec['libtiff'].prefix.include

@@ -33,4 +33,4 @@ class RivetToolfile(Package):
 <use name="yoda"/>
 </tool>
 """)
-        self.write_scram_toolfile(contents, values, fname, prefix)
+        write_scram_toolfile(contents, values, fname, prefix)

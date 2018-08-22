@@ -1,5 +1,5 @@
 from spack import *
-import sys,os
+import sys,os,re
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
 from scrampackage import write_scram_toolfile
 
