@@ -33,37 +33,3 @@ class Photos(Package):
         url='http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/photos/photos-%s-src.tgz'%version
         return url
 
-    @run_after('install')
-    def write_scram_toolfiles(self):
-        values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
-
-        fname = 'photos.xml'
-        contents = str("""
-<tool name="photos" version="${VER}">
-  <lib name="photos"/>
-  <client>
-    <environment name="PHOTOS_BASE" default="${PFX}"/>
-    <environment name="LIBDIR" default="$$PHOTOS_BASE/lib"/>
-  </client>
-  <use name="photos_headers"/>
-  <use name="f77compiler"/>
-</tool>
-""")
-
-        write_scram_toolfile(contents, values, fname)
-
-        fname = 'photos_headers.xml'
-        contents = str("""
-<tool name="photos_headers" version="${VER}">
-  <client>
-    <environment name="PHOTOS_HEADERS_BASE" default="${PFX}"/>
-    <environment name="INCLUDE" default="$$PHOTOS_HEADERS_BASE/include"/>
-  </client>
-  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
-  <use name="root_cxxdefaults"/>
-</tool>
-""")
-
-        write_scram_toolfile(contents, values, fname)

@@ -42,22 +42,3 @@ born_optimisation = -O0
         for f in glob.glob('proclib/*.info'):
             install(f, join_path(prefix, f))
 
-
-    @run_after('install')
-    def write_scram_toolfiles(self):
-        values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
-
-        fname = 'openloops.xml'
-        contents = str("""
-<tool name="openloops" version="${VER}">
-<client>
-<environment name="OPENLOOPS_BASE" default="${PFX}"/>
-<environment name="LIBDIR" default="$$OPENLOOPS_BASE/lib"/>
-<runtime name="CMS_OPENLOOPS_PREFIX" value="$$OPENLOOPS_BASE" type="path"/>
-</client>
-</tool>
-""")
-
-        write_scram_toolfile(contents, values, fname)

@@ -22,24 +22,3 @@ class Meschach(Package):
             install(f, prefix.include + '/' + f)
         install('meschach.a', prefix.lib + '/libmeschach.a')
 
-
-    @run_after('install')
-    def write_scram_toolfiles(self):
-        values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
-
-        fname = 'meschach.xml'
-        contents = str("""<tool name="meschach" version="$VER">
-  <info url="http://www.meschach.com"/>
-  <lib name="meschach"/>
-  <client>
-    <environment name="MESCHACH_BASE" default="$PFX"/>
-    <environment name="LIBDIR" default="$$MESCHACH_BASE/lib"/>
-    <environment name="INCLUDE" default="$$MESCHACH_BASE/include"/>
-  </client>
-  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
-  <use name="root_cxxdefaults"/>
-</tool>""")
-
-        write_scram_toolfile(contents, values, fname)

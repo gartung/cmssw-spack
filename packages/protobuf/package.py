@@ -44,28 +44,3 @@ class Protobuf(AutotoolsPackage):
         spack_env.set('PROTOBUF_SOURCE','https://github.com/google/protobuf/archive/v%s.tar.gz'%self.version)
         spack_env.set('PROTOBUF_STRIP_PREFIX','protobuf-%s'%self.version)
 
-
-    @run_after('install')
-    def write_scram_toolfiles(self):
-        values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
-
-        fname = 'protobuf.xml'
-        contents = str("""
-<tool name="protobuf" version="${VER}">
-  <lib name="protobuf"/>
-  <client>
-    <environment name="PROTOBUF_BASE" default="${PFX}"/>
-    <environment name="INCLUDE" default="$$PROTOBUF_BASE/include"/>
-    <environment name="LIBDIR" default="$$PROTOBUF_BASE/lib"/>
-    <environment name="BINDIR" default="$$PROTOBUF_BASE/bin"/>
-  </client>
-  <runtime name="PATH" value="$$PROTOBUF_BASE/bin" type="path"/>
-  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
-  <use name="root_cxxdefaults"/>
-  <flags SKIP_TOOL_SYMLINKS="1"/>
-</tool>
-""")
-
-        write_scram_toolfile(contents, values, fname)

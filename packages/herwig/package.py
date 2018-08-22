@@ -25,29 +25,3 @@ class Herwig(Package):
             make('install')
         os.symlink('%s/HERWIG65.INC' % prefix.include, '%s/herwig65.inc'% prefix.include)
 
-
-    @run_after('install')
-    def write_scram_toolfiles(self):
-        values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
-
-        fname = 'herwig.xml'
-        contents = str("""
-<tool name="herwig" version="${VER}">
-  <lib name="herwig"/>
-  <lib name="herwig_dummy"/>
-  <client>
-    <environment name="HERWIG_BASE" default="${PFX}"/>
-    <environment name="LIBDIR" default="$$HERWIG_BASE/lib"/>
-    <environment name="INCLUDE" default="$$HERWIG_BASE/include"/>
-  </client>
-  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
-  <use name="root_cxxdefaults"/>
-  <use name="f77compiler"/>
-  <use name="lhapdf"/>
-  <use name="photos"/>
-</tool>
-""")
-
-        write_scram_toolfile(contents, values, fname)

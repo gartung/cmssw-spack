@@ -22,31 +22,3 @@ class Lwtnn(Package):
         install_tree('lib', self.prefix.lib)
         install_tree('bin', self.prefix.bin)
         install_tree('include', self.prefix.include)
-
-
-    @run_after('install')
-    def write_scram_toolfiles(self):
-        values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
-
-        fname = 'lwtnn.xml'
-        contents = str("""
-<tool name="lwtnn" version="${VER}">
-  <info url="https://github.com/lwtnn/lwtnn"/>
-  <lib name="lwtnn"/>
-  <client>
-    <environment name="LWTNN_BASE" default="${PFX}"/>
-    <environment name="LIBDIR" default="$$LWTNN_BASE/lib"/>
-    <environment name="INCLUDE" default="$$LWTNN_BASE/include"/>
-  </client>
-  <runtime name="PATH" value="$$LWTNN_BASE/bin" type="path"/>
-  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
-  <use name="root_cxxdefaults"/>
-  <use name="eigen"/>
-  <use name="boost_system"/>  
-  <flags SKIP_TOOL_SYMLINKS="1"/>
-</tool>
-""")
-
-        write_scram_toolfile(contents, values, fname)

@@ -12,7 +12,7 @@ class CascadeToolfile(Package):
     def install(self, spec, prefix):
         values = {}
         values['VER'] = spec['cascade'].version
-        values['PFX'] = spec['cascase'].prefix
+        values['PFX'] = spec['cascade'].prefix
 
         fname = 'cascade.xml'
         contents = str("""
@@ -27,7 +27,7 @@ class CascadeToolfile(Package):
   <use name="cascade_headers"/>
 </tool>
 """)
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, prefix)
 
         fname = 'cascade_headers.xml'
         contents = str("""
@@ -40,5 +40,5 @@ class CascadeToolfile(Package):
   <use name="root_cxxdefaults"/>
 </tool>
 """)
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, prefix)
 

@@ -29,7 +29,7 @@ class ClhepToolfile(Package):
   <flags CXXFLAGS="-Wno-error=unused-variable"/>
   <use name="root_cxxdefaults"/>
 </tool>""")
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, prefix)
 
         fname = 'clhepheader.xml'
         contents = str("""<tool name="clhepheader" version="$VER">

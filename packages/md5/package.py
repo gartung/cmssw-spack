@@ -6,8 +6,6 @@ from scrampackage import write_scram_toolfile
 
 
 class Md5(Package):
-    """."""
-    homepage = "https://github.com/cms-externals/md5"
     url = "http://cmsrep.cern.ch/cmssw/cms/SOURCES/slc6_amd64_gcc600/external/md5/1.0.0-giojec/md5.1.0.0-d97a571864a119cd5408d2670d095b4410e926cc.tgz"
 
     version('1.0.0', 'b154f78e89a70ac1328099d9c3820d13',
@@ -27,23 +25,3 @@ class Md5(Package):
             comp('md5.c', '-shared', '-fPIC', '-o', 'libcms-md5.so')
             cp('-v', 'libcms-md5.so', prefix.lib)
         cp('-v', 'md5.h', prefix.include)
-
-
-    @run_after('install')
-    def write_scram_toolfiles(self):
-        values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
-
-        fname = 'md5.xml'
-        contents = str("""<tool name="md5" version="$VER">
-  <info url="https://tls.mbed.org/md5-source-code"/>
-   <lib name="cms-md5"/>
-  <client>
-    <environment name="MD5_BASE" default="$PFX"/>
-    <environment name="LIBDIR" default="$$MD5_BASE/lib"/>
-    <environment name="INCLUDE" default="$$MD5_BASE/include"/>
-    </client>  
-</tool>""")
-
-        write_scram_toolfile(contents, values, fname)

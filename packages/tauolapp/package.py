@@ -28,15 +28,15 @@ class Tauolapp(Package):
                 install(join_path(os.path.dirname(__file__), '../../config.guess'), './config/config.guess')
 
 
-#    def setup_environment(self, spack_env, run_env):
-#        self.HEPMC_ROOT = self.spec['hepmc'].prefix
-#        self.HEPMC_VERSION = self.spec['hepmc'].version
-#        self.LHAPDF_ROOT = self.spec['lhapdf'].prefix
-#        self.PYTHIA8_ROOT = self.spec['pythia8'].prefix
-#        spack_env.set('HEPMCLOCATION',self.HEPMC_ROOT)
-#        spack_env.set('HEPMCVERSION',self.HEPMC_VERSION)
-#        spack_env.set('LHAPDF_LOCATION',self.LHAPDF_ROOT)
-#        spack_env.set('PYTHIA8_LOCATION',self.PYTHIA8_ROOT)
+    def setup_environment(self, spack_env, run_env):
+        self.HEPMC_ROOT = self.spec['hepmc'].prefix
+        self.HEPMC_VERSION = self.spec['hepmc'].version
+        self.LHAPDF_ROOT = self.spec['lhapdf'].prefix
+        self.PYTHIA8_ROOT = self.spec['pythia8'].prefix
+        spack_env.set('HEPMCLOCATION',self.HEPMC_ROOT)
+        spack_env.set('HEPMCVERSION',self.HEPMC_VERSION)
+        spack_env.set('LHAPDF_LOCATION',self.LHAPDF_ROOT)
+        spack_env.set('PYTHIA8_LOCATION',self.PYTHIA8_ROOT)
 
 
     def install(self, spec, prefix):
@@ -53,33 +53,3 @@ class Tauolapp(Package):
                     'TauSpinner/examples/CP-tests/Z-pi')):
                 for f in glob.glob('*.txt'):    
                     install(f, join_path(prefix.share, f))
-
-
-
-    @run_after('install')
-    def write_scram_toolfiles(self):
-        values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
-
-        fname = 'tauolapp.xml'
-        contents = str("""
-<tool name="tauolapp" version="${VER}">
-  <lib name="TauolaCxxInterface"/>
-  <lib name="TauolaFortran"/>
-  <lib name="TauolaTauSpinner"/>
-  <client>
-    <environment name="TAUOLAPP_BASE" default="${PFX}"/>
-    <environment name="LIBDIR" default="$$TAUOLAPP_BASE/lib"/>
-    <environment name="INCLUDE" default="$$TAUOLAPP_BASE/include"/>
-  </client>
-  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
-  <use name="root_cxxdefaults"/>
-  <use name="hepmc"/>
-  <use name="f77compiler"/>
-  <use name="pythia8"/>
-  <use name="lhapdf"/>
-</tool>
-""")
-
-        write_scram_toolfile(contents, values, fname)

@@ -44,39 +44,3 @@ class Tauola(Package):
             for f in glob.glob(prefix.lib+'/archive/*.a'):
                 shutil.move(f,join_path(prefix.lib,os.path.basename(f)))
             shutil.rmtree(prefix.lib+'/archive')
-
-    @run_after('install')
-    def write_scram_toolfiles(self):
-        values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
-
-        fname = 'tauola.xml'
-        contents = str("""
-<tool name="tauola" version="${VER}">
-  <lib name="pretauola"/>
-  <lib name="tauola"/>
-  <client>
-    <environment name="TAUOLA_BASE" default="${PFX}"/>
-    <environment name="LIBDIR" default="$$TAUOLA_BASE/lib"/>
-  </client>
-  <use name="f77compiler"/>
-  <use name="tauola_headers"/>
-</tool>
-""")
-
-        write_scram_toolfile(contents, values, fname)
-
-        fname = 'tauola_headers.xml'
-        contents = str("""
-<tool name="tauola_headers" version="${VER}">
-  <client>
-    <environment name="TAUOLA_HEADERS_BASE" default="${PFX}"/>
-    <environment name="INCLUDE" default="$$TAUOLA_HEADERS_BASE/include"/>
-  </client>
-  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
-  <use name="root_cxxdefaults"/>
-</tool>
-""")
-
-        write_scram_toolfile(contents, values, fname)

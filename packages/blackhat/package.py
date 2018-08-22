@@ -25,7 +25,7 @@ class Blackhat(Package):
         if os.path.exists('./config/config.guess'):
             os.remove('./config/config.guess')
             install(join_path(os.path.dirname(__file__), '../../config.guess'), './config/config.guess')
-
+        filter_file('else return Cached_OLHA_user_normal','else return new Cached_OLHA_user_normal', 'src/cached_OLHA.cpp')
 
 
     def install(self, spec, prefix):

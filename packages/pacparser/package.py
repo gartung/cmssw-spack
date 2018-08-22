@@ -35,4 +35,4 @@ class Pacparser(Package):
   <use name="root_cxxdefaults"/>
 </tool>""")
 
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, self.spec.prefix)

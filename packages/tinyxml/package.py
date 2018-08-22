@@ -30,24 +30,3 @@ class Tinyxml(Package):
         else:
             cp('-v', 'libtinyxml.so', prefix.lib)
         cp('-v', 'tinystr.h', 'tinyxml.h', prefix.include)
-
-
-
-    @run_after('install')
-    def write_scram_toolfiles(self):
-        values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
-
-        fname = 'tinyxml.xml'
-        contents = str("""<tool name="tinyxml" version="$VER">
-  <info url="https://sourceforge.net/projects/tinyxml/"/>
-   <lib name="tinyxml"/>
-  <client>
-    <environment name="TINYXML_BASE" default="$PFX"/>
-    <environment name="LIBDIR" default="$$TINYXML_BASE/lib"/>
-    <environment name="INCLUDE" default="$$TINYXML_BASE/include"/>
-  </client>  
-</tool>""")
-
-        write_scram_toolfile(contents, values, fname)

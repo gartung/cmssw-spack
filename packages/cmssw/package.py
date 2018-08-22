@@ -14,11 +14,9 @@ class Cmssw(Package):
     """CMSSW built as a scram project"""
 
     homepage = "http://cms-sw.github.io"
-    url = "https://github.com/cms-sw/cmssw/archive/CMSSW_10_1_0_pre1.tar.gz"
+    url = "https://github.com/cms-sw/cmssw/archive/CMSSW_10_2_0.tar.gz"
 
-    version('10.2.0.pre1', git='https://github.com/cms-sw/cmssw.git', tag='CMSSW_10_2_0_pre1')
-
-    config_tag = 'V05-05-40'
+    version('10.2.0', git='https://github.com/cms-sw/cmssw.git', tag='CMSSW_10_2_0')
 
     def url_for_version(self, version):
         """Handle CMSSW's version string."""
@@ -64,8 +62,9 @@ class Cmssw(Package):
                                                        '.git', 'config'))
             install_tree(spec['cmssw-config'].prefix.bin, 'config',
                          ignore=shutil.ignore_patterns('.git'))
+            config_tag = spec['cmssw-config'].version
             with open('config/config_tag', 'w') as f:
-                f.write(self.config_tag+'\n')
+                f.write(config_tag+'\n')
                 f.close()
             #mkdirp('tools/selected')
             #mkdirp('tools/available')

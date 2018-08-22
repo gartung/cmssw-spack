@@ -50,4 +50,4 @@ class CfeBindings(Package):
   <runtime name="PYTHONPATH" value="${LIB}/python${PYVER}/site-packages" type="path"/>
   <use name="python"/>
 </tool>""")
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, self.spec.prefix)

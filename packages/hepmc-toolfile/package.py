@@ -24,7 +24,7 @@ class HepmcToolfile(Package):
   <use name="hepmc_headers"/>
   <runtime name="CMSSW_FWLITE_INCLUDE_PATH" value="$$HEPMC_BASE/include" type="path"/>
 </tool>""")
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, prefix)
 
         fname = 'hepmc_headers.xml'
         contents = str("""<tool name="hepmc_headers" version="$VER">

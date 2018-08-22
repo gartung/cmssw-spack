@@ -19,7 +19,7 @@ class Geant4(CMakePackage):
 
     depends_on('cmake@3.5:', type='build')
 
-    depends_on("clhep~cxx11+cxx14")
+    depends_on("clhep")
     depends_on("expat")
     depends_on("zlib")
     depends_on("xerces-c")

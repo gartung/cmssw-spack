@@ -31,25 +31,3 @@ XERCESC  = %s
         install_tree('lib', prefix + '/lib')
         install_tree('interface', prefix + '/interface')
 
-    @run_after('install')
-    def write_scram_toolfiles(self):
-        values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
-
-        fname = 'mcdb.xml'
-        contents = str("""
-<tool name="mcdb" version="$VER">
-  <lib name="mcdb"/>
-  <client>
-    <environment name="MCDB_BASE" default="$PFX"/>
-    <environment name="LIBDIR" default="$$MCDB_BASE/lib"/>
-    <environment name="INCLUDE" default="$$MCDB_BASE/interface"/>
-  </client>
-  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
-  <use name="root_cxxdefaults"/>
-  <use name="xerces-c"/>
-</tool>
-""")
-
-        write_scram_toolfile(contents, values, fname)

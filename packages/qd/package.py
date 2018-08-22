@@ -22,24 +22,3 @@ class Qd(Package):
                   '--enable-shared')
         make()
         make('install')
-
-    @run_after('install')
-    def write_scram_toolfiles(self):
-        values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
-
-        fname = 'qd.xml'
-        contents = str("""
-<tool name="qd" version="${VER}">
-<lib name="qd_f_main"/>
-<lib name="qdmod"/>
-<lib name="qd"/>
-<client>
-<environment name="QD_BASE" default="${PFX}"/>
-<environment name="LIBDIR" default="$$QD_BASE/lib"/>
-<environment name="INCLUDE" default="$$QD_BASE/include"/>
-</client>
-</tool>
-""")
-        write_scram_toolfile(contents, values, fname)

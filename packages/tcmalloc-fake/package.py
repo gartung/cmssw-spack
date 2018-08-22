@@ -26,31 +26,3 @@ namespace gptmp {
         install('libgptmp.so', '%s/libtcmalloc.so' % prefix.lib)
         install('libgptmp.so', '%s/libtcmalloc_minimal.so' % prefix.lib)
 
-
-    @run_after('install')
-    def write_scram_toolfiles(self):
-        values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
-
-        fname = 'tcmalloc_minimal.xml'
-        contents = str("""<tool name="tcmalloc_minimal" version="$VER">
-  <lib name="tcmalloc_minimal"/>
-  <client>
-    <environment name="TCMALLOC_MINIMAL_BASE" default="$PFX"/>
-    <environment name="LIBDIR"                default="$$TCMALLOC_MINIMAL_BASE/lib"/>
-  </client>
-</tool>""")
-
-        write_scram_toolfile(contents, values, fname)
-
-        fname = 'tcmalloc.xml'
-        contents = str("""<tool name="tcmalloc" version="$VER">
-  <lib name="tcmalloc"/>
-  <client>
-    <environment name="TCMALLOC_BASE" default="$PFX"/>
-    <environment name="LIBDIR"        default="$$TCMALLOC_BASE/lib"/>
-  </client>
-</tool>""")
-
-        write_scram_toolfile(contents, values, fname)

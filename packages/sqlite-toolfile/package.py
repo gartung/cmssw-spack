@@ -25,4 +25,4 @@ class SqliteToolfile(Package):
   <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
   <use name="root_cxxdefaults"/>
 </tool>""")
-        write_scram_toolfile(contents, values, prefix)
+        write_scram_toolfile(contents, values, fname, prefix)

@@ -9,7 +9,7 @@ class GiflibToolfile(Package):
     version('1.0', '68841b7dcbd130afd7d236afe8fd5b949f017615', expand=False)
     depends_on('giflib')
 
-    def write_scram_toolfiles(self):
+    def install(self, spec, prefix):
         values = {}
         values['VER'] = spec['giflib'].version
         values['PFX'] = spec['giflib'].prefix

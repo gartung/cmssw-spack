@@ -50,27 +50,3 @@ class Lhapdf(Package):
         mkdirp(join_path(spec.prefix.share, 'LHAPDF'))
         for pdf in ['cteq6l1', 'CT10', 'MSTW2008nlo68cl', 'MMHT2014lo68cl', 'MMHT2014nlo68cl']:
             install_tree(pdf, join_path(spec.prefix.share, 'LHAPDF', pdf))
-
-    @run_after('install')
-    def write_scram_toolfiles(self):
-        values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
-
-        fname = 'lhapdf.xml'
-        contents = str("""
-<tool name="lhapdf" version="${VER}">
-  <lib name="LHAPDF"/>
-  <client>
-    <environment name="LHAPDF_BASE" default="${PFX}"/>
-    <environment name="LIBDIR" default="$$LHAPDF_BASE/lib"/>
-    <environment name="INCLUDE" default="$$LHAPDF_BASE/include"/>
-  </client>
-  <runtime name="LHAPDF_DATA_PATH" value="$$LHAPDF_BASE/share/LHAPDF"/>
-  <use name="yaml-cpp"/>
-  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
-  <use name="root_cxxdefaults"/>
-</tool>
-""")
-
-        write_scram_toolfile(contents, values, fname)

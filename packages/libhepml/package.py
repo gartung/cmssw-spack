@@ -26,24 +26,3 @@ class Libhepml(Package):
                 install(f, join_path(prefix.lib, f))
         install_tree('interface', join_path(prefix, 'interface'))
 
-    @run_after('install')
-    def write_scram_toolfiles(self):
-        values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
-
-        fname = 'libhepml.xml'
-        contents = str("""
-<tool name="libhepml" version="${VER}">
-  <lib name="hepml"/>
-  <client>
-    <environment name="LIBHEPML_BASE" default="${PFX}"/>
-    <environment name="LIBDIR" default="$$LIBHEPML_BASE/lib"/>
-    <environment name="INCLUDE" default="$$LIBHEPML_BASE/interface"/>
-  </client>
-  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
-  <use name="root_cxxdefaults"/>
-</tool>
-""")
-
-        write_scram_toolfile(contents, values, fname)

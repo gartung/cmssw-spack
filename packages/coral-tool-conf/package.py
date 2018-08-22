@@ -2,15 +2,12 @@ from spack import *
 import re
 import os
 from glob import glob
-from string import Template
 import fnmatch
 
 
 class CoralToolConf(Package):
-
-    url='file://'
-
-    version('1.0', '', expand=False)
+    url = 'file://' + os.path.dirname(__file__) + '/../../common/junk.xml'
+    version('1.0', '68841b7dcbd130afd7d236afe8fd5b949f017615', expand=False)
 
     depends_on('scram') # provides gcc-toolfile systemtools
     depends_on('gmake-toolfile')
@@ -23,7 +20,7 @@ class CoralToolConf(Package):
 
 
     depends_on('sqlite-toolfile')
-    depends_on('uuid-cms-toolfile')
+    depends_on('uuid-toolfile')
     depends_on('zlib-toolfile')
     depends_on('bzip2-toolfile')
     depends_on('cppunit-toolfile')
@@ -32,5 +29,9 @@ class CoralToolConf(Package):
 
 
     def install(self, spec, prefix):
-
-        install_tree(self.stage.source_path,prefix+'/tools')
+        with working_dir(prefix, create=True):
+            mkdirp('tools')
+            for dep in spec.dependencies():
+                xmlfiles = glob(join_path(dep.prefix.etc, 'scram.d', '*.xml'))
+                for xmlfile in xmlfiles:
+                    install(xmlfile, 'tools')

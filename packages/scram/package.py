@@ -55,7 +55,7 @@ class Scram(Package):
   </tool>
 """)
     
-            write_scram_toolfile(contents, values, 'gcc-ccompiler.xml')
+            write_scram_toolfile(contents, values, 'gcc-ccompiler.xml', prefix)
     
 
             contents = str("""
@@ -88,7 +88,7 @@ class Scram(Package):
     <runtime name="PATH" value="$$GCC_CXXCOMPILER_BASE/bin" type="path"/>
   </tool>
 """)
-            write_scram_toolfile(contents, values, 'gcc-cxxcompiler.xml')
+            write_scram_toolfile(contents, values, 'gcc-cxxcompiler.xml', prefix)
 
 
             contents = str("""
@@ -105,7 +105,7 @@ class Scram(Package):
     <flags FSHAREDOBJECTFLAGS="-fPIC   "/>
   </tool>
 """)
-            write_scram_toolfile(contents, values, 'gcc-f77compiler.xml')
+            write_scram_toolfile(contents, values, 'gcc-f77compiler.xml', prefix)
 
 
             contents = str("""
@@ -118,7 +118,7 @@ class Scram(Package):
   <runtime name="ROOT_INCLUDE_PATH" value="/usr/include" type="path"/>
 </tool>
 """)
-            write_scram_toolfile(contents, values, 'root_cxxdefaults.xml')
+            write_scram_toolfile(contents, values, 'root_cxxdefaults.xml', prefix)
 
 
             contents = str("""
@@ -135,7 +135,7 @@ class Scram(Package):
     <lib name="dl"/>
   </tool>
 """)
-            write_scram_toolfile(contents, values, 'sockets.xml')
+            write_scram_toolfile(contents, values, 'sockets.xml', prefix)
 
 
             contents = str("""
@@ -154,7 +154,7 @@ class Scram(Package):
     </client>
 """
             contents += """</tool>"""
-            write_scram_toolfile(contents, values, 'opengl.xml')
+            write_scram_toolfile(contents, values, 'opengl.xml', prefix)
 
 
             contents = str("""
@@ -162,7 +162,7 @@ class Scram(Package):
     <use name="sockets"/>
   </tool>
 """)
-            write_scram_toolfile(contents, values, 'x11.xml')
+            write_scram_toolfile(contents, values, 'x11.xml', prefix)
 
     def setup_dependent_environment(self, spack_env, run_env, dspec):
         spack_env.set('SCRAM_ARCH', self.scram_arch)

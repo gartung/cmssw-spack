@@ -6,7 +6,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
 from scrampackage import write_scram_toolfile
 
 class Oracle(Package):
-    homepage = "http://www.example.com"
     url = "http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc6_amd64_gcc630/external/oracle/12.1.0.2.0/instantclient-basic-linux.x64-12.1.0.2.0.zip"
 
     version('12.1.0.2.0', 'd5ef30bc0506e0b0dae4dc20c76b8dbe')
@@ -59,7 +58,7 @@ class Oracle(Package):
   <use name="sockets"/>
 </tool>""")
 
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, self.spec.prefix)
 
         fname = 'oracleocci.xml'
         contents = str("""<tool name="oracleocci" version="$VER">
@@ -67,4 +66,4 @@ class Oracle(Package):
   <use name="oracle"/>
 </tool>""")
 
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, self.spec.prefix)

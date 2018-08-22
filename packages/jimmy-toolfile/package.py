@@ -26,7 +26,7 @@ class JimmyToolfile(Package):
   <use name="jimmy_headers"/>
 </tool>
 """)
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, prefix)
 
         fname = 'jimmy_headers.xml'
         contents = str("""

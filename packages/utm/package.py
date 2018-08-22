@@ -27,29 +27,3 @@ class Utm(Package):
         install('menu.xsd', prefix + '/menu.xsd')
 
 
-    @run_after('install')
-    def write_scram_toolfiles(self):
-        values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
-
-        fname = 'utm.xml'
-        contents = str("""
-<tool name="utm" version="${VER}">
-  <lib name="tmeventsetup"/>
-  <lib name="tmtable"/>
-  <lib name="tmxsd"/>
-  <lib name="tmgrammar"/>
-  <lib name="tmutil"/>
-  <client>
-    <environment name="UTM_BASE" default="${PFX}"/>
-    <environment name="LIBDIR" default="$$UTM_BASE/lib"/>
-    <environment name="INCLUDE" default="$$UTM_BASE/include"/>
-  </client>
-  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
-  <runtime name="UTM_XSD_DIR" value="$$UTM_BASE"/>
-  <use name="root_cxxdefaults"/>
-</tool>
-""")
-
-        write_scram_toolfile(contents, values, fname)

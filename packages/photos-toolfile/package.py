@@ -10,8 +10,8 @@ class PhotosToolfile(Package):
 
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
+        values['VER'] = spec['photos'].version
+        values['PFX'] = spec['photos'].prefix
 
         fname = 'photos.xml'
         contents = str("""
@@ -26,7 +26,7 @@ class PhotosToolfile(Package):
 </tool>
 """)
 
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, prefix)
 
         fname = 'photos_headers.xml'
         contents = str("""

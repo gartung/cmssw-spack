@@ -29,7 +29,7 @@ class OracleToolfile(Package):
   <use name="root_cxxdefaults"/>
   <use name="sockets"/>
 </tool>""")
-        write_scram_toolfile(contents, values, fname)
+        write_scram_toolfile(contents, values, fname, prefix)
 
         fname = 'oracleocci.xml'
         contents = str("""<tool name="oracleocci" version="$VER">

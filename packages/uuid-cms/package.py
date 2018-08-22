@@ -51,43 +51,7 @@ class UuidCms(Package):
 
         mkdirp(prefix.lib)
         mkdirp(prefix.include)
-        for f in glob.glob('util-linux-*/.libs/libuuid.so*'):
+        for f in glob.glob('.libs/libuuid.so*'):
             install(f, prefix.lib)
         make('install-uuidincHEADERS')
 
-
-    @run_after('install')
-    def write_scram_toolfiles(self):
-        values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
-
-        fname = 'uuid-cms.xml'
-        contents = str("""<tool name="uuid" version="$VER">
-  <lib name="uuid"/>
-  <client>
-    <environment name="LIBUUID_BASE" default="$PFX"/>
-    <environment name="LIBDIR" default="$$LIBUUID_BASE/lib"/>
-    <environment name="INCLUDE" default="$$LIBUUID_BASE/include"/>
-  </client>
-  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
-  <use name="root_cxxdefaults"/>
-  <use name="sockets"/>
-</tool>""")
-
-        write_scram_toolfile(contents, values, fname)
-
-        fname = 'libuuid.xml'
-        contents = str("""<tool name="libuuid" version="$VER">
-  <lib name="uuid"/>
-  <client>
-    <environment name="LIBUUID_BASE" default="$PFX"/>
-    <environment name="LIBDIR" default="$$LIBUUID_BASE/lib"/>
-    <environment name="INCLUDE" default="$$LIBUUID_BASE/include"/>
-  </client>
-  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
-  <use name="root_cxxdefaults"/>
-  <use name="sockets"/>
-</tool>""")
-
-        write_scram_toolfile(contents, values, fname)

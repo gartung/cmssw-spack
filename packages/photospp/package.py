@@ -18,27 +18,3 @@ class Photospp(Package):
                       spec['hepmc'].prefix)
             make()
             make('install')
-
-
-    @run_after('install')
-    def write_scram_toolfiles(self):
-        values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
-
-        fname = 'photospp.xml'
-        contents = str("""
-<tool name="photospp" version="${VER}">
-  <lib name="Photospp"/>
-  <lib name="PhotosppHepMC"/>
-  <lib name="PhotosppHEPEVT"/>
-  <client>
-    <environment name="PHOTOSPP_BASE" default="${PFX}"/>
-    <environment name="LIBDIR" default="$$PHOTOSPP_BASE/lib"/>
-    <environment name="INCLUDE" default="$$PHOTOSPP_BASE/include"/>
-  </client>
-  <use name="hepmc"/>
-</tool>
-""")
-
-        write_scram_toolfile(contents, values, fname)

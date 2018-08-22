@@ -6,10 +6,11 @@ import fnmatch
 
 
 class CmsswToolConf(Package):
+    url = 'file://' + os.path.dirname(__file__) + '/../../common/junk.xml'
+    version('1.0', '68841b7dcbd130afd7d236afe8fd5b949f017615', expand=False)
 
-    version('1.0.0', '', expand=False)
     depends_on('gmake-toolfile')
-    depends_on('root-cms-toolfile')
+    depends_on('root-toolfile')
     depends_on('intel-tbb-toolfile')
     depends_on('tinyxml-toolfile')
     depends_on('clhep-toolfile')
@@ -39,7 +40,7 @@ class CmsswToolConf(Package):
     depends_on('bzip2-toolfile')
     depends_on('fireworks-geometry-toolfile')
     depends_on('llvm-toolfile')
-    depends_on('uuid-cms-toolfile')
+    depends_on('uuid-toolfile')
     depends_on('valgrind-toolfile')
     depends_on('geant4-toolfile')
     depends_on('expat-toolfile')
@@ -95,5 +96,9 @@ class CmsswToolConf(Package):
     depends_on('frontier-client-toolfile')
 
     def install(self, spec, prefix):
-
-        install_tree(self.stage.source_path,prefix+'/tools')
+        with working_dir(prefix, create=True):
+            mkdirp('tools')
+            for dep in spec.dependencies():
+                xmlfiles = glob(join_path(dep.prefix.etc, 'scram.d', '*.xml'))
+                for xmlfile in xmlfiles:
+                    install(xmlfile, 'tools')

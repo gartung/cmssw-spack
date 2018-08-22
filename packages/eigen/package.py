@@ -4,7 +4,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
 from scrampackage import write_scram_toolfile
 
 
-class EigenCms(CMakePackage):
+class Eigen(CMakePackage):
     """Eigen is a C++ template library for linear algebra matrices,
     vectors, numerical solvers, and related algorithms.
     """

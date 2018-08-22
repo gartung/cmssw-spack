@@ -9,7 +9,7 @@ class Bzip2Toolfile(Package):
     version('1.0', '68841b7dcbd130afd7d236afe8fd5b949f017615', expand=False)
     depends_on('bzip2')
 
-    def install(self):
+    def install(self, spec, prefix):
         values = {}
         values['VER'] = spec['bzip2'].version
         values['PFX'] = spec['bzip2'].prefix

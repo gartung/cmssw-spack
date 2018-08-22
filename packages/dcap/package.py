@@ -36,9 +36,3 @@ class Dcap(AutotoolsPackage):
     def install(self, spec, prefix):
         make('-C', 'src')
         make('-C', 'src', 'install')
-
-    @run_after('install')
-    def write_scram_toolfiles(self):
-        values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix

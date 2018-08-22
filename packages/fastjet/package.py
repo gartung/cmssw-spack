@@ -5,8 +5,6 @@ from scrampackage import write_scram_toolfile
 
 
 class Fastjet(AutotoolsPackage):
-    """."""
-
     homepage = "http://fastjet.fr"
     url = "http://fastjet.fr/repo/fastjet-3.1.0.tar.gz"
 

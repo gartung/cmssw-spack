@@ -88,26 +88,3 @@ class Coral(Package):
         with working_dir(self.spec.prefix):
             os.symlink('CORAL_%s/include/LCG' % self.version.underscored, 'include')
             os.symlink('CORAL_%s/%s/lib' % (self.version.underscored, self.scram_arch), 'lib')
-
-    @run_after('install')
-    def write_scram_toolfiles(self):
-        values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
-        values['UVER'] = 'CORAL_%s' % self.version.underscored
-
-        fname = 'coral.xml'
-        contents = str("""
-<tool name="coral" version="${VER}" type="scram">
-  <client>
-    <environment name="CORAL_BASE" default="${PFX}/${UVER}"/>
-    <environment name="LIBDIR" default="$$CORAL_BASE/$$SCRAM_ARCH/lib"/>
-    <environment name="INCLUDE" default="$$CORAL_BASE/include/LCG"/>
-  </client>
-  <runtime name="PYTHONPATH" default="$$CORAL_BASE/$$SCRAM_ARCH/python" type="path"/>
-  <runtime name="PYTHONPATH" default="$$CORAL_BASE/$$SCRAM_ARCH/lib" type="path"/>
-  <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
-  <use name="root_cxxdefaults"/>
-</tool>
-""")
-        write_scram_toolfile(contents, values, fname)
