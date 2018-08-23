@@ -10,23 +10,10 @@ class LlvmLibToolfile(Package):
     depends_on('llvm+python')
 
     def install(self, spec, prefix):
-        gcc = which(spack_f77)
-        gcc_prefix = re.sub('/bin/.*$', '', self.compiler.f77)
-        gcc_machine = gcc('-dumpmachine', output=str)
-        gcc_ver = gcc('-dumpversion', output=str)
-
         values = {}
         values['VER'] = spec['llvm'].version
         values['PFX'] = spec['llvm'].prefix
         values['LIB'] = spec['llvm'].prefix.lib
-        values['BIN'] = spec['llvm'].prefix.bin
-        values['GCC_VER'] = gcc_ver.rstrip()
-        values['GCC_PREFIX'] = gcc_prefix
-        values['GCC_MACHINE'] = gcc_machine.rstrip()
-        values['LDPATH_NAME'] = 'LD_LIBRARY_PATH'
-        if sys.platform == 'darwin':
-            values['LDPATH_NAME'] = 'DYLD_LIBRARY_PATH'
-
 # This is a toolfile to use llvm / clang as a library, not as a compiler.
         fname = 'llvm.xml'
         contents = str("""  <tool name="llvm" version="${VER}">

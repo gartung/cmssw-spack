@@ -40,7 +40,7 @@ class CmsswToolConf(Package):
     depends_on('libxml2-toolfile')
     depends_on('bzip2-toolfile')
     depends_on('fireworks-geometry-toolfile')
-    depends_on('llvm-toolfile')
+    depends_on('llvm-lib-toolfile')
     depends_on('uuid-cms-toolfile')
 #    depends_on('valgrind-toolfile')
     depends_on('geant4-toolfile')

@@ -56,7 +56,7 @@ class Fwlite(Package):
     depends_on('libxml2-toolfile')
     depends_on('bzip2-toolfile')
     depends_on('fireworks-geometry-toolfile')
-    depends_on('llvm-toolfile')
+    depends_on('llvm-libtoolfile')
     depends_on('uuid-cms-toolfile')
 
     if sys.platform == 'darwin':

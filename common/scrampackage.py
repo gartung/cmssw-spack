@@ -4,8 +4,8 @@ from llnl.util.filesystem import *
 def write_scram_toolfile(tmplstr, vals, fname, prefix):
     """Create contents of scram tool config files for this package."""
     from string import Template
-    mkdirp(join_path(prefix, 'scram.d'))
-    filename=join_path(prefix, 'scram.d', fname)
+    mkdirp(join_path(prefix, 'etc/scram.d'))
+    filename=join_path(prefix, 'etc/scram.d', fname)
     template = Template(tmplstr)
     contents = template.substitute(vals)
     with open(filename, 'w') as f:
