@@ -31,8 +31,9 @@ class CoralToolConf(Package):
 
     def install(self, spec, prefix):
         with working_dir(prefix, create=True):
-            mkdirp('tools')
+            mkdirp('tools/selected')
+            mkdirp('tools/available')
             for dep in spec.dependencies():
                 xmlfiles = glob(join_path(dep.prefix.etc, 'scram.d', '*.xml'))
                 for xmlfile in xmlfiles:
-                    install(xmlfile, 'tools')
+                    install(xmlfile, 'tools/selected')

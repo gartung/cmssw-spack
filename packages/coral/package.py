@@ -15,7 +15,9 @@ class Coral(Package):
     url = "https://github.com/cms-externals/coral.tgz"
 
     version('2.3.21', git='https://github.com/cms-externals/coral',
-            branch='cms/CORAL_2_3_21')
+            commit='1a2014499b7459fa725f05ef5d0f2d9142eeb697')
+
+    patch('coral-2_3_21-gcc8.patch')
 
     depends_on('scram')
     depends_on('gmake')
@@ -38,17 +40,11 @@ class Coral(Package):
             with open('config/config_tag', 'w') as f:
                 f.write('%s\n' % spec['cmssw-config'].version.underscored )
                 f.close()
-            mkdirp('tools/selected')
-            mkdirp('tools/available')
-            for dep in spec.dependencies():
-                xmlfiles = glob(join_path(dep.prefix.etc, 'scram.d', '*.xml'))
-                for xmlfile in xmlfiles:
-                    install(xmlfile, 'tools/selected')
             uc=Executable('config/updateConfig.pl')
             uc(  '-p', 'CORAL',
                  '-v', 'CORAL_%s' % self.version.underscored,
                  '-s', scram_version,
-                 '-t', build_directory,
+                 '-t', spec['coral-tool-conf'].prefix,
                  '--keys', 'SCRAM_COMPILER=gcc',
                  '--keys', 'PROJECT_GIT_HASH=CORAL_%s' % self.version.underscored,
                  '--arch', '%s' % self.scram_arch)
