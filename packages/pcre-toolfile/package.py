@@ -11,8 +11,8 @@ class PcreToolfile(Package):
 
     def install(self,spec,prefix):
         values = {}
-        values['VER'] = self.spec['pcre'].version
-        values['PFX'] = self.spec['pcre'].prefix
+        values['VER'] = spec['pcre'].version
+        values['PFX'] = spec['pcre'].prefix
         fname = 'pcre.xml'
         contents = str("""<tool name="pcre" version="$VER">
   <info url="http://www.pcre.org"/>

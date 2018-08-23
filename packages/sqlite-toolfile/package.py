@@ -10,8 +10,8 @@ class SqliteToolfile(Package):
     depends_on('sqlite')
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec['sqlite'].version
-        values['PFX'] = self.spec['sqlite'].prefix
+        values['VER'] = spec['sqlite'].version
+        values['PFX'] = spec['sqlite'].prefix
         fname = 'sqlite.xml'
         contents = str("""<tool name="sqlite" version="$VER">
   <lib name="sqlite3"/>

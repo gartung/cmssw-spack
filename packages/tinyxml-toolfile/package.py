@@ -11,8 +11,8 @@ class TinyxmlToolfile(Package):
 
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
+        values['VER'] = spec['tinyxml'].version
+        values['PFX'] = spec['tinyxml'].prefix
 
         fname = 'tinyxml.xml'
         contents = str("""<tool name="tinyxml" version="$VER">

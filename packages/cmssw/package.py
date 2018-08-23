@@ -43,6 +43,7 @@ class Cmssw(Package):
         cmssw_version = 'CMSSW.' + str(self.version)
         cmssw_u_version = cmssw_version.replace('.', '_')
         scram_version = 'V%s' % spec['scram'].version
+        config_tag = '%s' % spec['cmssw-config'].version
         project_dir = join_path(prefix, cmssw_u_version)
 
         gcc = which(spack_f77)
@@ -62,21 +63,14 @@ class Cmssw(Package):
                                                        '.git', 'config'))
             install_tree(spec['cmssw-config'].prefix.bin, 'config',
                          ignore=shutil.ignore_patterns('.git'))
-            config_tag = spec['cmssw-config'].version
             with open('config/config_tag', 'w') as f:
                 f.write(config_tag+'\n')
                 f.close()
-            #mkdirp('tools/selected')
-            #mkdirp('tools/available')
-            #for dep in spec.dependencies():
-            #    xmlfiles = glob(join_path(dep.prefix.etc, 'scram.d', '*.xml'))
-            #    for xmlfile in xmlfiles:
-            #        install(xmlfile, 'tools/selected')
             uc = Executable('config/updateConfig.pl')
             uc('-p', 'CMSSW',
                  '-v', '%s' % cmssw_u_version,
                  '-s', '%s' % scram_version,
-                 '-t', '%s' % self.spec['cmssw-tool-conf'].prefix,
+                 '-t', '%s' % spec['cmssw-tool-conf'].prefix,
                  '--keys', 'SCRAM_COMPILER=gcc',
                  '--keys', 'PROJECT_GIT_HASH=' + cmssw_u_version,
                  '--arch', '%s' % self.scram_arch)

@@ -12,8 +12,8 @@ class PythonToolfile(Package):
         pyvers=str(self.spec['python'].version).split('.')
         pyver=pyvers[0]+'.'+pyvers[1]
         values={}
-        values['VER']=self.spec.version
-        values['PFX']=self.spec.prefix
+        values['VER']=spec['python'].version
+        values['PFX']=spec['python'].prefix
         values['PYVER']=pyver
         fname='python.xml'
         contents = str("""<tool name="python" version="$VER">

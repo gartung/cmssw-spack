@@ -11,8 +11,8 @@ class Pythia8Toolfile(Package):
 
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
+        values['VER'] = spec['pythia8'].version
+        values['PFX'] = spec['pythia8'].prefix
 
         fname = 'pythia8.xml'
         contents = str("""

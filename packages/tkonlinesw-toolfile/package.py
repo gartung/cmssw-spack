@@ -11,8 +11,8 @@ class TkonlineswToolfile(Package):
 
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
+        values['VER'] = spec['tkonlinesw'].version
+        values['PFX'] = spec['tkonlinesw'].prefix
 
         fname = 'tkonlinesw.xml'
         contents = str("""

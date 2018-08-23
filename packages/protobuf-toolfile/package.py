@@ -12,8 +12,8 @@ class ProtobufToolfile(Package):
 
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
+        values['VER'] = spec['protobuf'].version
+        values['PFX'] = spec['protobuf'].prefix
 
         fname = 'protobuf.xml'
         contents = str("""

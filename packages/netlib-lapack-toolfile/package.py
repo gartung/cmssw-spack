@@ -10,8 +10,8 @@ class NetlibLapackToolfile(Package):
 
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
+        values['VER'] = spec['netlib-lapack'].version
+        values['PFX'] = spec['netlib-lapack'].prefix
         fname = 'lapack.xml'
         contents = str("""
 <tool name="lapack" version="${VER}">

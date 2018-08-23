@@ -11,8 +11,8 @@ class McdbToolfile(Package):
 
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
+        values['VER'] = spec['mcdb'].version
+        values['PFX'] = spec['mcdb'].prefix
 
         fname = 'mcdb.xml'
         contents = str("""

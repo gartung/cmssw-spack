@@ -11,8 +11,8 @@ class VdtToolfile(Package):
 
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec['vdt'].version
-        values['PFX'] = self.spec['vdt'].prefix
+        values['VER'] = spec['vdt'].version
+        values['PFX'] = spec['vdt'].prefix
 
         fname = 'vdt_headers.xml'
         contents = str("""<tool name="vdt_headers" version="$VER">

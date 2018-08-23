@@ -11,8 +11,8 @@ class TcmallocFakeToolfile(Package):
 
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec['tcmalloc-fake'].version
-        values['PFX'] = self.spec['tcmalloc-fake'].prefix
+        values['VER'] = spec['tcmalloc-fake'].version
+        values['PFX'] = spec['tcmalloc-fake'].prefix
 
         fname = 'tcmalloc_minimal.xml'
         contents = str("""<tool name="tcmalloc_minimal" version="$VER">

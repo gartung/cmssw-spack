@@ -11,8 +11,8 @@ class OpensslToolfile(Package):
 
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec['openssl'].version
-        values['PFX'] = self.spec['openssl'].prefix
+        values['VER'] = spec['openssl'].version
+        values['PFX'] = spec['openssl'].prefix
         fname = 'openssl.xml'
         contents = str("""<tool name="openssl" version="$VER">
     <lib name="ssl"/>

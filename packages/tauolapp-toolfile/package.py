@@ -11,8 +11,8 @@ class TauolappToolfile(Package):
 
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
+        values['VER'] = spec['tauolapp'].version
+        values['PFX'] = spec['tauolapp'].prefix
 
         fname = 'tauolapp.xml'
         contents = str("""

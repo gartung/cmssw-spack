@@ -12,8 +12,8 @@ class PhotosppToolfile(Package):
 
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
+        values['VER'] = spec['photospp'].version
+        values['PFX'] = spec['photospp'].prefix
 
         fname = 'photospp.xml'
         contents = str("""

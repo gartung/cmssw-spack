@@ -11,8 +11,8 @@ class YodaToolfile(Package):
 
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
+        values['VER'] = spec['yoda'].version
+        values['PFX'] = spec['yoda'].prefix
 
         fname = 'yoda.xml'
         contents = str("""

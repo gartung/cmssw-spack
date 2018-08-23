@@ -11,8 +11,8 @@ class UtmToolfile(Package):
 
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
+        values['VER'] = spec['utm'].version
+        values['PFX'] = spec['utm'].prefix
 
         fname = 'utm.xml'
         contents = str("""

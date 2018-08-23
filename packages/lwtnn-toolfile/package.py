@@ -11,8 +11,8 @@ class LwtnnToolfile(Package):
 
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
+        values['VER'] = spec['lwtnn'].version
+        values['PFX'] = spec['lwtnn'].prefix
 
         fname = 'lwtnn.xml'
         contents = str("""

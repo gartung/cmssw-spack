@@ -11,8 +11,8 @@ class ValgrindToolfile(Package):
 
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec['valgrind'].version
-        values['PFX'] = self.spec['valgrind'].prefix
+        values['VER'] = spec['valgrind'].version
+        values['PFX'] = spec['valgrind'].prefix
 
         fname = 'valgrind.xml'
         contents = str("""

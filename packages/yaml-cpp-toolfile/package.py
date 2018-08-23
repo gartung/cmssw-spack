@@ -11,8 +11,8 @@ class YamlCppToolfile(Package):
 
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec['yaml-cpp'].version
-        values['PFX'] = self.spec['yaml-cpp'].prefix
+        values['VER'] = spec['yaml-cpp'].version
+        values['PFX'] = spec['yaml-cpp'].prefix
 
         fname = 'yamlcpp.xml'
         contents = str("""

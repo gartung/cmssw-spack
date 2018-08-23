@@ -10,8 +10,8 @@ class OpenloopsToolfile(Package):
 
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
+        values['VER'] = spec['openloops'].version
+        values['PFX'] = spec['openloops'].prefix
         fname = 'openloops.xml'
         contents = str("""
 <tool name="openloops" version="${VER}">

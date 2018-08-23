@@ -20,12 +20,13 @@ class CoralToolConf(Package):
 
 
     depends_on('sqlite-toolfile')
-    depends_on('uuid-toolfile')
+    depends_on('uuid-cms-toolfile')
     depends_on('zlib-toolfile')
     depends_on('bzip2-toolfile')
     depends_on('cppunit-toolfile')
     depends_on('xerces-c-toolfile')
     depends_on('oracle-toolfile')
+    depends_on('occi-toolfile')
 
 
     def install(self, spec, prefix):

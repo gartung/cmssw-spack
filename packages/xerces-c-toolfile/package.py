@@ -11,8 +11,8 @@ class XercesCToolfile(Package):
 
     def install(self,spec,prefix):
         values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
+        values['VER'] = spec['xerces-c'].version
+        values['PFX'] = spec['xerces-c'].prefix
         fname = 'xerces-c.xml'
         contents = str("""<tool name="xerces-c" version="$VER">
   <info url="http://xml.apache.org/xerces-c/"/>

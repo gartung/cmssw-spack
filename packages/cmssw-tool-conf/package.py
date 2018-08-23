@@ -9,6 +9,7 @@ class CmsswToolConf(Package):
     url = 'file://' + os.path.dirname(__file__) + '/../../common/junk.xml'
     version('1.0', '68841b7dcbd130afd7d236afe8fd5b949f017615', expand=False)
 
+    depends_on('scram')
     depends_on('gmake-toolfile')
     depends_on('root-toolfile')
     depends_on('intel-tbb-toolfile')
@@ -40,8 +41,8 @@ class CmsswToolConf(Package):
     depends_on('bzip2-toolfile')
     depends_on('fireworks-geometry-toolfile')
     depends_on('llvm-toolfile')
-    depends_on('uuid-toolfile')
-    depends_on('valgrind-toolfile')
+    depends_on('uuid-cms-toolfile')
+#    depends_on('valgrind-toolfile')
     depends_on('geant4-toolfile')
     depends_on('expat-toolfile')
     depends_on('protobuf-toolfile')
@@ -97,8 +98,9 @@ class CmsswToolConf(Package):
 
     def install(self, spec, prefix):
         with working_dir(prefix, create=True):
-            mkdirp('tools')
+            mkdirp('tools/selected')
+            mkdirp('tools/available')
             for dep in spec.dependencies():
                 xmlfiles = glob(join_path(dep.prefix.etc, 'scram.d', '*.xml'))
                 for xmlfile in xmlfiles:
-                    install(xmlfile, 'tools')
+                    install(xmlfile, 'tools/selected')

@@ -11,8 +11,8 @@ class NinjaToolfile(Package):
 
     def install(self, spec, prefix):
         values={}
-        values['PFX']=prefix
-        values['VER']=self.version
+        values['PFX']=spec['ninja'].prefix
+        values['VER']=spec['ninja'].version
         fname='ninja.xml'
         contents="""
 <tool name="ninja" version="${VER}">

@@ -11,8 +11,8 @@ class SherpaToolfile(Package):
 
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec['sherpa'].version
-        values['PFX'] = self.spec['sherpa'].prefix
+        values['VER'] = spec['sherpa'].version
+        values['PFX'] = spec['sherpa'].prefix
 
         fname = 'sherpa.xml'
         contents = str("""

@@ -16,8 +16,8 @@ class RootToolfile(Package):
         gcc_ver = gcc('-dumpversion', output=str)
 
         values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
+        values['VER'] = spec['root'].version
+        values['PFX'] = spec['root'].prefix
         values['GCC_VER'] = gcc_ver.rstrip()
         values['GCC_PREFIX'] = gcc_prefix
         values['GCC_MACHINE'] = gcc_machine.rstrip()

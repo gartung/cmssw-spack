@@ -11,8 +11,8 @@ class OracleToolfile(Package):
 
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec['oracle'].version
-        values['PFX'] = self.spec['oracle'].prefix
+        values['VER'] = spec['oracle'].version
+        values['PFX'] = spec['oracle'].prefix
         fname = 'oracle.xml'
         contents = str("""<tool name="oracle" version="$VER">
   <lib name="clntsh"/>

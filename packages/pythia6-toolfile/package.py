@@ -11,8 +11,8 @@ class Pythia6Toolfile(Package):
 
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
+        values['VER'] = spec['pythia6'].version
+        values['PFX'] = spec['pythia6'].prefix
 
         fname = 'pythia6_headers.xml'
         contents = str("""

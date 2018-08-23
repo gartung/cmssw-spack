@@ -64,16 +64,16 @@ class LlvmToolfile(Package):
         write_scram_toolfile(contents,values, fname, prefix)
 
 
-        fname='iwyu-cxxcompiler.xml'
-        contents = str("""<tool name="iwyu-cxxcompiler" version="${VER}" type="compiler">
-    <use name="llvm-cxxcompiler"/>
-    <client>
-      <environment name="LLVM_CXXCOMPILER_BASE" default="${PFX}"/>
-      <environment name="CXX" value="${BIN}/include-what-you-use"/>
-    </client>
-  </tool>""")
-
-        write_scram_toolfile(contents, values, fname, prefix)
+#        fname='iwyu-cxxcompiler.xml'
+#        contents = str("""<tool name="iwyu-cxxcompiler" version="${VER}" type="compiler">
+#    <use name="llvm-cxxcompiler"/>
+#    <client>
+#      <environment name="LLVM_CXXCOMPILER_BASE" default="${PFX}"/>
+#      <environment name="CXX" value="${BIN}/include-what-you-use"/>
+#    </client>
+#  </tool>""")
+#
+#        write_scram_toolfile(contents, values, fname, prefix)
 
 
         fname='llvm-ccompiler.xml'
@@ -99,30 +99,30 @@ class LlvmToolfile(Package):
         write_scram_toolfile(contents, values, fname, prefix)
 
 
-# Clang analyzer compilers
-        fname='llvm-analyzer-cxxcompiler.xml'
-        contents = str("""  <tool name="llvm-analyzer-cxxcompiler" version="${VER}" type="compiler">
-    <use name="llvm-cxxcompiler"/>
-    <client>
-      <environment name="LLVM_ANALYZER_CXXCOMPILER_BASE" default="${PFX}"/>
-      <environment name="CXX" value="${BIN}/c++-analyzer"/>
-    </client>
-    <runtime name="COMPILER_RUNTIME_OBJECTS" value="${GCC_PREFIX}"/>
-  </tool>""")
-
-        write_scram_toolfile(contents, values, fname, prefix)
-
-
-        fname='llvm-analyzer-ccompiler.xml'
-        contents = str("""  <tool name="llvm-analyzer-ccompiler" version="${VER}" type="compiler">
-    <use name="llvm-ccompiler"/>
-    <client>
-      <environment name="LLVM_ANALYZER_CCOMPILER_BASE" default="${PFX}"/>
-      <environment name="CC" value="${BIN}/ccc-analyzer"/>
-    </client>
-  </tool>""")
-
-        write_scram_toolfile(contents, values, fname, prefix)
+## Clang analyzer compilers
+#        fname='llvm-analyzer-cxxcompiler.xml'
+#        contents = str("""  <tool name="llvm-analyzer-cxxcompiler" version="${VER}" type="compiler">
+#    <use name="llvm-cxxcompiler"/>
+#    <client>
+#      <environment name="LLVM_ANALYZER_CXXCOMPILER_BASE" default="${PFX}"/>
+#      <environment name="CXX" value="${BIN}/c++-analyzer"/>
+#    </client>
+#    <runtime name="COMPILER_RUNTIME_OBJECTS" value="${GCC_PREFIX}"/>
+#  </tool>""")
+#
+#        write_scram_toolfile(contents, values, fname, prefix)
+#
+#
+#        fname='llvm-analyzer-ccompiler.xml'
+#        contents = str("""  <tool name="llvm-analyzer-ccompiler" version="${VER}" type="compiler">
+#    <use name="llvm-ccompiler"/>
+#    <client>
+#      <environment name="LLVM_ANALYZER_CCOMPILER_BASE" default="${PFX}"/>
+#      <environment name="CC" value="${BIN}/ccc-analyzer"/>
+#    </client>
+#  </tool>""")
+#
+#        write_scram_toolfile(contents, values, fname, prefix)
 
 
 # This is a toolfile to use llvm / clang as a library, not as a compiler.

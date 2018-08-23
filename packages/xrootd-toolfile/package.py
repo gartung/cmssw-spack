@@ -9,13 +9,11 @@ class XrootdToolfile(Package):
     version('1.0', '68841b7dcbd130afd7d236afe8fd5b949f017615', expand=False)
     depends_on('xrootd')
 
-    def write_scram_toolfiles(self):
-        pyvers = str(self.spec['python'].version).split('.')
-        pyver = pyvers[0] + '.' + pyvers[1]
+    def install(self, spec, prefix):
 
         values = {}
-        values['VER'] = self.spec['xrootd'].version
-        values['PFX'] = self.spec['xrootd'].prefix
+        values['VER'] = spec['xrootd'].version
+        values['PFX'] = spec['xrootd'].prefix
 
         fname = 'xrootd.xml'
         contents = str("""<tool name="xrootd" version="$VER">

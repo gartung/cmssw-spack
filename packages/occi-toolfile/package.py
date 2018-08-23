@@ -11,8 +11,8 @@ class OcciToolfile(Package):
 
     def install(self, spec, prefix):
         values = {}
-        values['VER'] = self.spec.version
-        values['PFX'] = self.spec.prefix
+        values['VER'] = spec['occi-cms'].version
+        values['PFX'] = spec['occi-cms'].prefix
 
         fname = 'cms-occi.xml'
         contents = str("""
