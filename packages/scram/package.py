@@ -19,7 +19,7 @@ class Scram(Package):
 
     depends_on('gmake')
 
-    scram_arch = 'slc7_amd64_gcc700'
+    scram_arch = 'slc_amd64_gcc'
     if sys.platform == 'darwin':
         scram_arch = 'osx10_amd64_clang'
 

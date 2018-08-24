@@ -24,7 +24,9 @@ class Coral(Package):
     depends_on('cmssw-config')
     depends_on('coral-tool-conf')
 
-    scram_arch = 'slc7_amd64_gcc700'
+    scram_arch = 'slc_amd64_gcc'
+    if sys.platform == 'darwin':
+        scram_arch = 'osx10_amd64_clang'
  
     def install(self, spec, prefix):
         scram = which('scram')

@@ -20,7 +20,7 @@ class CoralToolConf(Package):
 
 
     depends_on('sqlite-toolfile')
-    depends_on('uuid-cms-toolfile')
+    depends_on('uuid-toolfile')
     depends_on('zlib-toolfile')
     depends_on('bzip2-toolfile')
     depends_on('cppunit-toolfile')

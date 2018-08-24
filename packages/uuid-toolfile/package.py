@@ -14,7 +14,7 @@ class UuidToolfile(Package):
         values['VER'] = spec['uuid-cms'].version
         values['PFX'] = spec['uuid-cms'].prefix
         fname = 'uuid-cms.xml'
-        contents = str("""<tool name="uuid" version="$VER">
+        contents = str("""<tool name="libuuid" version="$VER">
   <lib name="uuid"/>
   <client>
     <environment name="LIBUUID_BASE" default="$PFX"/>

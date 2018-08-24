@@ -34,30 +34,25 @@ class Cmssw(Package):
     else:
         patch('linux.patch')
 
-    scram_arch = 'slc7_amd64_gcc700'
+    scram_arch = 'slc_amd64_gcc'
+    if sys.platform == 'darwin':
+        scram_arch = 'osx10_amd64_clang'
+
 
     def install(self, spec, prefix):
         scram = Executable(spec['scram'].prefix.bin+'/scram')
-        build_directory = join_path(self.stage.path, 'spack-build')
         source_directory = self.stage.source_path
         cmssw_version = 'CMSSW.' + str(self.version)
         cmssw_u_version = cmssw_version.replace('.', '_')
         scram_version = 'V%s' % spec['scram'].version
         config_tag = '%s' % spec['cmssw-config'].version
-        project_dir = join_path(prefix, cmssw_u_version)
 
         gcc = which(spack_f77)
         gcc_prefix = re.sub('/bin/.*$', '', self.compiler.f77)
         gcc_machine = gcc('-dumpmachine', output=str)
         gcc_ver = gcc('-dumpversion', output=str)
 
-        values = {}
-        values['SELF_LIB'] = project_dir + '/lib/' + self.scram_arch
-        values['SELF_INC'] = project_dir + '/src'
-        values['GCC_VER'] = gcc_ver.rstrip()
-        values['GCC_PREFIX'] = gcc_prefix
-        values['GCC_MACHINE'] = gcc_machine.rstrip()
-        with working_dir(build_directory, create=True):
+        with working_dir(self.stage.path):
             install_tree(source_directory, 'src',
                          ignore=shutil.ignore_patterns('spack_build.*',
                                                        '.git', 'config'))
@@ -74,8 +69,9 @@ class Cmssw(Package):
                  '--keys', 'SCRAM_COMPILER=gcc',
                  '--keys', 'PROJECT_GIT_HASH=' + cmssw_u_version,
                  '--arch', '%s' % self.scram_arch)
-            scram('project', '-d', prefix, '-b', 'config/bootsrc.xml')
+            scram('project', '-d', os.path.realpath(self.stage.path), '-b', 'config/bootsrc.xml')
 
+        project_dir = os.path.realpath(self.stage.path+'/'+cmssw_u_version)
         with working_dir(project_dir, create=False):
             matches = []
 
@@ -93,18 +89,18 @@ class Cmssw(Package):
                 'LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib)
             scram.add_default_env(
                 'LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib64)
-            scram('build', '-v', '-k', '-j8')
+            scram('build', '-v', '-j8')
             relrelink('external')
             shutil.rmtree('tmp')
-#            install_tree(project_dir,prefix)
+            install_tree(project_dir,prefix)
 
 
-#        with working_dir(join_path(prefix,cmssw_u_version), create=False):
-#            os.environ[ 'LOCALTOP' ] = os.getcwd()
-#            os.environ[ 'RELEASETOP' ] = os.getcwd()
-#            os.environ[ 'CMSSW_RELEASE_BASE' ] = os.getcwd()
-#            os.environ[ 'CMSSW_BASE' ] = os.getcwd()
-#            scram('build', 'ProjectRename')
+        with working_dir(join_path(prefix,cmssw_u_version), create=False):
+            os.environ[ 'LOCALTOP' ] = os.getcwd()
+            os.environ[ 'RELEASETOP' ] = os.getcwd()
+            os.environ[ 'CMSSW_RELEASE_BASE' ] = os.getcwd()
+            os.environ[ 'CMSSW_BASE' ] = os.getcwd()
+            scram('build', 'ProjectRename')
 
     def setup_dependent_environment(self, spack_env, run_env, dspec):
         cmssw_version = 'CMSSW.' + str(self.version)
@@ -121,12 +117,12 @@ class Cmssw(Package):
     def setup_environment(self, spack_env, run_env):
         cmssw_version = 'CMSSW.' + str(self.version)
         cmssw_u_version = cmssw_version.replace('.', '_')
-        spack_env.set('LOCALTOP', self.prefix + '/' + cmssw_u_version)
-#        spack_env.set('RELEASETOP', self.prefix+'/'+cmssw_u_version)
-#        spack_env.set('CMSSW_RELEASE_BASE', self.prefix)
-        spack_env.set('CMSSW_BASE', self.prefix)
-        spack_env.append_path('LD_LIBRARY_PATH', self.prefix +
-                              '/' + cmssw_u_version + '/lib/' + self.scram_arch)
+        project_dir = os.path.realpath(join_path(self.stage.path, 
+                                                cmssw_u_version))
+        spack_env.set('LOCALTOP', project_dir)
+        spack_env.set('CMSSW_BASE',project_dir)
+        spack_env.append_path('LD_LIBRARY_PATH', 
+                              project_dir + '/lib/' + self.scram_arch)
         spack_env.append_path('LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib)
         spack_env.append_path(
             'LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib64)

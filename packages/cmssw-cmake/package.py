@@ -59,7 +59,7 @@ class CmsswCmake(Package):
     depends_on('bzip2')
     depends_on('fireworks-geometry')
     depends_on('llvm')
-    depends_on('uuid-cms')
+    depends_on('libuuid')
     depends_on('valgrind')
     depends_on('geant4')
     depends_on('expat')
