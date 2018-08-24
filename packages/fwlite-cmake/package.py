@@ -35,7 +35,6 @@ class FwliteCmake(Package):
     depends_on('xrootd')
     depends_on('hepmc')
     depends_on('pcre')
-    depends_on('castor')
     depends_on('davix')
     depends_on('libsigcpp')
     depends_on('tinyxml')
@@ -50,7 +49,6 @@ class FwliteCmake(Package):
             options.extend(std_cmake_args)
             args = ['-DCMakeTools_DIR=%s/cmaketools' % self.stage.source_path,
                     '-DCLHEP_ROOT_DIR=%s' % self.spec['clhep'].prefix,
-                    '-DCASTOR_INCLUDE_DIR=%s/include' % self.spec['castor'].prefix,
                     '-DBOOST_ROOT=%s' % self.spec['boost'].prefix,
                     '-DTBB_ROOT_DIR=%s' % self.spec['tbb'].prefix,
                     '-DMD5ROOT=%s' % self.spec['md5'].prefix,
@@ -68,9 +66,6 @@ class FwliteCmake(Package):
                                self.spec['libuuid'].prefix)
             options.append('-GNinja')
             cmake(*options)
-#            make = which('make')
-#            make('-j4', 'VERBOSE=1')
-#            make('install')
             ninja = which('ninja')
             ninja('-v', '-j4')
             ninja('install')

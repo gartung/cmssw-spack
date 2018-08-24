@@ -6,7 +6,6 @@ class Stitched(CMakePackage):
     homepage = "http://www.example.com"
     url = "http://www.example.com/example-1.2.3.tar.gz"
 
-    # version('1.2.3', '0123456789abcdef0123456789abcdef')
     version('8.0.X', git='https://github.com/gartung/stitched.git',
             commit='8ce0c76', submodules='True')
 
@@ -15,7 +14,6 @@ class Stitched(CMakePackage):
     depends_on('tinyxml')
     depends_on('md5')
     depends_on('root')
-    depends_on('castor')
     depends_on('clhep')
     depends_on('tbb')
     depends_on('cppunit')
@@ -23,8 +21,6 @@ class Stitched(CMakePackage):
     def cmake_args(self):
         args = ['-DCMakeTools_DIR=%s/cmaketools' % self.stage.source_path]
         args.append('-DCLHEP_ROOT_DIR=%s' % self.spec['clhep'].prefix)
-        args.append('-DCASTOR_INCLUDE_DIR=%s/include' %
-                    self.spec['castor'].prefix)
         args.append('-DBOOST_ROOT=%s' % self.spec['boost'].prefix)
         args.append('-DTBB_ROOT_DIR=%s' % self.spec['tbb'].prefix)
         args.append('-DTINYXMLROOT=%s' % self.spec['tinyxml'].prefix)
