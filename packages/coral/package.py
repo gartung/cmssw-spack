@@ -29,29 +29,35 @@ class Coral(Package):
         scram_arch = 'osx10_amd64_clang'
  
     def install(self, spec, prefix):
-        scram = which('scram')
-        build_directory = join_path(self.stage.path, 'spack-build')
+        coral_version = 'CORAL.' + str(self.version)
+        coral_u_version = coral_version.replace('.', '_')
+
+        scram = Executable(spec['scram'].prefix.bin+'/scram')        
         source_directory = self.stage.source_path
         scram_version = 'V%s' % spec['scram'].version
-        project_dir = join_path(prefix, 'CORAL_%s' % self.version.underscored)
 
-        with working_dir(build_directory, create=True):
-            rsync = which('rsync')
-            install_tree(source_directory,'src')
-            install_tree(spec['cmssw-config'].prefix.bin,'config')
+        config_tag = '%s' % spec['cmssw-config'].version.underscored 
+        with working_dir(self.stage.path):
+            install_tree(source_directory,'src',
+                         ignore=shutil.ignore_patterns('spack_build.*',
+                                                       '.git', 'config'))
+            install_tree(spec['cmssw-config'].prefix.bin,'config',
+                         ignore=shutil.ignore_patterns('.git'))
             with open('config/config_tag', 'w') as f:
-                f.write('%s\n' % spec['cmssw-config'].version.underscored )
+                f.write(config_tag+'\n' )
                 f.close()
+
             uc=Executable('config/updateConfig.pl')
             uc(  '-p', 'CORAL',
-                 '-v', 'CORAL_%s' % self.version.underscored,
-                 '-s', scram_version,
-                 '-t', spec['coral-tool-conf'].prefix,
+                 '-v', '%s' % coral_u_version,
+                 '-s', '%s' % scram_version,
+                 '-t', '%s' % spec['coral-tool-conf'].prefix,
                  '--keys', 'SCRAM_COMPILER=gcc',
-                 '--keys', 'PROJECT_GIT_HASH=CORAL_%s' % self.version.underscored,
+                 '--keys', 'PROJECT_GIT_HASH=' + coral_u_version,
                  '--arch', '%s' % self.scram_arch)
-            scram('project', '-d', '%s' % prefix, '-b', 'config/bootsrc.xml')
+            scram('project', '-d', os.path.realpath(self.stage.path), '-b', 'config/bootsrc.xml')
 
+        project_dir = os.path.realpath(self.stage.path+'/'+coral_u_version)
         with working_dir(project_dir, create=False):
             matches = []
 
@@ -66,8 +72,10 @@ class Coral(Package):
             scram.add_default_env('LD_LIBRARY_PATH', '%s/lib/%s' %
                                   (project_dir, self.scram_arch))
             scram('build', '-v', '-j8')
-            relrelink('external')
+            shutil.rmtree('external')
             shutil.rmtree('tmp')
+            os.remove('slc_amd64_gcc/python/LCG/PyCoral')
+        install_tree(project_dir, prefix+'/'+coral_u_version)
 
     def setup_dependent_environment(self, spack_env, run_env, dspec):
         spack_env.set('CORAL_RELEASE_BASE', self.prefix)

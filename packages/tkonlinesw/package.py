@@ -1,26 +1,23 @@
 from spack import *
-import shutil
-import os
-import sys,os
-sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
-from scrampackage import write_scram_toolfile
 
 
 class Tkonlinesw(Package):
     homepage = "http://www.example.com"
-    url = "http://cms-trackerdaq-service.web.cern.ch/cms-trackerdaq-service/download/sources/trackerDAQ-4.1.0-1.tgz"
+    url = "http://cms-trackerdaq-service.web.cern.ch/cms-trackerdaq-service/download/sources/trackerDAQ-4.2.0-1_gcc7.tgz"
 
-    version('4.1.0-1', 'aa8c780611f0292d5ff534d992617b46')
+    version('4.2.0-1_gcc7', sha256='e18649cb90d5dc867f8aedc35cd25fbd3f605e8aca86ed55c91f474d727d9d7d')
 
     depends_on('oracle')
     depends_on('xerces-c')
     depends_on('gmake')
     depends_on('root')
 
+    patch('tkonlinesw-4.0-clang-hash_map.patch')
+
     def setup_environment(self, spack_env, run_env):
         projectname = 'trackerDAQ'
         releasename = str(self.stage.path) + '/' + \
-            projectname + '-4.1-tkonline'
+            projectname + '-4.2-tkonline'
         spack_env.set('ENV_TRACKER_DAQ', releasename + '/opt/trackerDAQ')
         spack_env.set('XDAQ_ROOT', releasename + '/FecSoftwareV3_0/generic')
         spack_env.set('XDAQ_RPMBUILD', 'yes')
@@ -50,6 +47,7 @@ class Tkonlinesw(Package):
                       self.spec.prefix)
         spack_env.set('ENV_CMS_TK_TTC_ROOT', '%s/dummy/Linux' %
                       self.spec.prefix)
+        spack_env.set('ENV_CMS_TK_FED9U_ROOT_ROOT', '%s' % self.spec['root'].prefix)
         spack_env.set('XDAQ_OS', 'linux')
         spack_env.set('XDAQ_PLATFORM', 'x86_slc4')
         spack_env.set('CPPFLAGS', '-fPIC')
@@ -61,13 +59,16 @@ class Tkonlinesw(Package):
         mkdirp(join_path(prefix, 'dummy/Linux/lib'))
         configure('--with-xdaq-platform=x86_64',
                   '--with-oracle-path=%s' % spec['oracle'].prefix,
+                  '--with-root-path=%s' % spec['root'].prefix,
                   '--with-xerces-path=%s' % spec['xerces-c'].prefix)
         with working_dir('FecSoftwareV3_0'):
             configure('--with-xdaq-platform=x86_64',
                       '--with-oracle-path=%s' % spec['oracle'].prefix,
+                      '--with-root-path=%s' % spec['root'].prefix,
                       '--with-xerces-path=%s' % spec['xerces-c'].prefix)
         with working_dir('TrackerOnline/Fed9U/Fed9USoftware'):
             configure('--with-xdaq-platform=x86_64',
+                      '--with-root-path=%s' % spec['root'].prefix,
                       '--with-oracle-path=%s' % spec['oracle'].prefix,
                       '--with-xerces-path=%s' % spec['xerces-c'].prefix)
         make('cmssw')
@@ -75,7 +76,7 @@ class Tkonlinesw(Package):
 
         projectname = 'trackerDAQ'
         releasename = str(self.stage.path) + '/' + \
-            projectname + '-4.1-tkonline'
+            projectname + '-4.2-tkonline'
         project_path = join_path(releasename, 'opt', projectname)
         install_tree(join_path(project_path, 'include'), prefix.include)
         install_tree(join_path(project_path, 'lib'), prefix.lib)

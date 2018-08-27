@@ -26,7 +26,7 @@ class CoralToolConf(Package):
     depends_on('cppunit-toolfile')
     depends_on('xerces-c-toolfile')
     depends_on('oracle-toolfile')
-    depends_on('occi-toolfile')
+    depends_on('cms-oracleocci-abi-hack-toolfile')
 
 
     def install(self, spec, prefix):

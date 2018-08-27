@@ -32,7 +32,7 @@ class OracleToolfile(Package):
         write_scram_toolfile(contents, values, fname, prefix)
 
         fname = 'oracleocci.xml'
-        contents = str("""<tool name="oracleocci" version="$VER">
+        contents = str("""<tool name="oracleocci-official" version="$VER">
   <lib name="occi"/>
   <use name="oracle"/>
 </tool>""")

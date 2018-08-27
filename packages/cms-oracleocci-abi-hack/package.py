@@ -5,7 +5,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
 from scrampackage import write_scram_toolfile
 
 
-class OcciCms(Package):
+class CmsOracleocciAbiHack(Package):
     """An ABI hack to occi.h with std=c++17"""
 
     homepage = "https://github.com/cms-sw"
@@ -22,6 +22,6 @@ class OcciCms(Package):
             shutil.copytree('lib',prefix.lib)
             shutil.copytree('include',prefix.include)
 
-#    def setup_environment(self, spack_env, run_env):
-#        spack_env.set('INCLUDE_DIR','%s' % self.spec['oracle'].prefix.include)
-#        spack_env.set('LIB_DIR', '%s' % self.spec['oracle'].prefix.lib)
+    def setup_environment(self, spack_env, run_env):
+        spack_env.set('INCLUDE_DIR','%s' % self.spec['oracle'].prefix.include)
+        spack_env.set('LIB_DIR', '%s' % self.spec['oracle'].prefix.lib)

@@ -41,6 +41,6 @@ class Protobuf(AutotoolsPackage):
         return args
 
     def setup_dependent_environment(self,spack_env,run_env,dspec):
-        spack_env.set('PROTOBUF_SOURCE','https://github.com/google/protobuf/archive/v%s.tar.gz'%self.version)
+        spack_env.set('PROTOBUF_SOURCE','https://github.com/protocolbuffers/protobuf/archive/v%s.tar.gz'%self.version)
         spack_env.set('PROTOBUF_STRIP_PREFIX','protobuf-%s'%self.version)
 

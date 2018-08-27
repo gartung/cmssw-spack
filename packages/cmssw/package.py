@@ -89,10 +89,10 @@ class Cmssw(Package):
                 'LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib)
             scram.add_default_env(
                 'LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib64)
-            scram('build', '-v', '-j8')
-            relrelink('external')
+            scram('build', '-v', '-k', '-j8')
             shutil.rmtree('tmp')
-            install_tree(project_dir,prefix)
+        install_tree(project_dir,prefix+'/'+cmssw_u_version)
+        relrelink(prefix+'/'+cmssw_u_version+'external')
 
 
         with working_dir(join_path(prefix,cmssw_u_version), create=False):

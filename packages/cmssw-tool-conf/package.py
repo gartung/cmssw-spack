@@ -42,7 +42,7 @@ class CmsswToolConf(Package):
     depends_on('fireworks-geometry-toolfile')
     depends_on('llvm-lib-toolfile')
     depends_on('uuid-toolfile')
-#    depends_on('valgrind-toolfile')
+    depends_on('dd4hep-toolfile')
     depends_on('geant4-toolfile')
     depends_on('expat-toolfile')
     depends_on('protobuf-toolfile')
@@ -57,6 +57,7 @@ class CmsswToolConf(Package):
     depends_on('pythia6-toolfile')
     depends_on('pythia8-toolfile')
     depends_on('oracle-toolfile')
+    depends_on('cms-oracleocci-abi-hack-toolfile')
     depends_on('sqlite-toolfile')
     depends_on('coral-toolfile')
     depends_on('hector-toolfile')
@@ -95,6 +96,7 @@ class CmsswToolConf(Package):
     depends_on('fftw-toolfile')
     depends_on('netlib-lapack-toolfile')
     depends_on('frontier-client-toolfile')
+    depends_on('tkonlinesw-toolfile')
 
     def install(self, spec, prefix):
         with working_dir(prefix, create=True):

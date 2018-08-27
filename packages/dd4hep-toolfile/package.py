@@ -13,7 +13,7 @@ class Dd4hepToolfile(Package):
         values = {}
         values['VER'] = spec['dd4hep'].version
         values['PFX'] = spec['dd4hep'].prefix
-        fname = 'openssl.xml'
+        fname = 'dd4hep.xml'
         contents = str("""
 <tool name="dd4hep" version="$VER">
   <info url="https://github.com/AIDASoft/DD4hep"/>
@@ -33,6 +33,18 @@ class Dd4hepToolfile(Package):
   <use name="boost"/>
   <use name="xerces-c"/>
   <use name="clhep"/>
+</tool>
+""")
+        write_scram_toolfile(contents, values, fname, prefix)
+
+        fname = 'dd4hep-cms.xml'
+        contents = str("""
+<tool name="dd4hep-cms" version="$VER">
+  <lib name="DDCMS" />
+  <client>
+    <environment name="DD4HEP_CMS_BASE" default="$PFX"/>
+  </client>
+  <use name="dd4hep"/>
 </tool>
 """)
         write_scram_toolfile(contents, values, fname, prefix)

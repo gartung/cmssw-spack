@@ -34,6 +34,3 @@ def relrelink(top):
                     rel = os.path.relpath(linkto, start=os.path.dirname(f))
                     os.remove(p)
                     os.symlink(rel, p)
-
-
-
