@@ -109,6 +109,16 @@ class Scram(Package):
 
 
             contents = str("""
+  <tool name="gcc-atomic" version="${GCC_VER}">
+    <lib name="atomic"/>
+    <client>
+      <environment name="GCC_ATOMIC_BASE" default="${GCC_PREFIX}"/>
+    </client>
+  </tool>
+""")
+            write_scram_toolfile(contents, values, 'gcc-atomic.xml', prefix)
+
+            contents = str("""
 <tool name="root_cxxdefaults" version="6">
   <runtime name="ROOT_GCC_TOOLCHAIN" value="${GCC_PREFIX}" type="path"/>
   <runtime name="ROOT_INCLUDE_PATH" value="${GCC_PREFIX}/include/c++/${GCC_VER}" type="path"/>

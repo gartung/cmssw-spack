@@ -33,9 +33,9 @@ class Gosam(Package):
     depends_on('qgraf')
     depends_on('form')
     depends_on('gosamcontrib')
-    depends_on('pyhton')
-    depends_on('cyhton')
+    depends_on('python')
+    depends_on('cython')
 
-    install(self, spec, prefix):
+    def install(self, spec, prefix):
         python=which('python')
-        python('setup.py', 'install', '--prefix=%s'%prefix) 
+        python('setup.py', 'install', '--prefix=%s'%prefix)

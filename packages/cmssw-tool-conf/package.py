@@ -97,6 +97,7 @@ class CmsswToolConf(Package):
     depends_on('netlib-lapack-toolfile')
     depends_on('frontier-client-toolfile')
     depends_on('tkonlinesw-toolfile')
+    depends_on('valgrind-toolfile')
 
     def install(self, spec, prefix):
         with working_dir(prefix, create=True):
