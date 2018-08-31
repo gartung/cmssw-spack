@@ -25,6 +25,7 @@
 from spack import *
 from llnl.util.filesystem import *
 import os
+import tarfile
 
 def relinstall(f, target):
     if os.path.isfile(f) and not os.path.islink(f):
@@ -123,7 +124,7 @@ class Tensorflow(Package):
         bazel('shutdown')
 
         build_pip_package=Executable('bazel-bin/tensorflow/tools/pip_package/build_pip_package')
-        build_pip_package('%s' % self.prefix)
+        build_pip_package('.')
 
       
         libdir='%s/tensorflow_cc/lib' % os.getcwd()
@@ -176,10 +177,10 @@ class Tensorflow(Package):
             if os.path.exists(f):
                 relinstall(f, incdir)
         tar=tarfile.open('bazel-bin/tensorflow/tools/lib_package/libtensorflow.tar.gz')
-        tar.extractall('%s' % prefix)
-        pip=which('pip')
-        for f in find('.', 'tensorflow*.whl'):
-            pip('install', '--user', '-v', f)
+        tar.extractall('tensorflow_cc')
         install_tree(incdir, prefix.include)
         install_tree(libdir, prefix.lib)
         install_tree(bindir, prefix.bin)
+        pip=which('pip')
+        for f in find('.', 'tensorflow*.whl'):
+            pip('install', '--user', '-v', f)

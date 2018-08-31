@@ -98,6 +98,15 @@ class CmsswToolConf(Package):
     depends_on('frontier-client-toolfile')
     depends_on('tkonlinesw-toolfile')
     depends_on('valgrind-toolfile')
+    depends_on('tcmalloc-fake-toolfile')
+    depends_on('gbl-toolfile')
+    depends_on('thepeg-toolfile')
+    depends_on('gosam-toolfile')
+    depends_on('gosamcontrib-toolfile')
+    depends_on('madgraph5amcatnlo-toolfile')
+    depends_on('qgraf-toolfile')
+    depends_on('herwigpp-toolfile')
+    depends_on('vincia-toolfile')
 
     def install(self, spec, prefix):
         with working_dir(prefix, create=True):

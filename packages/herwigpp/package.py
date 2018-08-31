@@ -3,9 +3,10 @@ import os,sys
 
 
 class Herwigpp(AutotoolsPackage):
-    url      = "https://www.hepforge.org/archive/herwig/Herwig-7.1.4.tar.bz"
+    url      = "https://www.hepforge.org/archive/herwig/Herwig-7.1.4.tar.bz2"
 
-    version('7.1.4', sha256='bdd55ac0dcc9e96d2f64fe6eaa4d7df38709e9fc3446fe16eae3200cbe0c99ab')
+    version('7.1.4', sha256='bdd55ac0dcc9e96d2f64fe6eaa4d7df38709e9fc3446fe16eae3200cbe0c99ab',
+              url="https://www.hepforge.org/archive/herwig/Herwig-7.1.4.tar.bz2")
 
     depends_on('lhapdf')
     depends_on('boost')
