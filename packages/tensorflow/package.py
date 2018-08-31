@@ -26,6 +26,13 @@ from spack import *
 from llnl.util.filesystem import *
 import os
 
+def relinstall(f, target):
+    if os.path.isfile(f) and not os.path.islink(f):
+        rp=os.path.relpath(os.path.dirname(f))
+        mkdirp('%s/%s' % (target,rp))
+        install(f, '%s/%s' % (target, rp))
+
+
 
 class Tensorflow(Package):
     """
@@ -69,13 +76,6 @@ class Tensorflow(Package):
         spack_env.set('CXX_OPT_FLAGS', '-std=c++11')
         spack_env.set('USE_DEFAULT_PYTHON_LIB_PATH', '1')
         spack_env.set('PYTHON_BIN_PATH', '%s/python' % self.spec['python'].prefix.bin )
-
-
-    def relinstall(f, target):
-        if os.path.isfile(f) and not os.path.islink(f):
-            rp=os.path.relpath(os.path.dirname(f))
-            mkdirp('%s/%s' % (target,rp))
-            install(f, '%s/%s' % (target, rp))
 
 
     def install(self, spec, prefix):
@@ -128,16 +128,24 @@ class Tensorflow(Package):
         bindir='%s/tensorflow_cc/bin' % os.getcwd()
         incdir='%s/tensorflow_cc/include' % os.getcwd()
 
+        mkdirp(libdir)
+        mkdirp(bindir)
+
         for f in find('bazel-bin/tensorflow/','libtensorflow_cc.so'):
-            relinstall(os.path.basename(f), libdir)
+            if os.path.isfile(f) and not os.path.islink(f):
+                install(f, libdir)
         for f in find('bazel-bin/tensorflow/','libtensorflow_framework.so'):
-            relinstall(os.path.basename(f), libdir)
+            if os.path.isfile(f) and not os.path.islink(f):
+                install(f, libdir)
         for f in find('bazel-bin/tensorflow/compiler/aot','libtf_aot_runtime.so'):
-            relinstall(os.path.basename(f), libdir)
+            if os.path.isfile(f) and not os.path.islink(f):
+                install(f, libdir)
         for f in find('bazel-bin/tensorflow/compiler/tf2xla', 'libxla_compiled_cpu_function.so'):
-            relinstall(os.path.basename(f), libdir)
+            if os.path.isfile(f) and not os.path.islink(f):
+                install(f, libdir)
         for f in find('bazel-bin/tensorflow/compiler/aot','tfcompile'):
-            relinstall(os.path.basebane(f), bindir)
+            if os.path.isfile(f) and not os.path.islink(f):
+                install(f, bindir)
 
         depdl=Executable('tensorflow/contrib/makefile/download_dependencies.sh')
         depdl()
