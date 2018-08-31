@@ -26,3 +26,50 @@ class TensorflowToolfile(Package):
 </tool>
 """)
         write_scram_toolfile(content, values, fname, prefix)
+
+        fname='tensorflow-framework.xml'
+        content=str("""
+<tool name="tensorflow-framework" version="${VER}">
+  <lib name="tensorflow_framework"/>
+  <use name="tensorflow"/>
+</tool>
+""")
+        write_scram_toolfile(content, values, fname, prefix)
+
+        fname='tensorflow-cc.xml'
+        content=str("""
+<tool name="tensorflow-cc" version="${VER}">
+  <lib name="tensorflow_cc"/>
+  <use name="tensorflow-framework"/>
+  <use name="eigen"/>
+  <use name="protobuf"/>
+</tool>
+""")
+        write_scram_toolfile(content, values, fname, prefix)
+
+        name='tensorflow-c.xml'
+        content=str("""
+<tool name="tensorflow-c" version="${VER}">
+  <lib name="tensorflow"/>
+  <use name="tensorflow-framework"/>
+</tool>
+""")
+        write_scram_toolfile(content, values, fname, prefix)
+
+        name='tensorflow-runtime.xml'
+        content=str("""
+<tool name="tensorflow-runtime" version="${VER}">
+  <lib name="tf_aot_runtime"/>
+  <use name="tensorflow"/>
+</tool>
+""")
+        write_scram_toolfile(content, values, fname, prefix)
+
+        name='tensorflow-xla_compiled_cpu_function.xml'
+        content=str("""
+<tool name="tensorflow-xla_compiled_cpu_function" version="@TOOL_VERSION@">
+  <lib name="xla_compiled_cpu_function"/>
+  <use name="tensorflow"/>
+</tool>
+""")
+        write_scram_toolfile(content, values, fname, prefix)

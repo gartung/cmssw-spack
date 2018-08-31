@@ -49,6 +49,7 @@ class Tensorflow(Package):
     depends_on('python', type='build')
     depends_on('py-numpy')
     depends_on('py-wheel')
+    depends_on('py-pip')
     depends_on('eigen')
     depends_on('protobuf')
 
@@ -76,6 +77,7 @@ class Tensorflow(Package):
         spack_env.set('CXX_OPT_FLAGS', '-std=c++11')
         spack_env.set('USE_DEFAULT_PYTHON_LIB_PATH', '1')
         spack_env.set('PYTHON_BIN_PATH', '%s/python' % self.spec['python'].prefix.bin )
+        spack_env.set('PYTHONUSERBASE', '%s' % self.spec.prefix)
 
 
     def install(self, spec, prefix):
@@ -130,6 +132,7 @@ class Tensorflow(Package):
 
         mkdirp(libdir)
         mkdirp(bindir)
+        mkdirp(incdir)
 
         for f in find('bazel-bin/tensorflow/','libtensorflow_cc.so'):
             if os.path.isfile(f) and not os.path.islink(f):
@@ -150,9 +153,12 @@ class Tensorflow(Package):
         depdl=Executable('tensorflow/contrib/makefile/download_dependencies.sh')
         depdl()
 
-        for d in ('tensorflow','third_party', 'third_party/eigen3'):
+        for d in ('tensorflow','third_party'):
             for f in find( d, '*.h'):
                 relinstall(f, incdir)
+ 
+        for f in find('third_party/eigen3','*'):
+            relinstall(f, incdir)
 
         with working_dir('./bazel-genfiles'):
             for f in find('tensorflow','*.h'):
@@ -160,15 +166,20 @@ class Tensorflow(Package):
                     relinstall(f, incdir)
 
         with working_dir('./tensorflow/contrib/makefile/downloads'):
-            for d in ('gemmlowp', 'googletest', 're2', 'eigen/Eigen', 'eigen/unsupported','nsync/public'):
+            for d in ('gemmlowp', 'googletest', 're2', 'nsync/public'):
                 for f in find( d,'*.h'):
+                    relinstall(f, incdir)
+            for d in ('eigen/Eigen', 'eigen/unsupported'):
+                for f in find( d,'*'):
                     relinstall(f, incdir)
             f='eigen/signature_of_eigen3_matrix_library'
             if os.path.exists(f):
                 relinstall(f, incdir)
-        tar='bazel-bin/tensorflow/tools/lib_package/libtensorflow.tar.gz'
-        if os.path.exists(tar):
-            install(tar, prefix.share)
+        tar=tarfile.open('bazel-bin/tensorflow/tools/lib_package/libtensorflow.tar.gz')
+        tar.extractall('%s' % prefix)
+        pip=which('pip')
+        for f in find('.', 'tensorflow*.whl'):
+            pip('install', '--user', '-v', f)
         install_tree(incdir, prefix.include)
         install_tree(libdir, prefix.lib)
         install_tree(bindir, prefix.bin)
