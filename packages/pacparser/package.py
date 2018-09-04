@@ -11,8 +11,8 @@ class Pacparser(Package):
     version('1.3.5', '9db90bd4d88dfd8d31fa707466259566')
 
     def install(self, spec, prefix):
-        make('-C', 'src', 'PREFIX=%s' % prefix, 'CXXFLAGS=-Wno-unused-but-set-variable')
-        make('-C', 'src', 'install', 'PREFIX=%s' % prefix)
+        make('-j1', '-C', 'src', 'PREFIX=%s' % prefix, 'CXXFLAGS=-Wno-unused-but-set-variable')
+        make('-j1', '-C', 'src', 'install', 'PREFIX=%s' % prefix)
 
 
     @run_after('install')
