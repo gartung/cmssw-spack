@@ -108,6 +108,7 @@ class CmsswToolConf(Package):
     depends_on('herwigpp-toolfile')
     depends_on('vincia-toolfile')
     depends_on('tensorflow-toolfile')
+    depends_on('dire-toolfile')
 
     def install(self, spec, prefix):
         with working_dir(prefix, create=True):

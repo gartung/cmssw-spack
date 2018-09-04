@@ -25,7 +25,7 @@ class Oracle(Package):
         for f in glob.glob('*/lib*'):
             install(f, self.prefix.lib)
         mkdirp(self.prefix.bin)
-
+        mkdirp(self.prefix.etc)
         with working_dir(prefix.lib, create=False):
             for f in glob.glob('lib*.' + dso_suffix + '.[0-9]*'):
                 dest = str(os.path.basename(f)).split(
