@@ -19,8 +19,8 @@ class GblToolfile(Package):
   <lib name="GBL"/>
   <client>
     <environment name="GBL_BASE" default="$PFX"/>
-    <environment name="INCLUDE"        default="$$GBL/include"/>
-    <environment name="LIBDIR"        default="$$GBL/lib"/>
+    <environment name="INCLUDE"        default="$$GBL_BASE/include"/>
+    <environment name="LIBDIR"        default="$$GBL_BASE/lib"/>
   </client>
   <use name="eigen"/>
 </tool>""")

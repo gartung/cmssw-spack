@@ -107,6 +107,7 @@ class CmsswToolConf(Package):
     depends_on('qgraf-toolfile')
     depends_on('herwigpp-toolfile')
     depends_on('vincia-toolfile')
+    depends_on('tensorflow-toolfile')
 
     def install(self, spec, prefix):
         with working_dir(prefix, create=True):

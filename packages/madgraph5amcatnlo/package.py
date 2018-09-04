@@ -1,6 +1,6 @@
 from spack import *
 import os
-import shutil
+import distutils
 
 class Madgraph5amcatnlo(Package):
 
@@ -46,4 +46,6 @@ set nevents 5
         with open('basiceventgeneration.txt','w') as f:
             f.write(content)
         python('./bin/mg5_aMC', 'basiceventgeneration.txt')
-        shutil.copytree('.', self.prefix, ignore=shutil.ignore_paterns('*.tgz'))
+        for f in find('.', '*.tgz'):
+            os.remove(f)
+        distutils.dir_util.copy_tree('.', self.prefix)

@@ -47,7 +47,7 @@ class TensorflowToolfile(Package):
 """)
         write_scram_toolfile(content, values, fname, prefix)
 
-        name='tensorflow-c.xml'
+        fname='tensorflow-c.xml'
         content=str("""
 <tool name="tensorflow-c" version="${VER}">
   <lib name="tensorflow"/>
@@ -56,7 +56,7 @@ class TensorflowToolfile(Package):
 """)
         write_scram_toolfile(content, values, fname, prefix)
 
-        name='tensorflow-runtime.xml'
+        fname='tensorflow-runtime.xml'
         content=str("""
 <tool name="tensorflow-runtime" version="${VER}">
   <lib name="tf_aot_runtime"/>
@@ -65,9 +65,9 @@ class TensorflowToolfile(Package):
 """)
         write_scram_toolfile(content, values, fname, prefix)
 
-        name='tensorflow-xla_compiled_cpu_function.xml'
+        fname='tensorflow-xla_compiled_cpu_function.xml'
         content=str("""
-<tool name="tensorflow-xla_compiled_cpu_function" version="@TOOL_VERSION@">
+<tool name="tensorflow-xla_compiled_cpu_function" version="${VER}">
   <lib name="xla_compiled_cpu_function"/>
   <use name="tensorflow"/>
 </tool>

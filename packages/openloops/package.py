@@ -14,6 +14,7 @@ class Openloops(Package):
     version('1.0.1', '4b6381c8bc1b62855d604b1c37ed5189')
 
     depends_on('python', type='build')
+    depends_on('scons', type='build')
 
     patch('openloops-1.2.3-cpp-use-undef.patch')
 
@@ -32,11 +33,9 @@ born_optimisation = -O0
             f.write(contents)
             f.close()
 
-    def build(self, spec, prefix):
+    def install(self, spec, prefix):
         builder = Executable('./openloops')
         builder('update', '--processes', 'generator=0')
-
-    def install(self, spec, prefix):
         mkdirp(prefix.lib)
         mkdirp(join_path(prefix, 'proclib'))
         for f in glob.glob('lib/*.so'):
