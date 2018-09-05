@@ -66,7 +66,7 @@ class Scram(Package):
     <flags CPPDEFINES="GNU_GCC _GNU_SOURCE   "/>
     <flags CXXSHAREDOBJECTFLAGS="-fPIC   "/>
     <flags CXXFLAGS="-O2 -pthread -pipe -Werror=main -Werror=pointer-arith"/>
-    <flags CXXFLAGS="-Werror=overlength-strings -Wno-vla -Werror=overflow   -std=c++1z -ftree-vectorize -Wstrict-overflow -Werror=array-bounds -Werror=format-contains-nul -Werror=type-limits -fvisibility-inlines-hidden -fno-math-errno --param vect-max-version-for-alias-checks=50 -Wa,--compress-debug-sections -fno-crossjumping -msse3"/>
+    <flags CXXFLAGS="-Werror=overlength-strings -Wno-vla -Werror=overflow   -std=c++1z -ftree-vectorize -Wstrict-overflow -Werror=array-bounds -Werror=format-contains-nul -Werror=type-limits -fvisibility-inlines-hidden -fno-math-errno --param vect-max-version-for-alias-checks=50  -fno-crossjumping -msse3"/>
     <flags CXXFLAGS="-felide-constructors -fmessage-length=0"/>
     <flags CXXFLAGS="-Wall -Wno-non-template-friend -Wno-long-long -Wreturn-type"/>
     <flags CXXFLAGS="-Wunused -Wparentheses -Wno-deprecated -Werror=return-type"/>
