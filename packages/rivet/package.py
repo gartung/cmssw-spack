@@ -16,7 +16,7 @@ class Rivet(AutotoolsPackage):
     depends_on('yoda')
     depends_on('boost')
     depends_on('py-cython')
-    depends_on('py-asciidoc')
+    depends_on('asciidoc')
 
     def configure_args(self):
         args = ['--disable-silent-rules',
