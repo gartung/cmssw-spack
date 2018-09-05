@@ -14,7 +14,7 @@ class CmsOracleocciAbiHackToolfile(Package):
         values['VER'] = spec['cms-oracleocci-abi-hack'].version
         values['PFX'] = spec['cms-oracleocci-abi-hack'].prefix
 
-        fname = 'cms-occi.xml'
+        fname = 'oracle-occi-abi-hack.xml'
         contents = str("""
 <tool name="oracleocci" version="${VER}">
   <lib name="cms_oracleocci_abi_hack"/>

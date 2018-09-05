@@ -17,7 +17,7 @@ class NetlibLapackToolfile(Package):
 <tool name="lapack" version="${VER}">
   <client>
     <environment name="LAPACK_BASE" default="${PFX}"/>
-    <environment name="LIBDIR" default="$$LAPACK_BASE/lib64"/>
+    <environment name="LIBDIR" default="$$LAPACK_BASE/lib"/>
   </client>
 </tool>
 """)
