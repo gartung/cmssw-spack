@@ -5,7 +5,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
 from scrampackage import write_scram_toolfile
 
 
-class CmsOracleocciAbiHack(Package):
+class OracleocciAbiHackCms(Package):
     """An ABI hack to occi.h with std=c++17"""
 
     homepage = "https://github.com/cms-sw"

@@ -56,8 +56,8 @@ class CmsswToolConf(Package):
     depends_on('fftjet-toolfile')
     depends_on('pythia6-toolfile')
     depends_on('pythia8-toolfile')
+    depends_on('oracleocci-abi-hack-cms-toolfile')
     depends_on('oracle-toolfile')
-    depends_on('cms-oracleocci-abi-hack-toolfile')
     depends_on('sqlite-toolfile')
     depends_on('coral-toolfile')
     depends_on('hector-toolfile')
@@ -109,6 +109,7 @@ class CmsswToolConf(Package):
     depends_on('vincia-toolfile')
     depends_on('tensorflow-toolfile')
     depends_on('dire-toolfile')
+    depends_on('cuda-toolfile')
 
     def install(self, spec, prefix):
         with working_dir(prefix, create=True):

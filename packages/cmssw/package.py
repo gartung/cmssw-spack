@@ -71,7 +71,7 @@ class Cmssw(Package):
                  '--arch', '%s' % self.scram_arch)
             scram('project', '-d', os.path.realpath(self.stage.path), '-b', 'config/bootsrc.xml')
 
-        project_dir = os.path.realpath(self.stage.path+'/'+cmssw_u_version)
+        project_dir =join_path(os.path.realpath(self.stage.path),cmssw_u_version)
         with working_dir(project_dir, create=False):
             matches = []
 
@@ -81,8 +81,8 @@ class Cmssw(Package):
                 if os.path.exists(m):
                     os.remove(m)
 
-            scram.add_default_env('LOCALTOP', project_dir)
-            scram.add_default_env('CMSSW_BASE', project_dir)
+#            scram.add_default_env('LOCALTOP', project_dir)
+#            scram.add_default_env('CMSSW_BASE', project_dir)
             scram.add_default_env(
                 'LD_LIBRARY_PATH', project_dir + '/lib/' + self.scram_arch)
             scram.add_default_env(
@@ -96,19 +96,19 @@ class Cmssw(Package):
 
 
         with working_dir(join_path(prefix,cmssw_u_version), create=False):
-            os.environ[ 'LOCALTOP' ] = os.getcwd()
-            os.environ[ 'RELEASETOP' ] = os.getcwd()
-            os.environ[ 'CMSSW_RELEASE_BASE' ] = os.getcwd()
-            os.environ[ 'CMSSW_BASE' ] = os.getcwd()
+#            os.environ[ 'LOCALTOP' ] = os.getcwd()
+#            os.environ[ 'RELEASETOP' ] = os.getcwd()
+#            os.environ[ 'CMSSW_RELEASE_BASE' ] = os.getcwd()
+#            os.environ[ 'CMSSW_BASE' ] = os.getcwd()
             scram('build', 'ProjectRename')
 
     def setup_dependent_environment(self, spack_env, run_env, dspec):
         cmssw_version = 'CMSSW.' + str(self.version)
         cmssw_u_version = cmssw_version.replace('.', '_')
-        spack_env.set('LOCALTOP', self.prefix + '/' + cmssw_u_version)
-        spack_env.set('RELEASETOP', self.prefix + '/' + cmssw_u_version)
-        spack_env.set('CMSSW_RELEASE_BASE', self.prefix)
-        spack_env.set('CMSSW_BASE', self.prefix)
+#        spack_env.set('LOCALTOP', self.prefix + '/' + cmssw_u_version)
+#        spack_env.set('RELEASETOP', self.prefix + '/' + cmssw_u_version)
+#        spack_env.set('CMSSW_RELEASE_BASE', self.prefix)
+#        spack_env.set('CMSSW_BASE', self.prefix)
         spack_env.append_path('LD_LIBRARY_PATH', self.prefix +
                               '/' + cmssw_u_version + '/lib/' + self.scram_arch)
         spack_env.append_path(
@@ -117,10 +117,9 @@ class Cmssw(Package):
     def setup_environment(self, spack_env, run_env):
         cmssw_version = 'CMSSW.' + str(self.version)
         cmssw_u_version = cmssw_version.replace('.', '_')
-        project_dir = os.path.realpath(join_path(self.stage.path, 
-                                                cmssw_u_version))
-        spack_env.set('LOCALTOP', project_dir)
-        spack_env.set('CMSSW_BASE',project_dir)
+        project_dir = join_path(os.path.realpath(self.stage.path), cmssw_u_version)
+#        spack_env.set('LOCALTOP', project_dir)
+#        spack_env.set('CMSSW_BASE',project_dir)
         spack_env.append_path('LD_LIBRARY_PATH', 
                               project_dir + '/lib/' + self.scram_arch)
         spack_env.append_path('LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib)
