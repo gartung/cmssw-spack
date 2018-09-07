@@ -18,38 +18,9 @@ class Fwlite(Package):
 
     depends_on('scram')
     depends_on('cmssw-config')
-    depends_on('llvm')
+    depends_on('fwlite-tool-conf')
     depends_on('gmake')
-    depends_on('root-toolfile')
-    depends_on('intel-tbb-toolfile')
-    depends_on('tinyxml-toolfile')
-    depends_on('clhep-toolfile')
-    depends_on('md5-toolfile')
-    depends_on('python-toolfile')
-    depends_on('vdt-toolfile')
-    depends_on('boost-toolfile')
-    depends_on('libsigcpp-toolfile')
-    depends_on('xrootd-toolfile')
-    depends_on('cppunit-toolfile')
-    depends_on('xerces-c-toolfile')
-    depends_on('expat-toolfile')
-    depends_on('sqlite-toolfile')
-    depends_on('bzip2-toolfile')
-    depends_on('gsl-toolfile')
-    depends_on('hepmc-toolfile')
-    depends_on('libpng-toolfile')
-    depends_on('giflib-toolfile')
-    depends_on('openssl-toolfile')
-    depends_on('pcre-toolfile')
-    depends_on('zlib-toolfile')
-    depends_on('xz-toolfile')
-    depends_on('libtiff-toolfile')
-    depends_on('libjpeg-turbo-toolfile')
-    depends_on('libxml2-toolfile')
-    depends_on('bzip2-toolfile')
-    depends_on('fireworks-geometry-toolfile')
-    depends_on('llvm-lib-toolfile')
-    depends_on('uuid-toolfile')
+    depends_on('llvm')
 
     if sys.platform == 'darwin':
         patch('macos.patch')
@@ -64,6 +35,7 @@ class Fwlite(Package):
     def install(self, spec, prefix):
         scram = which('scram')
         source_directory = self.stage.source_path
+        build_directory=os.path.realpath(self.stage.path)
         cmssw_version = 'CMSSW.' + str(self.version)
         cmssw_u_version = cmssw_version.replace('.', '_')
         scram_version = 'V%s' % spec['scram'].version
@@ -75,10 +47,10 @@ class Fwlite(Package):
         gcc_machine = gcc('-dumpmachine', output=str)
         gcc_ver = gcc('-dumpversion', output=str)
 
-        with working_dir(self.stage.path):
-            install_tree(source_directory, 'src', 
-                        ignore=shutil.ignore_patterns('spack_build.*',
-                                                       '.git', 'config')) 
+        with working_dir(build_directory):
+            install_tree(source_directory, 'src',
+                         ignore=shutil.ignore_patterns('spack_build.*',
+                                                       '.git', 'config'))
             install_tree(spec['cmssw-config'].prefix.bin, 'config', 
                          ignore=shutil.ignore_patterns('.git')) 
 
@@ -89,21 +61,13 @@ class Fwlite(Package):
             install(join_path(os.path.dirname(__file__), "fwlite_build_set.file"),
                 "fwlite_build_set.file")
 
-            mkdirp('tools/selected')
-            mkdirp('tools/available')
-            for dep in spec.dependencies():
-                xmlfiles = glob(join_path(dep.prefix.etc, 'scram.d', '*.xml'))
-                for xmlfile in xmlfiles:
-                    install(xmlfile, 'tools/selected')
-
-            perl = which('perl')
             uc = Executable('config/updateConfig.pl')
             uc('-p', 'CMSSW',
                  '-v', cmssw_u_version,
                  '-s', scram_version,
-                 '-t', self.stage.path,
+                 '-t', '%s' % spec['fwlite-tool-conf'].prefix,
                  '--keys', 'SCRAM_COMPILER=gcc',
-                 '--keys', 'PROJECT_GIT_HASH=' + cmssw_u_version,
+                 '--keys', 'PROJECT_GIT_HASH=%s'%cmssw_u_version,
                  '--arch', self.scram_arch)
             fin = 'config/bootsrc.xml'
             matchexp = re.compile(
@@ -125,9 +89,9 @@ class Fwlite(Package):
                     replacement = line + '\n'
                     fout.write(replacement)
             fout.close()
-            scram('project', '-d', self.stage.path, '-b', 'config/bootsrc.xml')
-
-        with working_dir(join_path(self.stage.path, cmssw_u_version), create=False):
+            scram('project', '-d', '%s' %  build_directory, '-b', 'config/bootsrc.xml')
+        project_dir =join_path(os.path.realpath(self.stage.path),cmssw_u_version)
+        with working_dir(project_dir, create=False):
             matches = []
             matches.append('src/CommonTools/Utils/src/TMVAEvaluator.cc')
             matches.append(
@@ -143,6 +107,16 @@ class Fwlite(Package):
             scram('build', '-r', '-v', '-j8')
             relrelink('external')
             shutil.rmtree('tmp')
+        install_tree(project_dir,prefix+'/'+cmssw_u_version)
+        relrelink(prefix+'/'+cmssw_u_version+'external')
+
+
+        with working_dir(join_path(prefix,cmssw_u_version), create=False):
+#            os.environ[ 'LOCALTOP' ] = os.getcwd()
+#            os.environ[ 'RELEASETOP' ] = os.getcwd()
+#            os.environ[ 'CMSSW_RELEASE_BASE' ] = os.getcwd()
+#            os.environ[ 'CMSSW_BASE' ] = os.getcwd()
+            scram('build', 'ProjectRename')
 
     def setup_dependent_environment(self, spack_env, run_env, dspec):
         cmssw_version = 'CMSSW.' + str(self.version)
@@ -161,6 +135,6 @@ class Fwlite(Package):
 #        spack_env.set('RELEASETOP', join_path(self.stage.path, cmssw_u_version))
 #        spack_env.set('CMSSW_RELEASE_BASE', join_path(self.stage.path,cmssw_u_version))
 #        spack_env.set('CMSSW_BASE', join_path(self.stage.path, cmssw_u_version))
-        spack_env.append_path('LD_LIBRARY_PATH', join_path(self.stage.path,
-                              cmssw_u_version, '/lib/', self.scram_arch))
+#        spack_env.append_path('LD_LIBRARY_PATH', join_path(os.path.realpath(self.stage.path),
+#                              cmssw_u_version, '/lib/', self.scram_arch))
         spack_env.append_path('LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib)
