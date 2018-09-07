@@ -107,7 +107,7 @@ class Fwlite(Package):
             scram('build', '-r', '-v', '-j8')
             relrelink('external')
             shutil.rmtree('tmp')
-        install_tree(project_dir,prefix+'/'+cmssw_u_version)
+        install_tree(project_dir,prefix+'/'+cmssw_u_version, symlinks=True)
         relrelink(prefix+'/'+cmssw_u_version+'external')
 
 

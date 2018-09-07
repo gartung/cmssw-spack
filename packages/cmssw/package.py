@@ -86,7 +86,7 @@ class Cmssw(Package):
                 'LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib64)
             scram('build', '-v', '-j8')
             shutil.rmtree('tmp')
-        install_tree(project_dir,prefix+'/'+cmssw_u_version)
+        install_tree(project_dir,prefix+'/'+cmssw_u_version, symlinks=True)
         relrelink(prefix+'/'+cmssw_u_version+'external')
 
 
