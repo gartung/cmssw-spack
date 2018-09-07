@@ -16,12 +16,7 @@ class Cmssw(Package):
     homepage = "http://cms-sw.github.io"
     url = "https://github.com/cms-sw/cmssw/archive/CMSSW_10_2_0.tar.gz"
 
-    version('10.2.0', git='https://github.com/cms-sw/cmssw.git', tag='CMSSW_10_2_0')
-
-    def url_for_version(self, version):
-        """Handle CMSSW's version string."""
-        version_underscore = str(self.version).replace('.', '_')
-        return "https://github.com/cms-sw/cmssw/archive/CMSSW_%s.tar.gz" % version_underscore
+    version('10.3.0.pre3', git='https://github.com/cms-sw/cmssw.git', tag='CMSSW_10_3_0_pre3')
 
     depends_on('scram')
     depends_on('cmssw-config')
