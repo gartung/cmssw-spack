@@ -38,7 +38,8 @@ class Root(CMakePackage):
     depends_on("openssl")
     depends_on("xrootd")
     depends_on("freetype")
-    depends_on("dcap")
+    if sys.platform == 'linux2':
+        depends_on("dcap") 
     depends_on("davix")
     depends_on("openblas")
     depends_on("intel-tbb")
