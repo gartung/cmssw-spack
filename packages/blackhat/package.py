@@ -3,9 +3,10 @@ import sys,os
 
 class Blackhat(Package):
 
-    url      = "http://www.hepforge.org/archive/blackhat/blackhat-0.9.9.tar.gz"
+    url      = "https://blackhat.hepforge.org/downloads/blackhat-0.9.9.tar.gz"
 
-    version('0.9.9', '64a4e64a95754bb701bf0c1f88c8ee53')
+    version('0.9.9', '64a4e64a95754bb701bf0c1f88c8ee53',
+             url='http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc7_amd64_gcc700/external/blackhat/0.9.9/blackhat-0.9.9.tar.gz')
 
     patch('blackhat-gcc48.patch')
 #    patch('blackhat-0.9.9-armv7hl.patch')
