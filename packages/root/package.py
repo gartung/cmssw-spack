@@ -40,7 +40,7 @@ class Root(CMakePackage):
     depends_on("freetype")
     if sys.platform == 'linux2':
         depends_on("dcap") 
-    depends_on("davix")
+    depends_on("davix", type='run')
     depends_on("openblas")
     depends_on("intel-tbb")
 

@@ -159,8 +159,8 @@ class Scram(Package):
                 contents += """
     <client>
       <environment name="OPENGL_BASE" default="/System/Library/Frameworks/OpenGL.framework/Versions/A"/>
-      <environment name="INCLUDE"     default="$OPENGL_BASE/Headers"/>
-      <environment name="LIBDIR"      default="$OPENGL_BASE/Libraries"/>
+      <environment name="INCLUDE"     default="$$OPENGL_BASE/Headers"/>
+      <environment name="LIBDIR"      default="$$OPENGL_BASE/Libraries"/>
     </client>
 """
             contents += """</tool>"""
