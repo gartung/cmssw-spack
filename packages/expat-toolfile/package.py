@@ -7,7 +7,7 @@ from scrampackage import write_scram_toolfile
 class ExpatToolfile(Package):
     url = 'file://' + os.path.dirname(__file__) + '/../../common/junk.xml'
     version('1.0', '68841b7dcbd130afd7d236afe8fd5b949f017615', expand=False)
-    depends_on('expat')
+    depends_on('expat@2.1.0')
 
     def install(self, spec, prefix):
         values = {}

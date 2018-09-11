@@ -7,7 +7,7 @@ from scrampackage import write_scram_toolfile
 class XrootdToolfile(Package):
     url = 'file://' + os.path.dirname(__file__) + '/../../common/junk.xml'
     version('1.0', '68841b7dcbd130afd7d236afe8fd5b949f017615', expand=False)
-    depends_on('xrootd')
+    depends_on('xrootd@4.8.4')
 
     def install(self, spec, prefix):
 

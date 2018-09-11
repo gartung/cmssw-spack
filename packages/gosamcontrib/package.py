@@ -6,7 +6,8 @@ class Gosamcontrib(AutotoolsPackage):
     homepage = "http://www.example.com"
     url      = "http://www.hepforge.org/archive/gosam/gosam-contrib-2.0-20150803.tar.gz"
 
-    version('2.0-20150803', sha256='d8fcbfe4270ce250f37366e39b5cd19528bd520658930b3d204df29b905314da')
+    version('2.0-20150803', sha256='d8fcbfe4270ce250f37366e39b5cd19528bd520658930b3d204df29b905314da',
+            url='http://cmsrep.cern.ch/cmssw/repos/cms/SOURCES/slc7_amd64_gcc700/external/gosamcontrib/2.0-20150803/gosam-contrib-2.0-20150803.tar.gz')
 
     depends_on('qgraf')
     depends_on('form')

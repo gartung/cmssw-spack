@@ -8,6 +8,7 @@ class Qd(Package):
     homepage = "http://www.example.com"
     url      = "http://crd.lbl.gov/~dhbailey/mpdist/qd-2.3.13.tar.gz"
     
+    version('2.3.13', '1c901295624d91df0114614f2ccf914f')
     version('2.3.18', '48e788826c0c610f4f0eb49e5465a32b')
 
 

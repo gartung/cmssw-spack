@@ -7,7 +7,6 @@ from scrampackage import write_scram_toolfile
 class Rivet(AutotoolsPackage):
     url = "http://lcgpackages.web.cern.ch/lcgpackages/tarFiles/sources/MCGeneratorsTarFiles/Rivet-2.5.4.tar.bz2"
 
-    version('3.0.0alpha1', '7fb24d0e6ac8e9fe549d61194cb863d0')
     version('2.5.4',       '709a5c744135639f8f8195a1241ae81d', preferred=True)
 
     depends_on('hepmc')

@@ -7,7 +7,7 @@ from scrampackage import write_scram_toolfile
 class FftwToolfile(Package):
     url = 'file://' + os.path.dirname(__file__) + '/../../common/junk.xml'
     version('1.0', '68841b7dcbd130afd7d236afe8fd5b949f017615', expand=False)
-    depends_on('fftw')
+    depends_on('fftw@3.3.2')
 
     def install(self, spec, prefix):
         values = {}

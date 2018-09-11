@@ -8,6 +8,7 @@ class FireworksGeometry(Package):
     version('07.05.01', '9f40fdf89286392d1d39d5ed52981051')
     version('07.05.02', '0277dd37c0ff7664ea733445445efb6a')
     version('07.05.03', 'cea2d9a9c03cb95470552f7fd73d3537')
+    version('07.05.04', '11111111111111111111111111111111')
 
 
     def install(self, spec, prefix):

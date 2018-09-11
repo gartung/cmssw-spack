@@ -9,6 +9,8 @@ class Sherpa(Package):
     homepage = "http://www.example.com"
     url = "http://www.hepforge.org/archive/sherpa/SHERPA-MC-2.2.2.tar.gz"
 
+    version('2.2.4', git='https://github.com/cms-externals/sherpa',
+            commit='39e6e46da14c4ad12be4894e7acb952ea4087717')
     version('2.2.2', git='https://github.com/cms-externals/sherpa', branch='cms/v2.2.2')
 
     depends_on('scons')

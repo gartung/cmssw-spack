@@ -31,7 +31,7 @@ class Lhapdf(Package):
 
     depends_on('gmake', type='build')
     depends_on('boost@1.63.0')
-    depends_on('cython', type='build')
+    depends_on('py-cython', type='build')
     depends_on('python')
 #    depends_on('yaml-cpp@0.5.1')
 
@@ -39,13 +39,13 @@ class Lhapdf(Package):
         configure('--prefix=%s' % prefix,
                   '--with-boost=%s' % spec['boost'].prefix,
                   'PYTHON=%s/bin/python' % spec['python'].prefix,
-                  'CYTHON=%s/bin/cython' % spec['cython'].prefix,
+                  'CYTHON=%s/bin/cython' % spec['py-cython'].prefix,
                   'PYTHONPATH=%s/lib/python2.7/site-packages' %
-                  spec['cython'].prefix)
+                  spec['py-cython'].prefix)
         make('all', 'PYTHONPATH=%s/lib/python2.7/site-packages' %
-             spec['cython'].prefix)
+             spec['py-cython'].prefix)
         make('install', 'PYTHONPATH=%s/lib/python2.7/site-packages' %
-                        spec['cython'].prefix)
+                        spec['py-cython'].prefix)
 
         mkdirp(join_path(spec.prefix.share, 'LHAPDF'))
         for pdf in ['cteq6l1', 'CT10', 'MSTW2008nlo68cl', 'MMHT2014lo68cl', 'MMHT2014nlo68cl']:

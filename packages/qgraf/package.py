@@ -4,7 +4,6 @@ from spack import *
 class Qgraf(Package):
     """FIXME: Put a proper description of your package here."""
 
-    # FIXME: Add a proper url for your package's homepage here.
     homepage = "http://www.example.com"
     url      = "https://gosam.hepforge.org/gosam-installer/qgraf-3.1.4.tgz"
 

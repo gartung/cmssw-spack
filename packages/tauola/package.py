@@ -12,9 +12,9 @@ class Tauola(Package):
     homepage = "http://www.example.com"
     url      = "http://service-spi.web.cern.ch/service-spi/external/MCGenerators/distribution/tauola/tauola-28.121.2-src.tgz"
 
-    #version('28.121.2', '275ec7dd7ce9c091c042c033a434754d')
-    #version('28.121',   'e2c75a6e566c98f3972744883f687b9c')
-    version('27.121.5', 'b0a155d16ea5759701636202d1f6de3e')
+    version('28.121.2', '275ec7dd7ce9c091c042c033a434754d')
+    version('28.121',   'e2c75a6e566c98f3972744883f687b9c')
+    version('27.121.5', 'b0a155d16ea5759701636202d1f6de3e', preferred=True)
 
     depends_on('pythia6')
     depends_on('photos')
