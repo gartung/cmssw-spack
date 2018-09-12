@@ -103,7 +103,7 @@ class Fwlite(Package):
             for m in matches:
                 if os.path.exists(m):
                     os.remove(m)
-
+            scram('setup', 'self')
             scram('build', '-r', '-v', '-j8')
             relrelink('external')
             shutil.rmtree('tmp')

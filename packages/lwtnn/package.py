@@ -4,11 +4,11 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
 from scrampackage import write_scram_toolfile
 
 
-class Lwtnn(Package):
+class Lwtnn(CMakePackage):
     homepage = "http://www.example.com"
     url      = "https://github.com/lwtnn/lwtnn/archive/v1.0.tar.gz"
 
-    version('2.4', 'bb62cd8c1f0a97681206894f7f5a8e95')
+    version('2.4', 'e323debb51fdd251e7f74238f757a952')
     version('1.0', 'bb62cd8c1f0a97681206894f7f5a8e95')
 
     depends_on('boost')
@@ -19,13 +19,11 @@ class Lwtnn(Package):
         spack_env.set('BOOST_ROOT', self.spec['boost'].prefix)
         spack_env.set('EIGEN_ROOT', self.spec['eigen'].prefix)
 
-    def install(self, spec, prefix):
-        cmake(
-             ' -DCMAKE_CXX_COMPILER="g++',
-             ' -DCMAKE_CXX_FLAGS="-fPIC"',
-             ' -DCMAKE_BUILD_TYPE=Release',
-             ' -DBUILTIN_BOOST=OFF',
-             ' -DBUILTIN_EIGEN=OFF',
-             ' -DCMAKE_PREFIX_PATH="${EIGEN_ROOT};${BOOST_ROOT}"')
-        make('all')
-        make('install')
+    def cmake_args(self):
+        args= (
+             '-DCMAKE_CXX_COMPILER=g++',
+             '-DCMAKE_CXX_FLAGS=-fPIC',
+             '-DCMAKE_BUILD_TYPE=Release',
+             '-DBUILTIN_BOOST=OFF',
+             '-DBUILTIN_EIGEN=OFF')
+        return args
