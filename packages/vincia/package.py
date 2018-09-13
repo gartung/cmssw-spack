@@ -7,8 +7,8 @@ class Vincia(AutotoolsPackage):
     homepage = "http://www.example.com"
     url      = "https://www.hepforge.org/archive/vincia/vincia-2.2.01.tgz"
 
-    version('2.2.01', sha256='4c93014cdb3813e10e36d8df494bda75366b81c6a985c729dd15e5089762ec20')
     version('2.2.02', sha256='4c93014cdb3813e10e36d8df494bda75366b81c6a985c729dd15e5089762ec20')
+    version('2.2.01', sha256='ca98d1bb5f73192e01d1e054f3ba9c385df49a1256dc4c932bf40434b6d56d69')
 
     depends_on('pythia8')
 
