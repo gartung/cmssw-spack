@@ -41,7 +41,12 @@ class RootToolfile(Package):
         write_scram_toolfile(contents, values, fname, prefix)
 
         fname = 'root_cxxdefaults.xml'
-        contents = str("""<tool name="root_cxxdefaults" version="$VER">
+        if sys.platform == 'darwin':
+          contents = str("""<tool name="root_cxxdefaults" version="$VER">
+</tool>""")
+          write_scram_toolfile(contents, values, fname, prefix)
+        else:
+          contents = str("""<tool name="root_cxxdefaults" version="$VER">
   <runtime name="ROOT_GCC_TOOLCHAIN" value="$GCC_PREFIX" type="path"/>
   <runtime name="ROOT_INCLUDE_PATH" value="$GCC_PREFIX/include/c++/$GCC_VER" type="path"/>
   <runtime name="ROOT_INCLUDE_PATH" value="$GCC_PREFIX/include/c++/$GCC_VER/$GCC_MACHINE" type="path"/>
@@ -49,7 +54,7 @@ class RootToolfile(Package):
   <runtime name="ROOT_INCLUDE_PATH" value="/usr/local/include" type="path"/>
   <runtime name="ROOT_INCLUDE_PATH" value="/usr/include" type="path"/>
 </tool>""")
-        write_scram_toolfile(contents, values, fname, prefix)
+          write_scram_toolfile(contents, values, fname, prefix)
 
 # rootcling toolfile
         fname = 'rootcling.xml'

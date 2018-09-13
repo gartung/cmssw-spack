@@ -1,6 +1,6 @@
 from spack import *
 import re
-import os
+import os, sys
 from glob import glob
 import fnmatch
 
@@ -11,6 +11,9 @@ class FwliteToolConf(Package):
 
     depends_on('scram')
     depends_on('gmake-toolfile')
+    if sys.platform == 'darwin':
+        depends_on('llvm-compiler-toolfile')
+    depends_on('gcc-compiler-toolfile')
     depends_on('root-toolfile')
     depends_on('intel-tbb-toolfile')
     depends_on('tinyxml-toolfile')

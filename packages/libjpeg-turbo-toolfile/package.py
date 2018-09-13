@@ -12,6 +12,9 @@ class LibjpegTurboToolfile(Package):
         values = {}
         values['VER'] = spec["libjpeg-turbo"].version
         values['PFX'] = spec["libjpeg-turbo"].prefix
+        values['LIB'] = 'lib64'
+        if sys.platform == 'darwin':
+            values['LIB'] = 'lib'
 
         fname = 'libjpg.xml'
         contents = str("""<tool name="libjpeg-turbo" version="$VER">
@@ -20,7 +23,7 @@ class LibjpegTurboToolfile(Package):
   <lib name="turbojpeg"/>
   <client>
     <environment name="LIBJPEG_TURBO_BASE" default="$PFX"/>
-    <environment name="LIBDIR" default="$$LIBJPEG_TURBO_BASE/lib64"/>
+    <environment name="LIBDIR" default="$$LIBJPEG_TURBO_BASE/$LIB"/>
     <environment name="INCLUDE" default="$$LIBJPEG_TURBO_BASE/include"/>
   </client>
   <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>

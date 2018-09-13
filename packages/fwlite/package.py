@@ -42,10 +42,10 @@ class Fwlite(Package):
         config_tag = '%s' % spec['cmssw-config'].version
 
 
-        gcc = which(spack_f77)
-        gcc_prefix = re.sub('/bin/.*$', '', self.compiler.f77)
-        gcc_machine = gcc('-dumpmachine', output=str)
-        gcc_ver = gcc('-dumpversion', output=str)
+#        gcc = which(spack_f77)
+#        gcc_prefix = re.sub('/bin/.*$', '', self.compiler.f77)
+#        gcc_machine = gcc('-dumpmachine', output=str)
+#        gcc_ver = gcc('-dumpversion', output=str)
 
         with working_dir(build_directory):
             install_tree(source_directory, 'src',
@@ -104,7 +104,10 @@ class Fwlite(Package):
                 if os.path.exists(m):
                     os.remove(m)
             scram('setup', 'self')
-            scram('build', '-r', '-v', '-j8')
+            if sys.platform == 'darwin':
+                scram('build', '-r', '-v', '-j8', 'COMPILER=llvm')
+            else:
+                scram('build', '-r', '-v', '-j8' )
             relrelink('external')
             shutil.rmtree('tmp')
         install_tree(project_dir,prefix+'/'+cmssw_u_version, symlinks=True)

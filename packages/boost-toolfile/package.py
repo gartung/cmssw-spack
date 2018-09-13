@@ -29,7 +29,7 @@ class BoostToolfile(Package):
   <runtime name="CMSSW_FWLITE_INCLUDE_PATH" value="$$BOOST_BASE/include" type="path"/>
   <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
   <use name="root_cxxdefaults"/>
-  <flags CPPDEFINES="BOOST_SPIRIT_THREADSAFE PHOENIX_THREADSAFE"/>
+  <flags CPPDEFINES="BOOST_SPIRIT_THREADSAFE PHOENIX_THREADSAFE _LIBCPP_ENABLE_CXX17_REMOVED_FEATURES=1"/>
   <flags CXXFLAGS="-Wno-error=unused-variable"/>
   <use name="sockets"/>
 </tool>""")
