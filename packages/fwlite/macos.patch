@@ -1,16 +1,26 @@
 diff --git a/CondFormats/Serialization/python/condformats_serialization_generate.py b/CondFormats/Serialization/python/condformats_serialization_generate.py
-index e0d7303..8e22bad 100755
+index e0d7303..ca2e3e2 100755
 --- a/CondFormats/Serialization/python/condformats_serialization_generate.py
 +++ b/CondFormats/Serialization/python/condformats_serialization_generate.py
-@@ -426,6 +426,7 @@ class SerializationCodeGenerator(object):
+@@ -29,7 +29,7 @@ import subprocess
+ 
+ import clang.cindex
+ 
+-clang_version = None
++clang_version = (6,0,1)
+ 
+ headers_template = '''
+ #include "{headers}"
+@@ -420,7 +420,7 @@ class SerializationCodeGenerator(object):
+ 
+     def __init__(self, scramFlags=None):
+ 
+-        self.cmssw_base = os.getenv('CMSSW_BASE')
++        self.cmssw_base = os.path.realpath(os.getenv('CMSSW_BASE'))
+         if self.cmssw_base is None:
+             raise Exception('CMSSW_BASE is not set.')
          logging.debug('cmssw_base = %s', self.cmssw_base)
- 
-         cwd = os.getcwd()
-+        cwd = cwd.replace('/private', '')
-         logging.debug('cwd = %s', cwd)
- 
-         if not cwd.startswith(self.cmssw_base):
-@@ -475,7 +476,7 @@ class SerializationCodeGenerator(object):
+@@ -475,7 +475,7 @@ class SerializationCodeGenerator(object):
          # On macOS we need to costruct library search path
          if "SCRAM_ARCH" in os.environ and re.match('osx10*',os.environ['SCRAM_ARCH']):
              cindex=clang.cindex
@@ -19,6 +29,16 @@ index e0d7303..8e22bad 100755
              cindex.Config.set_library_path(libpath)
              index = cindex.Index.create()
          else :
+@@ -493,7 +493,8 @@ class SerializationCodeGenerator(object):
+ 
+             # Ignore some known warnings
+             if diagnostic['spelling'].startswith('argument unused during compilation') \
+-                or diagnostic['spelling'].startswith('unknown warning option'):
++                or diagnostic['spelling'].startswith('unknown warning option') \
++                or diagnostic['spelling'].startswith('unknown attribute'):
+                 logf = logging.debug
+ 
+             logf('Diagnostic: [%s] %s', get_severity_name(diagnostic['severity']), diagnostic['spelling'])
 diff --git a/DataFormats/Candidate/src/classes_def.xml b/DataFormats/Candidate/src/classes_def.xml
 index 2484a36..b29ac00 100644
 --- a/DataFormats/Candidate/src/classes_def.xml
@@ -68,9 +88,6 @@ index 5b7e0ea..b0e4266 100644
    <version ClassVersion="-1" checksum="2990326637"/>
  </class>
  <class name="std::vector<GEMAMCStatusDigi>"/>
-diff --git a/DataFormats/JetReco/src/classes_def_2.xml b/DataFormats/JetReco/src/classes_def_2.xml
-old mode 100755
-new mode 100644
 diff --git a/DataFormats/L1Trigger/src/classes_def.xml b/DataFormats/L1Trigger/src/classes_def.xml
 index bda2ba8..c3224c6 100644
 --- a/DataFormats/L1Trigger/src/classes_def.xml
@@ -109,9 +126,6 @@ index 74d6781..4998db2 100644
    <class name="std::pair<edm::OwnVector<TrackingRecHit,edm::ClonePolicy<TrackingRecHit> >::const_iterator,edm::OwnVector<TrackingRecHit,edm::ClonePolicy<TrackingRecHit> >::const_iterator>"/>
    <class name="edm::RefProd<edm::OwnVector<TrackingRecHit, edm::ClonePolicy<TrackingRecHit> > >"/>
    <class name="edm::RefVector<edm::OwnVector<TrackingRecHit,edm::ClonePolicy<TrackingRecHit> >,TrackingRecHit,edm::refhelper::FindUsingAdvance<edm::OwnVector<TrackingRecHit,edm::ClonePolicy<TrackingRecHit> >,TrackingRecHit> >"/>
-diff --git a/DataFormats/VertexReco/src/classes_def.xml b/DataFormats/VertexReco/src/classes_def.xml
-old mode 100755
-new mode 100644
 diff --git a/FWCore/Framework/src/EventSetupRecordProvider.cc b/FWCore/Framework/src/EventSetupRecordProvider.cc
 index 87ba797..e9ba06a 100644
 --- a/FWCore/Framework/src/EventSetupRecordProvider.cc
@@ -707,12 +721,6 @@ index 6d3950d..d445428 100644
      std::vector<boost::shared_ptr<double> > pars_;
      static std::vector<boost::shared_ptr<double> > *fPars_;
      bool verbose_;
-diff --git a/PhysicsTools/Utilities/src/classes_def.xml b/PhysicsTools/Utilities/src/classes_def.xml
-old mode 100755
-new mode 100644
-diff --git a/SimDataFormats/CrossingFrame/src/classes_def.xml b/SimDataFormats/CrossingFrame/src/classes_def.xml
-old mode 100755
-new mode 100644
 diff --git a/SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h b/SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h
 index 5447941..a180d2e 100644
 --- a/SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h
@@ -813,6 +821,3 @@ index 637e608..1dc49f3 100644
   </class>
   <ioread sourceClass = "LHEEventProduct" version="[-12]" targetClass="LHEEventProduct" source = "" target="npLO_">
      <![CDATA[npLO_ = -99;]]>
-diff --git a/SimDataFormats/TrackingAnalysis/src/classes_def.xml b/SimDataFormats/TrackingAnalysis/src/classes_def.xml
-old mode 100755
-new mode 100644

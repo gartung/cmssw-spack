@@ -23,8 +23,8 @@ class Fwlite(Package):
 
     if sys.platform == 'darwin':
         patch('macos.patch')
-    else:
-        patch('linux.patch')
+#    else:
+#        patch('linux.patch')
 
     scram_arch = 'linux_amd64_gcc'
     if sys.platform == 'darwin':

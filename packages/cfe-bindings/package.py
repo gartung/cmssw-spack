@@ -8,7 +8,7 @@ class CfeBindings(Package):
     url = 'file://' + os.path.dirname(__file__) + '/../../common/junk.xml'
     version('1.0', '68841b7dcbd130afd7d236afe8fd5b949f017615', expand=False)
 
-    depends_on('llvm@4.0.1~gold+python+shared_libs',
+    depends_on('llvm@6.0.1~gold+python+shared_libs',
                type='build')
     extends('python')
 
