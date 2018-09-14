@@ -50,6 +50,25 @@ class GccCompilerToolfile(Package):
     </client>
     <flags CPPDEFINES="GNU_GCC _GNU_SOURCE   "/>
     <flags CXXSHAREDOBJECTFLAGS="-fPIC   "/>
+    <flags REM_CXXFLAGS="-Wno-non-template-friend"/>
+    <flags REM_CXXFLAGS="-Werror=format-contains-nul"/>
+    <flags REM_CXXFLAGS="-Werror=maybe-uninitialized"/>
+    <flags REM_CXXFLAGS="-Werror=unused-but-set-variable"/>
+    <flags REM_CXXFLAGS="-Werror=return-local-addr"/>
+    <flags REM_CXXFLAGS="-fipa-pta"/>
+    <flags REM_CXXFLAGS="-frounding-math"/>
+    <flags REM_CXXFLAGS="-mrecip"/>
+    <flags REM_CXXFLAGS="-Wno-psabi"/>
+    <flags REM_CXXFLAGS="-fno-crossjumping"/>
+    <flags REM_CXXFLAGS="-fno-aggressive-loop-optimizations"/>
+    <flags CXXFLAGS="-Wno-c99-extensions"/>
+    <flags CXXFLAGS="-Wno-c++11-narrowing"/>
+    <flags CXXFLAGS="-D__STRICT_ANSI__"/>
+    <flags CXXFLAGS="-Wno-unused-private-field"/>
+    <flags CXXFLAGS="-Wno-unknown-pragmas"/>
+    <flags CXXFLAGS="-Wno-unused-command-line-argument"/>
+    <flags CXXFLAGS="-ftemplate-depth=512"/>
+    <flags CXXFLAGS="-Wno-error=potentially-evaluated-expression"/>
     <flags CXXFLAGS="-O2 -pthread -pipe -Werror=main -Werror=pointer-arith"/>
     <flags CXXFLAGS="-Werror=overlength-strings -Wno-vla"/>
     <flags CXXFLAGS="-std=c++1z -ftree-vectorize -Wstrict-overflow -Werror=array-bounds -Werror=format-contains-nul -Werror=type-limits -fvisibility-inlines-hidden -fno-math-errno --param vect-max-version-for-alias-checks=50 -msse3"/>

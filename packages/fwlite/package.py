@@ -14,13 +14,12 @@ class Fwlite(Package):
     homepage = "http://cms-sw.github.io"
     url = "https://github.com/cms-sw/cmssw/archive/CMSSW_9_2_15.tar.gz"
 
-    version('10.2.4', git='https://github.com/cms-sw/cmssw.git', tag='CMSSW_10_2_4')
+    version('10.2.5', git='https://github.com/cms-sw/cmssw.git', tag='CMSSW_10_2_5')
 
     depends_on('scram')
     depends_on('cmssw-config')
     depends_on('fwlite-tool-conf')
     depends_on('gmake')
-    depends_on('llvm')
 
     if sys.platform == 'darwin':
         patch('macos.patch')
@@ -42,10 +41,6 @@ class Fwlite(Package):
         config_tag = '%s' % spec['cmssw-config'].version
 
 
-#        gcc = which(spack_f77)
-#        gcc_prefix = re.sub('/bin/.*$', '', self.compiler.f77)
-#        gcc_machine = gcc('-dumpmachine', output=str)
-#        gcc_ver = gcc('-dumpversion', output=str)
 
         with working_dir(build_directory):
             install_tree(source_directory, 'src',
@@ -104,10 +99,7 @@ class Fwlite(Package):
                 if os.path.exists(m):
                     os.remove(m)
             scram('setup', 'self')
-            if sys.platform == 'darwin':
-                scram('build', '-r', '-v', '-j8', 'COMPILER=llvm')
-            else:
-                scram('build', '-r', '-v', '-j8' )
+            scram('build', '-r', '-v', '-j8' )
             relrelink('external')
             shutil.rmtree('tmp')
         install_tree(project_dir,prefix+'/'+cmssw_u_version, symlinks=True)
@@ -115,29 +107,15 @@ class Fwlite(Package):
 
 
         with working_dir(join_path(prefix,cmssw_u_version), create=False):
-#            os.environ[ 'LOCALTOP' ] = os.getcwd()
-#            os.environ[ 'RELEASETOP' ] = os.getcwd()
-#            os.environ[ 'CMSSW_RELEASE_BASE' ] = os.getcwd()
-#            os.environ[ 'CMSSW_BASE' ] = os.getcwd()
             scram('build', 'ProjectRename')
 
     def setup_dependent_environment(self, spack_env, run_env, dspec):
         cmssw_version = 'CMSSW.' + str(self.version)
         cmssw_u_version = cmssw_version.replace('.', '_')
-#        spack_env.set('LOCALTOP', join_path(self.prefix,cmssw_u_version))
-#        spack_env.set('RELEASETOP', join_path(self.prefix,cmssw_u_version))
-#        spack_env.set('CMSSW_RELEASE_BASE', self.prefix)
-#        spack_env.set('CMSSW_BASE', self.prefix)
         spack_env.append_path('LD_LIBRARY_PATH', join_path(self.stage.path,
                               cmssw_u_version,'/lib/',self.scram_arch))
 
     def setup_environment(self, spack_env, run_env):
         cmssw_version = 'CMSSW.' + str(self.version)
         cmssw_u_version = cmssw_version.replace('.', '_')
-#        spack_env.set('LOCALTOP', join_path(self.stage.path, cmssw_u_version))
-#        spack_env.set('RELEASETOP', join_path(self.stage.path, cmssw_u_version))
-#        spack_env.set('CMSSW_RELEASE_BASE', join_path(self.stage.path,cmssw_u_version))
-#        spack_env.set('CMSSW_BASE', join_path(self.stage.path, cmssw_u_version))
-#        spack_env.append_path('LD_LIBRARY_PATH', join_path(os.path.realpath(self.stage.path),
-#                              cmssw_u_version, '/lib/', self.scram_arch))
         spack_env.append_path('LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib)

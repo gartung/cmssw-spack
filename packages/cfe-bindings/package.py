@@ -5,31 +5,24 @@ from scrampackage import write_scram_toolfile
 
 
 class CfeBindings(Package):
+    url = 'file://' + os.path.dirname(__file__) + '/../../common/junk.xml'
+    version('1.0', '68841b7dcbd130afd7d236afe8fd5b949f017615', expand=False)
 
-    url = "http://releases.llvm.org/5.0.0/cfe-5.0.0.src.tar.xz"
-
-    version('5.0.0', '699c448c6d6d0edb693c87beb1cc8c6e')
-    version('4.0.1', 'a6c7b3e953f8b93e252af5917df7db97')
-
+    depends_on('llvm@4.0.1~gold+python+shared_libs',
+               type='build')
     extends('python')
 
-    depends_on('llvm@5.0.0~gold+python+shared_libs',
-               type='build', when='@5.0.0')
-    depends_on('llvm@4.0.1~gold+python+shared_libs',
-               type='build', when='@4.0.1')
-
-
     def install(self, spec, prefix):
-        install_tree('%s/bindings/python/clang/' %
-                     self.stage.source_path,
-                     self.prefix.lib + '/python2.7/site-packages/clang')
-        install('%s/libclang.so' % self.spec['llvm'].prefix.lib,
-                '%s/libclang.so' % self.prefix.lib)
+        install_tree( '%s/python2.7/site-packages/clang' %
+                       spec['llvm'].prefix.lib,
+                      '%s/python2.7/site-packages/clang' %
+                     self.prefix.lib)
+        install('%s/libclang.dylib' % self.spec['llvm'].prefix.lib,
+                '%s/libclang.dylib' % self.prefix.lib)
 
 
     def setup_dependent_environment(self, spack_env, run_env, dspec):
         spack_env.set('LLVM_BASE', self.prefix)
-
 
     @run_after('install')
     def write_scram_toolfiles(self):
@@ -45,6 +38,7 @@ class CfeBindings(Package):
         fname = 'pyclang.xml'
         contents = str("""<tool name="pyclang" version="${VER}">
   <client>
+    <environment name="LLVM_BASE" default="${PFX}"/>
     <environment name="PYCLANG_BASE" default="${PFX}"/>
   </client>
   <runtime name="PYTHONPATH" value="${LIB}/python${PYVER}/site-packages" type="path"/>

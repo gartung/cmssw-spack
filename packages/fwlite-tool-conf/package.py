@@ -12,7 +12,9 @@ class FwliteToolConf(Package):
     depends_on('scram')
     depends_on('gmake-toolfile')
     if sys.platform == 'darwin':
-        depends_on('llvm-compiler-toolfile')
+        depends_on('cfe-bindings')
+    else:
+        depends_on('llvm-lib-toolfile')
     depends_on('gcc-compiler-toolfile')
     depends_on('root-toolfile')
     depends_on('intel-tbb-toolfile')
@@ -42,7 +44,6 @@ class FwliteToolConf(Package):
     depends_on('libxml2-toolfile')
     depends_on('bzip2-toolfile')
     depends_on('fireworks-geometry-toolfile')
-    depends_on('llvm-lib-toolfile')
     depends_on('uuid-toolfile')
 
     def install(self, spec, prefix):
