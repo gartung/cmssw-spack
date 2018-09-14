@@ -30,7 +30,6 @@ class BoostToolfile(Package):
   <runtime name="ROOT_INCLUDE_PATH" value="$$INCLUDE" type="path"/>
   <use name="root_cxxdefaults"/>
   <flags CPPDEFINES="BOOST_SPIRIT_THREADSAFE PHOENIX_THREADSAFE"/>
-  <flags CPPDEFINES="_LIBCPP_ENABLE_CXX17_REMOVED_FEATURES=1"/>
   <flags CXXFLAGS="-Wno-error=unused-variable"/>
   <use name="sockets"/>
 </tool>""")
@@ -84,7 +83,7 @@ class BoostToolfile(Package):
         contents = str("""
 <tool name="boost_python" version="$VER">
   <info url="http://www.boost.org"/>
-  <lib name="boost_python"/>
+  <lib name="boost_python27"/>
   <client>
     <environment name="BOOST_PYTHON_BASE" default="$PFX"/>
     <environment name="LIBDIR" default="$$BOOST_PYTHON_BASE/lib"/>

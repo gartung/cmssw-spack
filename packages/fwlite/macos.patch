@@ -1,3 +1,16 @@
+diff --git a/CommonTools/Statistics/interface/SequentialCombinationGenerator.h b/CommonTools/Statistics/interface/SequentialCombinationGenerator.h
+index 35ba5c8..17cb14e 100644
+--- a/CommonTools/Statistics/interface/SequentialCombinationGenerator.h
++++ b/CommonTools/Statistics/interface/SequentialCombinationGenerator.h
+@@ -99,7 +99,7 @@ private:
+       }
+       int mincnew2=cnew2[0];
+       if (ss[n1-1]<mincnew2) return empty;
+-      Vecint::iterator j1=find_if(ss.begin(),ss.end(),bind2nd(std::greater<int>(),mincnew2));
++      Vecint::iterator j1=find_if(ss.begin(),ss.end(),bind(std::greater<int>(),std::placeholders::_1,mincnew2));
+       if (ss.end()-j1 < p[i]) return empty;
+       Vecint sss(j1,ss.end());
+       for (int j=0;j<p[i];j++){cnew[ip+j]=cnew2[j]=sss[j];}
 diff --git a/CondFormats/Serialization/python/condformats_serialization_generate.py b/CondFormats/Serialization/python/condformats_serialization_generate.py
 index e0d7303..ca2e3e2 100755
 --- a/CondFormats/Serialization/python/condformats_serialization_generate.py
@@ -102,6 +115,19 @@ index bda2ba8..c3224c6 100644
      <version ClassVersion="14" checksum="66417560"/>
    </class>
    <class name="std::vector<HOTPDigiTwinMux>"/>
+diff --git a/DataFormats/PatCandidates/src/JetCorrFactors.cc b/DataFormats/PatCandidates/src/JetCorrFactors.cc
+index ecb73e9..252fec7 100644
+--- a/DataFormats/PatCandidates/src/JetCorrFactors.cc
++++ b/DataFormats/PatCandidates/src/JetCorrFactors.cc
+@@ -50,7 +50,7 @@ JetCorrFactors::Flavor
+ JetCorrFactors::jecFlavor(std::string flavor) const
+ {
+   std::map<std::string, Flavor> flavors;
+-  std::transform(flavor.begin(), flavor.end(), flavor.begin(), std::ptr_fun<int,int>(std::tolower));
++  std::transform(flavor.begin(), flavor.end(), flavor.begin(), [](int c){ return !std::tolower(c);} );
+   flavors["uds"]=UDS; flavors["charm"]=CHARM; flavors["bottom"]=BOTTOM; flavors["gluon"]=GLUON; flavors["none"]=NONE;
+   if(flavors.find(flavor)==flavors.end()){
+     throw cms::Exception("InvalidRequest") << "You ask for a flavor, which does not exist. Available flavors are: \n"
 diff --git a/DataFormats/TrackingRecHit/src/classes.h b/DataFormats/TrackingRecHit/src/classes.h
 index 80fd1d1..7cee78a 100644
 --- a/DataFormats/TrackingRecHit/src/classes.h
@@ -127,10 +153,10 @@ index 74d6781..4998db2 100644
    <class name="edm::RefProd<edm::OwnVector<TrackingRecHit, edm::ClonePolicy<TrackingRecHit> > >"/>
    <class name="edm::RefVector<edm::OwnVector<TrackingRecHit,edm::ClonePolicy<TrackingRecHit> >,TrackingRecHit,edm::refhelper::FindUsingAdvance<edm::OwnVector<TrackingRecHit,edm::ClonePolicy<TrackingRecHit> >,TrackingRecHit> >"/>
 diff --git a/FWCore/Framework/src/EventSetupRecordProvider.cc b/FWCore/Framework/src/EventSetupRecordProvider.cc
-index 87ba797..e9ba06a 100644
+index 87ba797..0138426 100644
 --- a/FWCore/Framework/src/EventSetupRecordProvider.cc
 +++ b/FWCore/Framework/src/EventSetupRecordProvider.cc
-@@ -108,7 +108,7 @@ void
+@@ -108,10 +108,10 @@ void
  EventSetupRecordProvider::setDependentProviders(const std::vector< std::shared_ptr<EventSetupRecordProvider> >& iProviders)
  {
     using std::placeholders::_1;
@@ -138,7 +164,11 @@ index 87ba797..e9ba06a 100644
 +   std::shared_ptr<DependentRecordIntervalFinder> newFinder = std::shared_ptr<DependentRecordIntervalFinder>(new DependentRecordIntervalFinder(key()));
     
     std::shared_ptr<EventSetupRecordIntervalFinder> old = swapFinder(newFinder);
-    for_all(iProviders, std::bind(std::mem_fun(&DependentRecordIntervalFinder::addProviderWeAreDependentOn), &(*newFinder), _1));
+-   for_all(iProviders, std::bind(std::mem_fun(&DependentRecordIntervalFinder::addProviderWeAreDependentOn), &(*newFinder), _1));
++   for_all(iProviders, std::bind(std::mem_fn(&DependentRecordIntervalFinder::addProviderWeAreDependentOn), &(*newFinder), _1));
+    //if a finder was already set, add it as a depedency.  This is done to ensure that the IOVs properly change even if the
+    // old finder does not update each time a dependent record does change
+    if(old.get() != nullptr) {
 @@ -125,7 +125,7 @@ EventSetupRecordProvider::usePreferred(const DataToPreferredProviderMap& iMap)
    for_all(providers_, std::bind(&EventSetupRecordProvider::addProxiesToRecordHelper,this,_1,iMap));
    if (1 < multipleFinders_->size()) {
@@ -612,6 +642,19 @@ index 6837bf5..d1c4424 100644
    shape->SetTransMatrix( matrix.get() );
    delete matrix;
  
+diff --git a/Fireworks/Muons/plugins/FWCSCStripDigiProxyBuilder.cc b/Fireworks/Muons/plugins/FWCSCStripDigiProxyBuilder.cc
+index e90b186..1a7cfa8 100644
+--- a/Fireworks/Muons/plugins/FWCSCStripDigiProxyBuilder.cc
++++ b/Fireworks/Muons/plugins/FWCSCStripDigiProxyBuilder.cc
+@@ -90,7 +90,7 @@ FWCSCStripDigiProxyBuilder::build(const FWEventItem* iItem, TEveElementList* pro
+          TEveStraightLineSet* stripDigiSet = new TEveStraightLineSet();
+          setupAddElement(stripDigiSet, product);
+              
+-         if( std::find_if( adcCounts.begin(), adcCounts.end(), bind2nd( std::greater<int>(), signalThreshold )) != adcCounts.end()) 
++         if( std::find_if( adcCounts.begin(), adcCounts.end(), bind( std::greater<int>(), std::placeholders::_1, signalThreshold )) != adcCounts.end()) 
+          {
+             stripDigiSet->SetLineWidth(3);
+             int stripId = (*dit).getStrip();  
 diff --git a/Fireworks/Muons/src/FWMuonBuilder.cc b/Fireworks/Muons/src/FWMuonBuilder.cc
 index fe54761..376c7a0 100644
 --- a/Fireworks/Muons/src/FWMuonBuilder.cc

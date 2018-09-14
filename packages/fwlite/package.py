@@ -108,6 +108,14 @@ class Fwlite(Package):
 
         with working_dir(join_path(prefix,cmssw_u_version), create=False):
             scram('build', 'ProjectRename')
+            if sys.platform == 'darwin':
+               install_name_tool = Executable('install_name_tool')
+               install_name_tool('-add_rpath', '@loader_path/../../lib/%s' % self.scram_arch,
+                                 'bin/%s/cmsShow.exe' % self.scram_arch)
+               install_name_tool('-add_rpath', '%s/%s/lib/%s' % 
+                                 (prefix, cmssw_u_version, self.scram_arch),
+                                 'bin/%s/cmsShow.exe' % self.scram_arch)
+
 
     def setup_dependent_environment(self, spack_env, run_env, dspec):
         cmssw_version = 'CMSSW.' + str(self.version)
