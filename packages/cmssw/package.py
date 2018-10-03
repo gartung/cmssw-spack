@@ -48,11 +48,8 @@ class Cmssw(Package):
         gcc_ver = gcc('-dumpversion', output=str)
 
         with working_dir(self.stage.path):
-            install_tree(source_directory, 'src',
-                         ignore=shutil.ignore_patterns('spack_build.*',
-                                                       '.git', 'config'))
-            install_tree(spec['cmssw-config'].prefix.bin, 'config',
-                         ignore=shutil.ignore_patterns('.git'))
+            install_tree(source_directory, 'src')
+            install_tree(spec['cmssw-config'].prefix.bin, 'config')
             with open('config/config_tag', 'w') as f:
                 f.write(config_tag+'\n')
                 f.close()
