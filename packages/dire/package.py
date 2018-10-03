@@ -1,7 +1,7 @@
 from spack import *
 
 
-class Dire(AutotoolsPackage):
+class Dire(Package):
 
     url      = "https://dire.gitlab.io/Downloads/DIRE-2.002.tar.gz"
 
@@ -9,6 +9,10 @@ class Dire(AutotoolsPackage):
 
     depends_on('pythia8')
 
-    def configure_args(self):
-        args = ['--with-pythia8=%s'%self.spec['pythia8'].prefix, '--enable-shared']
-        return args
+    def install(self, spec, prefix):
+        configure('--prefix=%s'%prefix,
+                  '--with-pythia8=%s'%spec['pythia8'].prefix,
+                  '--enable-shared')
+        make('VERBOSE=1')
+        filter_file('-Wl,-rpath ','-Wl,-rpath,','bin/dire-config')
+        make('install')
