@@ -10,6 +10,7 @@ class CoralToolConf(Package):
     version('1.0', '68841b7dcbd130afd7d236afe8fd5b949f017615', expand=False)
 
     depends_on('scram') # provides gcc-toolfile systemtools
+    depends_on('gcc-compiler-toolfile')
     depends_on('gmake-toolfile')
     depends_on('pcre-toolfile')
     depends_on('python-toolfile')
