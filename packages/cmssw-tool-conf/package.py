@@ -11,6 +11,7 @@ class CmsswToolConf(Package):
 
     depends_on('scram')
     depends_on('gmake-toolfile')
+    depends_on('gcc-compiler-toolfile')
     depends_on('root-toolfile')
     depends_on('intel-tbb-toolfile')
     depends_on('tinyxml-toolfile')
