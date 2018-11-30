@@ -19,6 +19,7 @@ class FwliteToolConf(Package):
     depends_on('root-toolfile')
     depends_on('intel-tbb-toolfile')
     depends_on('tinyxml-toolfile')
+    depends_on('tinyxml2-toolfile')
     depends_on('clhep-toolfile')
     depends_on('md5-toolfile')
     depends_on('python-toolfile')

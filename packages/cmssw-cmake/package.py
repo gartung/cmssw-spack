@@ -32,6 +32,7 @@ class CmsswCmake(Package):
     depends_on('root')
     depends_on('intel-tbb')
     depends_on('tinyxml')
+    depends_on('tinyxml2')
     depends_on('clhep~cxx11+cxx14')
     depends_on('md5')
     depends_on('python+shared')
