@@ -35,7 +35,7 @@ class RootToolfile(Package):
   <runtime name="ROOTSYS"                       value="$PFX/"/>
   <runtime name="ROOT_TTREECACHE_SIZE"          value="0"/>
   <runtime name="ROOT_TTREECACHE_PREFILL"       value="0"/>
-  <runtime name="ROOT_INCLUDE_PATH"             value="$$INCLUDE" type="path"/>
+  <runtime name="ROOT_INCLUDE_PATH"             value="$PFX/include" type="path"/>
   <use name="root_cxxdefaults"/>
 </tool>""")
         write_scram_toolfile(contents, values, fname, prefix)

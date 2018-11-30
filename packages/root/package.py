@@ -11,7 +11,7 @@ class Root(CMakePackage):
     homepage = "https://root.cern.ch"
     url = "https://root.cern.ch/download/root_v6.07.02.source.tar.gz"
     
-
+    version('6.14.08', sha256='1b63b51cfb4dc20f1f5749faac6bbd1098eccab777f8b49911257d77186c73c4')
     version('6.12.07', git='https://github.com/cms-sw/root.git', commit='8ea59a196e04c88776a05f9d20fac287f05224f6')
 
 

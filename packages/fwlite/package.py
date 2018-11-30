@@ -14,15 +14,15 @@ class Fwlite(Package):
     homepage = "http://cms-sw.github.io"
     url = "https://github.com/cms-sw/cmssw/archive/CMSSW_9_2_15.tar.gz"
 
-    version('10.2.5', git='https://github.com/cms-sw/cmssw.git', tag='CMSSW_10_2_5')
+    version('10.3.1', git='https://github.com/cms-sw/cmssw.git', tag='CMSSW_10_3_1')
 
     depends_on('scram')
     depends_on('cmssw-config')
     depends_on('fwlite-tool-conf')
     depends_on('gmake')
 
-    if sys.platform == 'darwin':
-        patch('macos.patch')
+#    if sys.platform == 'darwin':
+#        patch('macos.patch')
 #    else:
 #        patch('linux.patch')
 
@@ -120,7 +120,3 @@ class Fwlite(Package):
         spack_env.append_path('LD_LIBRARY_PATH', join_path(self.stage.path,
                               cmssw_u_version,'/lib/',self.scram_arch))
 
-    def setup_environment(self, spack_env, run_env):
-        cmssw_version = 'CMSSW.' + str(self.version)
-        cmssw_u_version = cmssw_version.replace('.', '_')
-        spack_env.append_path('LD_LIBRARY_PATH', self.spec['llvm'].prefix.lib)
