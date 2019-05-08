@@ -2,7 +2,7 @@ from spack import *
 import platform
 import sys,os
 
-class Geant4(CMakePackage):
+class Geant4Cms(CMakePackage):
     """Geant4 is a toolkit for the simulation of the passage of particles
     through matter. Its areas of application include high energy, nuclear
     and accelerator physics, as well as studies in medical and space
