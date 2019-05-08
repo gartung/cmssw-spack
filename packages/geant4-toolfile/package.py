@@ -8,12 +8,12 @@ from scrampackage import write_scram_toolfile
 class Geant4Toolfile(Package):
     url = 'file://' + os.path.dirname(__file__) + '/../../common/junk.xml'
     version('1.0', '68841b7dcbd130afd7d236afe8fd5b949f017615', expand=False)
-    depends_on('geant4')
+    depends_on('geant4-cms')
 
     def install(self, spec, prefix):
         values = {}
-        values['GEANT4_VER'] = spec['geant4'].version
-        values['GEANT4_PREFIX'] = spec['geant4'].prefix
+        values['GEANT4_VER'] = spec['geant4-cms'].version
+        values['GEANT4_PREFIX'] = spec['geant4-cms'].prefix
 
         fname = 'geant4.xml'
         contents = str("""

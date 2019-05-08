@@ -6,7 +6,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../../common'))
 from scrampackage import write_scram_toolfile
 
 
-class Root(CMakePackage):
+class RootCms(CMakePackage):
     """ROOT is a data analysis framework."""
     homepage = "https://root.cern.ch"
     url = "https://root.cern.ch/download/root_v6.07.02.source.tar.gz"
@@ -36,7 +36,7 @@ class Root(CMakePackage):
     depends_on("xz")
     depends_on('zlib')
     depends_on("openssl")
-    depends_on("xrootd")
+    depends_on("xrootd-cms")
     depends_on("freetype")
     if sys.platform == 'linux2':
         depends_on("dcap") 
@@ -45,6 +45,9 @@ class Root(CMakePackage):
     depends_on("intel-tbb")
 
     def cmake_args(self):
+        dso_suffix="so"
+        if sys.platorm == "darwin":
+            dso_suffix="dylib"
         pyvers = str(self.spec['python'].version).split('.')
         pyver = pyvers[0] + '.' + pyvers[1]
         options = [  '-Droot7=ON'

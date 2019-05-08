@@ -7,7 +7,7 @@ from scrampackage import write_scram_toolfile
 class RootToolfile(Package):
     url = 'file://' + os.path.dirname(__file__) + '/../../common/junk.xml'
     version('1.0', '68841b7dcbd130afd7d236afe8fd5b949f017615', expand=False)
-    depends_on('root')
+    depends_on('root-cms')
 
     def install(self, spec, prefix):
         gcc = which(spack_f77)
@@ -16,8 +16,8 @@ class RootToolfile(Package):
         gcc_ver = gcc('-dumpversion', output=str)
 
         values = {}
-        values['VER'] = spec['root'].version
-        values['PFX'] = spec['root'].prefix
+        values['VER'] = spec['root-cms'].version
+        values['PFX'] = spec['root-cms'].prefix
         values['GCC_VER'] = gcc_ver.rstrip()
         values['GCC_PREFIX'] = gcc_prefix
         values['GCC_MACHINE'] = gcc_machine.rstrip()

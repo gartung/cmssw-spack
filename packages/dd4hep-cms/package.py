@@ -26,7 +26,7 @@
 from spack import *
 
 
-class Dd4hep(CMakePackage):
+class Dd4hepCms(CMakePackage):
     """software framework of the FCC project"""
     homepage = "https://github.com/AIDASoft/DD4hep/"
     url      = "https://github.com/AIDASoft/DD4hep/archive/v01-02.tar.gz"
@@ -35,8 +35,8 @@ class Dd4hep(CMakePackage):
     depends_on('cmake', type='build')
     depends_on('boost')
     depends_on('xerces-c')
-    depends_on('geant4')
-    depends_on('root')
+    depends_on('geant4-cms')
+    depends_on('root-cms')
 
     def cmake_args(self):
         spec = self.spec

@@ -37,7 +37,9 @@ class Geant4(CMakePackage):
 
     def cmake_args(self):
         spec = self.spec
-
+        dso_suffix="so"
+        if sys.platorm == "darwin":
+            dso_suffix="dylib"
         options = [ '-DCMAKE_CXX_COMPILER=g++'
                    ,'-DCMAKE_CXX_FLAGS=-fPIC'
                    ,'-DCMAKE_INSTALL_LIBDIR=lib'
