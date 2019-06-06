@@ -1,5 +1,5 @@
 from spack import *
-import os
+import os,re
 
 
 class Stitched(CMakePackage):
@@ -15,23 +15,25 @@ class Stitched(CMakePackage):
     resource(name='buildfile2cmake', git='https://github.com/gartung/buildfile2cmake.git',
               placement="buildfile2cmake")
 
-    depends_on('boost@:1.69.0')
+    depends_on('boost@:1.68.0')
     depends_on('python')
-    depends_on('libpython2')
-    depends_on('py-pybind11')
-    depends_on('py-six')
-    depends_on('py-future')
+    #depends_on('libpython2')
+    depends_on('py-pybind11', type=('link', 'run', 'test'))
+    depends_on('py-six', type=('run', 'test'))
+    depends_on('py-future', type=('run', 'test'))
     depends_on('tinyxml2')
     depends_on('md5-cms')
     depends_on('root')
     depends_on('xrootd')
     depends_on('clhep')
     depends_on('tbb')
-    depends_on('cppunit')
+    depends_on('cppunit', type=('link', 'test'))
     depends_on('xerces-c')
-    depends_on('catch')
-    depends_on('googletest')
-    depends_on('benchmark@1.4.1')
+    depends_on('catch', type=('link', 'test'))
+    depends_on('googletest', type=('link', 'test'))
+    depends_on('benchmark@1.4.1', type=('link', 'test'))
+
+    patch('stitched.patch')
 
     @run_before('cmake')
     def createcmakefiles(self):
@@ -53,4 +55,44 @@ class Stitched(CMakePackage):
         args.append('-DCATCH2_INCLUDE_DIRS=%s/catch2' % self.spec['catch'].prefix.include)
         args.append('-DBUILDTEST=1') 
         return args
+
+    def setup_environment(self, spack_env, run_env):
+        gcc = which(spack_cc)
+        gcc_prefix = re.sub('/bin/.*$', '', self.compiler.cc)
+
+        spack_env.set('CMAKE_PARALLEL_LEVEL', '1')
+        # Binaries.
+        spack_env.prepend_path('PATH',
+                               join_path(self.build_directory, 'bin'))
+        spack_env.prepend_path('PATH',
+                               join_path(self.build_directory, 'test'))
+        spack_env.prepend_path('LD_LIBRARY_PATH',
+                               join_path(self.build_directory, 'lib'))
+        spack_env.prepend_path('LD_LIBRARY_PATH',
+                               join_path(self.build_directory, 'test'))
+        spack_env.prepend_path('LD_LIBRARY_PATH',
+                               join_path(self.spec['root'].prefix.lib))
+        spack_env.prepend_path('LD_LIBRARY_PATH',
+                               join_path(gcc_prefix, 'lib64'))
+        # Ensure we can find plugin libraries.
+        spack_env.prepend_path('PYTHONPATH',
+                               join_path(self.build_directory, 'lib'))
+        spack_env.prepend_path('PYTHONPATH',
+                               join_path(self.build_directory, 'test'))
+        spack_env.prepend_path('PYTHONPATH',
+                               join_path(self.build_directory, 'python'))
+        spack_env.prepend_path('PYTHONPATH',
+                               join_path(self.build_directory, 'cfipython'))
+        run_env.prepend_path('PYTHONPATH', self.prefix.lib)
+        run_env.prepend_path('PYTHONPATH', '%s/python' % self.prefix)
+        run_env.prepend_path('PYTHONPATH', '%s/cfipython' % self.prefix)
+        # Ensure Root can find headers for autoparsing.
+        for d in self.spec.traverse(root=False, cover='nodes', order='post',
+                                    deptype=('link'), direction='children'):
+            spack_env.prepend_path('ROOT_INCLUDE_PATH',
+                                   str(self.spec[d.name].prefix.include))
+            run_env.prepend_path('ROOT_INCLUDE_PATH',
+                                 str(self.spec[d.name].prefix.include))
+        run_env.prepend_path('ROOT_INCLUDE_PATH', self.prefix.include)
+        run_env.prepend_path('ROOT_INCLUDE_PATH', '%s' % self.prefix)
 
