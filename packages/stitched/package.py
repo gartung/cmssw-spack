@@ -6,7 +6,7 @@ class Stitched(CMakePackage):
     homepage = "https://github.com/cms-sw/stitched.git"
     url = "https://github.com/cms-sw/stitched.git"
 
-    version('master', git='https://github.com/cms-sw/stitched.git',
+    version('master', git='https://github.com/cms-sw/Stitched.git',
             branch="master")
     
     resource(name='cmaketools', git='https://github.com/HSF/cmaketools.git',
@@ -17,7 +17,6 @@ class Stitched(CMakePackage):
 
     depends_on('boost@:1.68.0')
     depends_on('python')
-    #depends_on('libpython2')
     depends_on('py-pybind11', type=('link', 'run', 'test'))
     depends_on('py-six', type=('run', 'test'))
     depends_on('py-future', type=('run', 'test'))
@@ -60,8 +59,6 @@ class Stitched(CMakePackage):
         gcc = which(spack_cc)
         gcc_prefix = re.sub('/bin/.*$', '', self.compiler.cc)
 
-        spack_env.set('CMAKE_PARALLEL_LEVEL', '1')
-        # Binaries.
         spack_env.prepend_path('PATH',
                                join_path(self.build_directory, 'bin'))
         spack_env.prepend_path('PATH',
@@ -72,8 +69,8 @@ class Stitched(CMakePackage):
                                join_path(self.build_directory, 'test'))
         spack_env.prepend_path('LD_LIBRARY_PATH',
                                join_path(self.spec['root'].prefix.lib))
-        spack_env.prepend_path('LD_LIBRARY_PATH',
-                               join_path(gcc_prefix, 'lib64'))
+        #spack_env.prepend_path('LD_LIBRARY_PATH',
+        #                       join_path(gcc_prefix, 'lib64'))
         # Ensure we can find plugin libraries.
         spack_env.prepend_path('PYTHONPATH',
                                join_path(self.build_directory, 'lib'))
