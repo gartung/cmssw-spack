@@ -52,7 +52,7 @@ class Stitched(CMakePackage):
         args.append('-DCMAKE_CXX_STANDARD=%s'% cxxstd)
         args.append('-DXROOTD_INCLUDE_DIR=%s/xrootd' % self.spec['xrootd'].prefix.include)
         args.append('-DCATCH2_INCLUDE_DIRS=%s/catch2' % self.spec['catch'].prefix.include)
-        args.append('-DBUILDTEST=1') 
+        args.append('-DBUILDTEST=BOOL:True') 
         return args
 
     def setup_environment(self, spack_env, run_env):
