@@ -11,8 +11,8 @@ class Fwdata(CMakePackage):
               placement="cmaketools")
  
     depends_on('boost')
-    depends_on('root cxxstd=17')
-    depends_on('python~libxml2')
+    depends_on('root~opengl cxxstd=17')
+    depends_on('python')
     depends_on('py-pybind11')
     depends_on('tinyxml2')
     depends_on('md5-cms')
