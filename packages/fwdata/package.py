@@ -2,57 +2,44 @@ from spack import *
 import os,re
 
 
-class Stitched(CMakePackage):
-    homepage = "https://github.com/cms-sw/stitched.git"
-    url = "https://github.com/cms-sw/stitched.git"
-
-    version('master', git='https://github.com/cms-sw/Stitched.git',
+class Fwdata(CMakePackage):
+    
+    version('master', git='https://github.com/gartung/fwdata.git',
             branch="master")
     
     resource(name='cmaketools', git='https://github.com/HSF/cmaketools.git',
               placement="cmaketools")
  
-    resource(name='buildfile2cmake', git='https://github.com/gartung/buildfile2cmake.git',
-              placement="buildfile2cmake")
-
-    depends_on('boost@:1.68.0')
-    depends_on('python')
-    depends_on('py-pybind11', type=('link', 'run', 'test'))
-    depends_on('py-six', type=('run', 'test'))
-    depends_on('py-future', type=('run', 'test'))
+    depends_on('boost')
+    depends_on('root~x~opengl cxxstd=17')
+    depends_on('python~libxml2')
+    depends_on('py-pybind11')
     depends_on('tinyxml2')
     depends_on('md5-cms')
-    depends_on('root')
-    depends_on('xrootd')
-    depends_on('clhep')
+    depends_on('uuid')
+    depends_on('clhep@2.4.1.3')
     depends_on('tbb')
-    depends_on('cppunit', type=('link', 'test'))
-    depends_on('xerces-c')
-    depends_on('catch', type=('link', 'test'))
-    depends_on('googletest', type=('link', 'test'))
-    depends_on('benchmark@1.4.1', type=('link', 'test'))
-
-    patch('stitched.patch')
-
-    @run_before('cmake')
-    def createcmakefiles(self):
-         with working_dir(self.stage.source_path):
-           b2c=Executable('buildfile2cmake/buildfile2cmake')
-           b2c()
+    depends_on('hepmc')
+    depends_on('eigen')
+    depends_on('fmt')
+    depends_on('vdt')
+    
 
     def cmake_args(self):
         cxxstd = self.spec['root'].variants['cxxstd'].value
-        args = ['-DCMakeTools_DIR=%s/cmaketools' % self.stage.source_path]
-        args.append('-DCLHEP_ROOT_DIR=%s' % self.spec['clhep'].prefix)
-        args.append('-DBOOST_ROOT=%s' % self.spec['boost'].prefix)
-        args.append('-DTBB_ROOT_DIR=%s' % self.spec['tbb'].prefix)
+        args = ['-DCMAKE_CXX_STANDARD=%s' % cxxstd]
+        args.append('-DCMakeTools_DIR=%s/cmaketools'  % self.stage.source_path)
+        args.append('-DBoost_INCLUDE_DIR=%s' % self.spec['boost'].prefix.include)
+        args.append('-DROOT_DIR=%s' % self.spec['root'].prefix.cmake)
         args.append('-DTINYXMLROOT2=%s' % self.spec['tinyxml2'].prefix)
+        args.append('-DTBB_ROOT_DIR=%s' % self.spec['intel-tbb'].prefix)
+        args.append('-DCLHEP_ROOT_DIR=%s' % self.spec['clhep'].prefix)
+        args.append('-DHEPMC_ROOT_DIR=%s' % self.spec['hepmc'].prefix)
+        args.append('-DUUID_ROOT_DIR=%s' % self.spec['uuid'].prefix)
         args.append('-DMD5ROOT=%s' % self.spec['md5-cms'].prefix)
-        args.append('-DCPPUNITROOT=%s' % self.spec['cppunit'].prefix)
-        args.append('-DCMAKE_CXX_STANDARD=%s'% cxxstd)
-        args.append('-DXROOTD_INCLUDE_DIR=%s/xrootd' % self.spec['xrootd'].prefix.include)
-        args.append('-DCATCH2_INCLUDE_DIRS=%s/catch2' % self.spec['catch'].prefix.include)
-        args.append('-DBUILDTEST=BOOL:True') 
+        args.append('-DFMT_INCLUDE_DIR=%s' % self.spec['fmt'].prefix)
+        args.append('-DEIGEN_INCLUDE_DIR=%s' % self.spec['eigen'].prefix) 
+        args.append('-DVDT_ROOT_DIR=%s' % self.spec['vdt'].prefix)
         return args
 
     def setup_environment(self, spack_env, run_env):
@@ -69,8 +56,8 @@ class Stitched(CMakePackage):
                                join_path(self.build_directory, 'test'))
         spack_env.prepend_path('LD_LIBRARY_PATH',
                                join_path(self.spec['root'].prefix.lib))
-        #spack_env.prepend_path('LD_LIBRARY_PATH',
-        #                       join_path(gcc_prefix, 'lib64'))
+        spack_env.prepend_path('LD_LIBRARY_PATH',
+                               join_path(gcc_prefix, 'lib64'))
         # Ensure we can find plugin libraries.
         spack_env.prepend_path('PYTHONPATH',
                                join_path(self.build_directory, 'lib'))
