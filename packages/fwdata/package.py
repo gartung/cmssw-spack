@@ -11,7 +11,7 @@ class Fwdata(CMakePackage):
               placement="cmaketools")
  
     depends_on('boost')
-    depends_on('root~x~opengl cxxstd=17')
+    depends_on('root cxxstd=17')
     depends_on('python~libxml2')
     depends_on('py-pybind11')
     depends_on('tinyxml2')
@@ -78,5 +78,6 @@ class Fwdata(CMakePackage):
             run_env.prepend_path('ROOT_INCLUDE_PATH',
                                  str(self.spec[d.name].prefix.include))
         run_env.prepend_path('ROOT_INCLUDE_PATH', self.prefix.include)
+        run_env.prepend_path('ROOT_INCLUDE_PATH', self.prefix.src)
         run_env.prepend_path('ROOT_INCLUDE_PATH', '%s' % self.prefix)
 

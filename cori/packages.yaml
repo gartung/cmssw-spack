@@ -1,0 +1,5 @@
+packages:
+  font-util:
+    externals:
+            - spec: 'font-util'
+              prefix: /usr
