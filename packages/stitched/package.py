@@ -23,7 +23,7 @@ class Stitched(CMakePackage):
     depends_on('tbb')
     depends_on('cppunit', type=('link', 'test'))
     depends_on('xerces-c')
-    depends_on('catch', type=('link', 'test'))
+    depends_on('catch2', type=('link', 'test'))
     depends_on('googletest', type=('link', 'test'))
     depends_on('benchmark@1.4.1', type=('link', 'test'))
 
@@ -39,7 +39,7 @@ class Stitched(CMakePackage):
         args.append('-DCPPUNITROOT=%s' % self.spec['cppunit'].prefix)
         args.append('-DCMAKE_CXX_STANDARD=%s'% cxxstd)
         args.append('-DXROOTD_INCLUDE_DIR=%s/xrootd' % self.spec['xrootd'].prefix.include)
-        args.append('-DCATCH2_INCLUDE_DIRS=%s/catch2' % self.spec['catch'].prefix.include)
+        args.append('-DCATCH2_INCLUDE_DIRS=%s/catch2' % self.spec['catch2'].prefix.include)
         args.append('-DBUILDTEST=BOOL:True') 
         return args
 
