@@ -27,7 +27,6 @@ class Stitched(CMakePackage):
     depends_on('googletest', type=('link', 'test'))
     depends_on('benchmark@1.4.1', type=('link', 'test'))
 
-    patch('stitched.patch')
 
     def cmake_args(self):
         cxxstd = self.spec['root'].variants['cxxstd'].value
