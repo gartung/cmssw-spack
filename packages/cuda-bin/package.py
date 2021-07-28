@@ -35,7 +35,7 @@ class CudaBin(Package):
             keep=('lib64/libcublas_device.a', 'lib64/libcudadevrt.a', 'lib64/libcudart_static.a')
             for f in glob.glob('lib64/lib*.a'):
                 if not f in keep:
-                    print f
+                    print(f)
                     os.remove(f) 
 # do not package dynamic libraries for which we have stubs
             for f in glob.glob('lib64/libcublas.so*'):

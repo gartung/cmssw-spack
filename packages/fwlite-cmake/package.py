@@ -21,26 +21,26 @@ class FwliteCmake(Package):
     if sys.platform != 'darwin':
         patch('patch')
     if sys.platform == 'darwin':
-        depends_on('cfe-bindings')
         depends_on('libuuid')
     depends_on('cmake', type='build')
     depends_on('ninja', type='build')
     depends_on('root')
-    depends_on('tbb')
-    depends_on('clhep')
-    depends_on('md5')
+    depends_on('intel-tbb-oneapi')
+    depends_on('clhep@2.4.1.4')
+    depends_on('md5-cms')
     depends_on('python')
     depends_on('vdt')
-    depends_on('boost+python')
+    depends_on('boost')
+    depends_on('py-pybind11', type=('link', 'run', 'test'))
     depends_on('xrootd')
     depends_on('hepmc')
     depends_on('pcre')
     depends_on('davix')
     depends_on('libsigcpp')
-    depends_on('tinyxml')
+    depends_on('tinyxml2@6.2.0')
     depends_on('jpeg')
     depends_on('cppunit')
-    depends_on('fireworks-data')
+    depends_on('fireworks-geometry')
     depends_on('xerces-c')
 
     def install(self, spec, prefix):
@@ -50,12 +50,12 @@ class FwliteCmake(Package):
             args = ['-DCMakeTools_DIR=%s/cmaketools' % self.stage.source_path,
                     '-DCLHEP_ROOT_DIR=%s' % self.spec['clhep'].prefix,
                     '-DBOOST_ROOT=%s' % self.spec['boost'].prefix,
-                    '-DTBB_ROOT_DIR=%s' % self.spec['tbb'].prefix,
-                    '-DMD5ROOT=%s' % self.spec['md5'].prefix,
+                    '-DTBB_ROOT_DIR=%s' % self.spec['intel-tbb-oneapi'].prefix,
+                    '-DMD5ROOT=%s' % self.spec['md5-cms'].prefix,
                     '-DDAVIXROOT=%s' % self.spec['davix'].prefix,
                     '-DSIGCPPROOT=%s' % self.spec['libsigcpp'].prefix,
                     '-DSIGCPP_INCLUDE_DIR=%s/include/sigc++-2.0' % self.spec['libsigcpp'].prefix,
-                    '-DTINYXMLROOT=%s' % self.spec['tinyxml'].prefix,
+                    '-DTINYXML2ROOT=%s' % self.spec['tinyxml2'].prefix,
                     '-DCPPUNITROOT=%s' % self.spec['cppunit'].prefix,
                     '-DXERCESC_ROOT_DIR=%s' % self.spec['xerces-c'].prefix]
             options.extend(args)
