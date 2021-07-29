@@ -1,14 +1,13 @@
-diff --git a/SimDataFormats/GeneratorProducts/src/classes_def.xml b/SimDataFormats/GeneratorProducts/src/classes_def.xml
-index 637e608..23d90b3 100644
---- a/SimDataFormats/GeneratorProducts/src/classes_def.xml
-+++ b/SimDataFormats/GeneratorProducts/src/classes_def.xml
-@@ -16,7 +16,8 @@
-     <class name="HepMC::GenCrossSection" ClassVersion="10">
-      <version ClassVersion="10" checksum="920043842"/>
-     </class>
--	<class name="HepMC::WeightContainer" ClassVersion="14">
-+	<class name="HepMC::WeightContainer" ClassVersion="15">
-+  <version ClassVersion="15" checksum="376377869"/>
-   <version ClassVersion="10" checksum="2163093401"/>
-   <version ClassVersion="11" checksum="376377869"/>
-   <version ClassVersion="12" checksum="2537869863"/>
+diff --git a/Fireworks/Core/CMakeLists.txt b/Fireworks/Core/CMakeLists.txt
+index 9721713..d0502c3 100644
+--- a/Fireworks/Core/CMakeLists.txt
++++ b/Fireworks/Core/CMakeLists.txt
+@@ -226,7 +226,7 @@ target_link_libraries(FireworksCore PUBLIC
+   FWCorePluginManager
+   FWCoreUtilities
+   FireworksTableWidget
+-  GCocoa
++  GX11
+   GLEW
+   Geom
+   GeomPainter
