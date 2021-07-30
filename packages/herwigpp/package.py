@@ -53,4 +53,4 @@ HERWIG_WRAPPER
 """)
             with open('Herwig','w') as f:
                 f.write(contents)
-            os.chmod('Herwig',0775)
+            os.chmod('Herwig',stat.S_IEXEC|stat.S_IREAD|stat.S_IWUSR|stat.S_IWGRP)
