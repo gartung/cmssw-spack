@@ -409,7 +409,7 @@ class Llvm(CMakePackage):
                                          resources[name].get('variant', "")),
                          placement=resources[name].get('placement', None))
 
-    conflicts('+clang_extra', when='~clang')
+#    conflicts('+clang_extra', when='~clang')
     conflicts('+lldb',        when='~clang')
 
     # Github issue #4986

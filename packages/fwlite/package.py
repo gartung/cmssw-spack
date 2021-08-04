@@ -95,11 +95,14 @@ class Fwlite(CMakePackage):
         install_tree(join_path(self.stage.source_path,'data'), join_path(self.prefix,'data'))
 
     def setup_run_environment(self, env):
+        cmssw_version = 'CMSSW.' + str(self.version[:-1])
+        cmssw_u_version = cmssw_version.replace('.', '_')
+        env.set('CMSSW_VERSION', cmssw_u_version)
         env.set('ROOT_INCLUDE_PATH', self.prefix.src)
         env.set('CMSSW_RELEASE_BASE', self.prefix)
         env.set('CMSSW_BASE', '%s' % self.prefix)
         env.set('CMSSW_DATA_PATH', '%s/data' % self.prefix)
-        env.set('CMSSW_SEARCH_PATH', '%s/data/Geometry/Fireworks/data' % self.prefix)
+        env.set('CMSSW_SEARCH_PATH', '%s/data/Fireworks/Geometry/data' % self.prefix)
         if sys.platform == 'darwin':
             env.set('DYLD_FALLBACK_LIBRARY_PATH', self.prefix.lib)
         else: 
