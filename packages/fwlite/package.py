@@ -16,7 +16,7 @@ class Fwlite(CMakePackage):
 
     version('master', git='https://github.com/gartung/fwlite.git',tag='master')
     version('11.3.1.2', sha256='0b293f6ad704faea3cc9e046542f1f86c9245ab30d39a2b54ba4d7423e6acfe6')
-    version('12.2.0', sha256='4131026a06e9bfab15d5da46645b30208401c85b98e48f6a184e4df37513039d')
+    version('12.2.0', sha256='ce3cd1b6ebde8514433f042646fedb8d2786a6471f664cf407e159cfb14c8a73')
 
     resource(name='cmaketools', git='https://github.com/gartung/cmaketools.git',
               placement='cmaketools')
@@ -56,6 +56,7 @@ class Fwlite(CMakePackage):
     depends_on('eigen')
     depends_on('openssl')
     depends_on('hls')
+    depends_on('gettext')
 
     def cmake_args(self):
         cxxstd = self.spec['root'].variants['cxxstd'].value
