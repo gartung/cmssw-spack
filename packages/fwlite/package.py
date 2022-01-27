@@ -16,6 +16,7 @@ class Fwlite(CMakePackage):
 
     version('master', git='https://github.com/gartung/fwlite.git',tag='master')
     version('11.3.1.2', sha256='0b293f6ad704faea3cc9e046542f1f86c9245ab30d39a2b54ba4d7423e6acfe6')
+    version('12.2.0', sha256='4131026a06e9bfab15d5da46645b30208401c85b98e48f6a184e4df37513039d')
 
     resource(name='cmaketools', git='https://github.com/gartung/cmaketools.git',
               placement='cmaketools')
@@ -23,12 +24,12 @@ class Fwlite(CMakePackage):
               placement='data', sha256='3077e4d9abd62c57d1d71b30fa968ba52a7c12879a7fc71d90d94c4123e426fa', expand=False)
     resource(name='geometry', url='https://github.com/cms-data/Fireworks-Geometry/archive/V07-06-00.tar.gz',
               placement='data/Fireworks/Geometry/data', sha256='93312e7c60525c66c09c86fdc36db401c281b95ccb2d9195d735f84506f5868b')
-    resource(name='patcandidates', url='https://github.com/cms-data/DataFormats-PatCandidates/archive/V01-00-01.tar.gz',
-              placement='data/DataFormats/PatCandidates/data', sha256='5a0941df5a191d0f942e26838103659970ba29cb9cd4ab3d0cc45bcc01b408df')
-    resource(name='miniaod', url='https://cmsshow-rels.web.cern.ch/cmsShow-rels/samples/11_2/RelValZTTminiaod.root',
-              placement='data/samples/11_2/miniaod', sha256='4c4ddc418c7131f6eea16ea4bfefa36c2dba8ac2161640bf93b1d7889ce8fa2c', expand=False)
-    resource(name='aod', url='https://cmsshow-rels.web.cern.ch/cmsShow-rels/samples/11_2/RelVallZTTGenSimReco.root',
-              placement='data/samples/11_2/aod', sha256='209e6bda0496892d33137bf67ecb583b233e4c962154b6ca574aa33f824ea532', expand=False)
+    resource(name='patcandidates', url='https://github.com/cms-data/DataFormats-PatCandidates/archive/V01-01-00.tar.gz',
+              placement='data/DataFormats/PatCandidates/data', sha256='f21e3d13ccc1f0abdf2a588dbf8f9623956df9a2d46578fc8c36bb1c5e1da25c')
+    resource(name='miniaod', url='https://cmsshow-rels.web.cern.ch/cmsShow-rels/samples/12/RelValTTBarMiniaod.root',
+              placement='data/samples/12/miniaod', sha256='9b013f2d4961304cbc77b5558dcc9cc1a0ff5e38c0fd1bb54954bd458ab32f73', expand=False)
+    resource(name='aod', url='https://cmsshow-rels.web.cern.ch/cmsShow-rels/samples/12/RelValZEEReco.root',
+              placement='data/samples/12/aod', sha256='a2e1388789ff57d4ed2eeee4f7be99083b6e88f3ad9b013634f9125e0135a92d', expand=False)
 
     if sys.platform != 'darwin':
         patch('patch')
@@ -54,6 +55,7 @@ class Fwlite(CMakePackage):
     depends_on('fmt')
     depends_on('eigen')
     depends_on('openssl')
+    depends_on('hls')
 
     def cmake_args(self):
         cxxstd = self.spec['root'].variants['cxxstd'].value
@@ -72,6 +74,7 @@ class Fwlite(CMakePackage):
         args.append('-DFMT_INCLUDE_DIR=%s' % self.spec['fmt'].prefix.include)
         args.append('-DOPENSSL_INCLUDE_DIR=%s' % self.spec['openssl'].prefix.include)
         args.append('-DEIGEN_INCLUDE_DIR=%s' % self.spec['eigen'].prefix.include)
+        args.append('-DHLS_INCLUDE_DIR=%s' % self.spec['hls'].prefix.include)
         args.append('-DVDT_ROOT_DIR=%s' % self.spec['vdt'].prefix)
         args.append('-DCMAKE_CXX_STANDARD=%s' % cxxstd)
         if sys.platform == 'darwin':
@@ -95,11 +98,14 @@ class Fwlite(CMakePackage):
         install_tree(join_path(self.stage.source_path,'data'), join_path(self.prefix,'data'))
 
     def setup_run_environment(self, env):
+        cmssw_version = 'CMSSW.' + str(self.version[:-1])
+        cmssw_u_version = cmssw_version.replace('.', '_')
+        env.set('CMSSW_VERSION', cmssw_u_version)
         env.set('ROOT_INCLUDE_PATH', self.prefix.src)
         env.set('CMSSW_RELEASE_BASE', self.prefix)
         env.set('CMSSW_BASE', '%s' % self.prefix)
         env.set('CMSSW_DATA_PATH', '%s/data' % self.prefix)
-        env.set('CMSSW_SEARCH_PATH', '%s/data/Geometry/Fireworks/data' % self.prefix)
+        env.set('CMSSW_SEARCH_PATH', '%s/data/Fireworks/Geometry/data' % self.prefix)
         if sys.platform == 'darwin':
             env.set('DYLD_FALLBACK_LIBRARY_PATH', self.prefix.lib)
         else: 
