@@ -50,7 +50,7 @@ class IntelTbbOneapi(CMakePackage):
         spec = self.spec
         define = self.define
         define_from_variant = self.define_from_variant
-        options = []
+        options = ['-DCMAKE_INSTALL_LIBDIR=lib']
         options.append('-DCMAKE_HWLOC_2_INCLUDE_PATH={}'.
                          format(spec['hwloc'].prefix.include))
         options.append('-DCMAKE_HWLOC_2_LIBRARY_PATH={}'.

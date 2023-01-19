@@ -1,0 +1,13 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 032f3a6c..c1c07345 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -75,7 +75,7 @@ find_package(VDT)
+ 
+ find_package(fmt)
+ 
+-find_library(NSL nsl NAMES nsl-2.28 nsl-2.26 nsl-2.17 nsl)
++#find_library(NSL nsl NAMES nsl-2.28 nsl-2.26 nsl-2.17 nsl)
+ find_library(RT rt)
+ find_library(CRYPT crypt)
+ find_library(DL dl)

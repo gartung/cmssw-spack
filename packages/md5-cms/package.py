@@ -21,3 +21,4 @@ class Md5Cms(Package):
             comp('md5.c', '-shared', '-fPIC', '-o', 'libcms-md5.so')
             cp('-v', 'libcms-md5.so', prefix.lib)
         cp('-v', 'md5.h', prefix.include)
+        cp('-v', 'md5.h', '%s/md5-cms.h' % prefix.include)
